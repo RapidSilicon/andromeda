@@ -22,14 +22,28 @@ from litex.soc.integration.soc_core import *
 from litex.soc.integration.builder import *
 from litex.soc.cores.led import LedChaser
 from litex.soc.cores.gpio import GPIOTristate
+from litex.soc.interconnect.csr import *
 
 from litedram.modules import MT41K128M16
 from litedram.phy import s7ddrphy
 
 from liteeth.phy.mii import LiteEthPHYMII
 
-# CRG ----------------------------------------------------------------------------------------------
+# Andromeda ----------------------------------------------------------------------------------------------
+class ibuf(Module, AutoCSR):
+    def __init__(self):
+        self.ctrl = CSRStorage(32)
+        self.stat = CSRStatus(32)
 
+        o_stat = Signal(32)
+        self.specials += [ Instance("ibuf",
+            i_ctrl=self.ctrl.storage,
+            o_stat = o_stat
+            )
+        ]
+        self.comb += self.stat.status.eq(o_stat)
+
+# CRG ----------------------------------------------------------------------------------------------
 class _CRG(Module):
     def __init__(self, platform, sys_clk_freq, with_dram=True, with_rst=True):
         self.rst = Signal()
@@ -81,6 +95,10 @@ class BaseSoC(SoCCore):
         # CRG --------------------------------------------------------------------------------------
         self.submodules.crg = _CRG(platform, sys_clk_freq, with_dram=not self.integrated_main_ram_size)
 
+        # Andromeda --------------------------------------------------------------------------------------
+        platform.add_source("ibuf.v")
+        self.submodules.ibuf = ibuf()
+
         # DDR3 SDRAM -------------------------------------------------------------------------------
         if not self.integrated_main_ram_size:
             self.submodules.ddrphy = s7ddrphy.A7DDRPHY(platform.request("ddram"),
@@ -123,6 +141,7 @@ class BaseSoC(SoCCore):
         if with_pmod_gpio:
             platform.add_extension(arty.raw_pmod_io("pmoda"))
             self.submodules.gpio = GPIOTristate(platform.request("pmoda"))
+
 
 # Build --------------------------------------------------------------------------------------------
 
