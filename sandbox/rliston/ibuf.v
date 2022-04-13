@@ -5,6 +5,6 @@ module ibuf (
 	output wire [31:0] stat
 );
 
-assign stat=ctrl;
+assign stat=ctrl+32'd1;
 
 endmodule
