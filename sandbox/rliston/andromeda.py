@@ -96,6 +96,11 @@ class BaseSoC(SoCCore):
         self.submodules.crg = _CRG(platform, sys_clk_freq, with_dram=not self.integrated_main_ram_size)
 
         # Andromeda --------------------------------------------------------------------------------------
+        self.add_constant("REMOTEIP1", 192)
+        self.add_constant("REMOTEIP2", 168)
+        self.add_constant("REMOTEIP3", 1)
+        self.add_constant("REMOTEIP4", 139)
+
         platform.add_source("ibuf.v")
         self.submodules.ibuf = ibuf()
 
