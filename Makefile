@@ -2,7 +2,7 @@ default:
 	echo "usage: make {build,demo,clean}"
 
 build::
-	python3 ./gateware/andromeda.py --toolchain vivado --build --variant a7-100 --cpu-type vexriscv --with-pmod-gpio --with-spi-flash --csr-address-width 15 --with-ethernet
+	python3 ./gateware/digilent_arty.py --toolchain vivado --build --variant a7-100 --cpu-type vexriscv --with-pmod-gpio --with-spi-flash --with-ethernet
 	echo "bitstream: ./build/digilent_arty/gateware/digilent_arty.bin"
 
 demo::

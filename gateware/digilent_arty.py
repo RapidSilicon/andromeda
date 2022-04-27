@@ -29,19 +29,7 @@ from litedram.phy import s7ddrphy
 
 from liteeth.phy.mii import LiteEthPHYMII
 
-# Andromeda ----------------------------------------------------------------------------------------------
-class ibuf(Module, AutoCSR):
-    def __init__(self):
-        self.ctrl = CSRStorage(32)
-        self.stat = CSRStatus(32)
-
-        o_stat = Signal(32)
-        self.specials += [ Instance("ibuf",
-            i_ctrl=self.ctrl.storage,
-            o_stat = o_stat
-            )
-        ]
-        self.comb += self.stat.status.eq(o_stat)
+from litex.soc.interconnect import wishbone
 
 # CRG ----------------------------------------------------------------------------------------------
 class _CRG(Module):
@@ -99,10 +87,28 @@ class BaseSoC(SoCCore):
         self.add_constant("REMOTEIP1", 192)
         self.add_constant("REMOTEIP2", 168)
         self.add_constant("REMOTEIP3", 1)
-        self.add_constant("REMOTEIP4", 139)
+        self.add_constant("REMOTEIP4", 51)
 
+        self.wb = wb = wishbone.Interface(data_width=32)
+        andromeda_region = SoCRegion(origin=self.mem_map.get("andromeda", None), size=256*1024*1024, cached=False)
+        self.bus.add_slave(name="andromeda", slave=wb, region=andromeda_region)
+        platform.add_source("gateware/andromeda.v")
+        platform.add_source("gateware/wb_decoder.v")
         platform.add_source("gateware/ibuf.v")
-        self.submodules.ibuf = ibuf()
+        self.specials += Instance("andromeda",
+            i_clk    = ClockSignal("sys"),
+            i_reset = ResetSignal("sys"),
+            # Wishbone
+            i_wb_CYC      = wb.cyc,
+            i_wb_STB      = wb.stb,
+            o_wb_ACK      = wb.ack,
+            i_wb_WE       = wb.we,
+            i_wb_ADR      = wb.adr,
+            o_wb_DAT_MISO = wb.dat_r,
+            i_wb_DAT_MOSI = wb.dat_w,
+            i_wb_SEL      = wb.sel
+            )
+        # print('DEBUG: bus',self.bus)
 
         # DDR3 SDRAM -------------------------------------------------------------------------------
         if not self.integrated_main_ram_size:
