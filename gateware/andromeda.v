@@ -49,7 +49,7 @@ ibuf u1 (
 	.stb(stb[0]),
 	.we(we),
 	.wdata(wdata),
-	.rdata(rdata[31:0]),
+	.rdata(rdata[0*32+:32]),
 	.ack(ack[0])
 );
 
@@ -60,7 +60,7 @@ ibuf u2 (
 	.stb(stb[1]),
 	.we(we),
 	.wdata(wdata),
-	.rdata(rdata[63:32]),
+	.rdata(rdata[1*32+:32]),
 	.ack(ack[1])
 );
 
