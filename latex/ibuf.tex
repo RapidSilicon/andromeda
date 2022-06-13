@@ -1,0 +1,104 @@
+\subsection{Input buffer}
+\begin{figure*}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure3}
+	\caption{Input buffer}
+	\label{fig:figure3}
+\end{figure*}
+
+The block diagram of the input buffer module is shown in Figure \ref{fig:figure3}. BRAM 0 is
+used to store complete even frames and BRAM 1 stores complete odd frames, where
+a frame is an array of pixels with shape [24,32,1]. All values are 18 bit
+signed integers. These BRAMs contain 2 write ports and 2 read ports. One write
+port is used by the I2C FSM to store and deinterlace incoming pixels from the
+sensor. One read port is used by the AXI-S FSM to read pixels in raster order
+and send them out the AXI-S interface. The second read and write ports are used
+to provide a memory mapped interface to the pixel values.
+The input buffer module contains the following memory map which is accessible through the AXI memory mapped slave interface.
+\begin{table}[hbt]
+\caption{Input buffer memory map}
+%	\centering
+\begin{tabular}{|l|r|l|l|l|}
+\toprule
+%		\multicolumn{2}{c}{Name} \\
+%		\cmidrule(r){1-2}
+Address & Bits & RW & Reset & Description \\
+\midrule
+	\hline
+	0x0	&0	&W	&1	&Bit bang SDA out (open drain) \\
+	\hline
+	0x0	&1	&R	&-	&Bit bang SDA in \\
+	\hline
+	0x0	&2	&W	&1	&Bit bang SCL out (open drain) \\
+	\hline
+	0x0	&3	&R	&-	&Bit bang SCL in \\
+	\hline
+	0x4	&0	&R/W	&0	&Run/Stop \\
+	\hline
+	0x1000	&17:0	&R/W		&&BRAM 2 EEPROM calibration coefficients for pixel compensation \\
+	\hline
+	0x2000	&17:0	&R/W		&&BRAM 0 SoC CPU access \\
+	\hline
+	0x3000	&17:0	&R/W		&&BRAM 1 SoC CPU access \\
+\bottomrule
+\end{tabular}
+\label{tab:mmap}
+\end{table}
+
+\paragraph{I2C FSM}
+The ibuf.v module contains an I2C master FSM which periodically reads IR pixel
+values from the sensor, applies per-pixel compensation factors, and stores the
+pixels in an on-chip 32x24 BRAM frame buffer. Refer to the
+\href{https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90640}{MLX90640 data sheet}.
+for details on sensor initialization, reading pixel values, and applying
+compensation factors.  The bit bang interface is used by the SoC application
+CPU to initialize the MLX90640 sensor. The sensor should be initialized with
+factory default settings except for the IR refresh rate which should be set to
+64Hz. Note that 64Hz is the interlaced rate for one subframe, the actual frame
+rate is 32Hz. It is desirable to make the refresh rate configurable in order to
+trade off thermal noise against refresh rate. At initialization, the
+calibration parameters must be read from the MLX90640 EEPROM using I2C reads,
+mathematically combined into 768 per-pixel coefficients, and stored in BRAM 2.
+Initially these coefficients can be set to unity to bypass calibration
+compensation. The compensation procedure is described in section 11.2.2 of the
+MLX90640 specification. Pixel compensation will require the use of a DSP
+multiplier and fixed point arithmetic.
+For simplicity, the input buffer can be double buffered so that one BRAM is
+receiving from the I2C FSM while the other is sending to the AXI-S FSM. Note
+that a 768-pixel frame fits in one 18x1K BRAM. The overall pseudo code for the
+I2C FSM follows.
+\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item	Poll MLX90640 until new data available
+\item	Read subframe 0 pixels from sensor RAM starting at 0x400
+\item	Multiply each pixel by its individual compensation coefficient (768 fixed point coefficients stored in BRAM 2)
+\item	Store compensated pixels in BRAM 0 (even frames)
+\item	Repeat 1-4 for subframe 1 (chess pattern interleave)
+\item	Assert interrupt to SoC CPU, trigger AXI-S FSM
+\item	Repeat 1-6 for BRAM 1 (odd frames)
+\end{enumerate}
+
+Note that if the input pixels arrive in raster order there is no need for a
+frame buffer. However, the MLX90640 sensor captures pixels in an interlaced
+chess board format. The frame buffer is designed to deinterlace the two chess
+boards into a single complete frame and then sequentially send each pixel over
+the output AXI-S interface in raster order. The frame buffer uses double
+buffered BRAM so the I2C side and AXI-S side can operate simultaneously.
+Additionally, the ibuf.v module generates an interrupt to the SoC CPU when a
+complete frame arrives (at 32Hz), so that the CPU can read the 768 raw pixel
+values in real time.
+
+\paragraph{AXI-S FSM}
+The AXI-S FSM operates concurrently with the I2C FSM and is responsible for
+emitting frames over the AXI stream interface. The overall pseudo code for the
+AXI-S FSM follows.
+\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item	Receive frame 0 trigger signal from I2C FSM \verb|foo_bar|
+\item	Sequentially read pixels from BRAM 0 in raster order and output to AXI-S
+\item	Rate limit AXI-S so that TVALID toggles at ~25KHz (768 pixels * 32Hz)
+\item	Assert TLAST
+\item	Repeat 1-4 for frame 1 / BRAM 1
+\end{enumerate}
+Conceptually, data on the AXI-S interface is a tensor sent sequentially in 'C'
+order and framed using TLAST. The shape of the IR sensor data is [24,32,1]. The
+pixels should be in raster order with 0,0 in the upper left corner of the
+frame.
+
