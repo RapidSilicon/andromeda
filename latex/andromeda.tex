@@ -1,0 +1,510 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Stylish Article
+% LaTeX Template
+% Version 2.2 (2020-10-22)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Mathias Legrand (legrand.mathias@gmail.com) 
+% With extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[fleqn,10pt]{SelfArx} % Document font size and equations flushed left
+
+\usepackage[english]{babel} % Specify a different language here - english by default
+
+\usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
+
+%----------------------------------------------------------------------------------------
+%	COLUMNS
+%----------------------------------------------------------------------------------------
+
+\setlength{\columnsep}{0.55cm} % Distance between the two columns of text
+\setlength{\fboxrule}{0.75pt} % Width of the border around the abstract
+
+%----------------------------------------------------------------------------------------
+%	COLORS
+%----------------------------------------------------------------------------------------
+
+\definecolor{color1}{RGB}{0,0,90} % Color of the article title and sections
+\definecolor{color2}{RGB}{0,20,20} % Color of the boxes behind the abstract and headings
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS
+%----------------------------------------------------------------------------------------
+
+\usepackage{hyperref} % Required for hyperlinks
+
+%\hypersetup{
+%	hidelinks,
+%	colorlinks,
+%	breaklinks=true,
+%	urlcolor=color2,
+%	citecolor=color1,
+%	linkcolor=color1,
+%	bookmarksopen=false,
+%	pdftitle={Title},
+%	pdfauthor={Author},
+%}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE INFORMATION
+%----------------------------------------------------------------------------------------
+
+%\JournalInfo{foo} % Journal information
+%\Archive{} % Additional notes (e.g. copyright, DOI, review/research article)
+
+\PaperTitle{Thermal vision AI reference application} % Article title
+
+\Authors{Rob Liston, Fawad Ahmad, Zafar Ali, Jash Garish} % Authors
+%\Authors{Rob Liston\textsuperscript{1}*, John Doe\textsuperscript{2}} % Authors
+%\affiliation{\textsuperscript{1}\textit{Department of Biology, University of Examples, London, United Kingdom}} % Author affiliation
+%\affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
+%\affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
+
+%\Keywords{Keyword1 --- Keyword2 --- Keyword3} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\Keywords{} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\newcommand{\keywordname}{Keywords} % Defines the keywords heading name
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\Abstract{Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus sit amet tortor gravida placerat. Integer sapien est, iaculis in, pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla. Curabitur auctor semper nulla. Donec varius orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum.}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Output the title and abstract box
+\tableofcontents % Output the contents section
+\thispagestyle{empty} % Removes page numbering from the first page
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\newpage
+\section*{Introduction} % The \section*{} command stops section numbering
+
+\addcontentsline{toc}{section}{Introduction} % Adds this section to the table of contents
+
+%\lipsum[1-3] % Dummy text
+% and some mathematics $\cos\pi=-1$ and $\alpha$ in the text\footnote{And some mathematics $\cos\pi=-1$ and $\alpha$ in the text.}.
+This document defines the architecture and microarchitecture for an FPGA
+reference application targeting the Gemini device. The application utilizes the
+MLX90640 IR thermal sensor array from Melexis, which produces a 32x24 array of
+high precision thermal pixels at 32Hz. This thermal sensor interfaces directly
+to the FPGA fabric using an I2C interface over GPIO. A 14-layer CNN with ~200K
+parameters is implemented in the FPGA fabric using CLB, BRAM and DSP resources.
+The output of the CNN is a 32Hz stream of predictions which can be accessed by
+the SoC CPU using a memory mapped interface. The CNN can be trained to perform
+a variety of classification tasks. All of the weights and data buffering are
+stored in BRAM in the FPGA fabric. In the reference application, the
+predictions and raw sensor values are encapsulated in UDP IP packets and sent
+out the SoC ethernet interface.  The system hardware diagram is shown in Figure \ref{fig:figure1}.
+
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure1}
+	\caption{System Diagram}
+	\label{fig:figure1}
+\end{figure}
+
+
+%------------------------------------------------
+
+\section{FPGA gateware}
+The FPGA fabric design consists of three major modules as shown in Figure \ref{fig:figure2}.
+The ibuf and obuf module each have one instance and the conv2d module contains
+one instance per CNN layer. The evaluation of the CNN is fully pipelined and
+does not contain any feedback loops or stall mechanisms. In this design, all
+tensors are composed of 18 bit signed integers and are serialized in 'C' order,
+for example in BRAM memory or over AXI-Stream interfaces.
+\begin{figure*}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure2}
+	\caption{FPGA Top Level}
+	\label{fig:figure2}
+\end{figure*}
+
+%\begin{figure*}[ht]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+%	\includegraphics[width=\linewidth]{view}
+%	\caption{Wide Picture}
+%	\label{fig:view}
+%\end{figure*}
+
+%\lipsum[4] % Dummy text
+
+%\begin{equation}
+%	\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
+%	\label{eq:refname2}
+%\end{equation}
+
+%\lipsum[5] % Dummy text
+
+%\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+%	\item First item in a list
+%	\item Second item in a list
+%	\item Third item in a list
+%\end{enumerate}
+
+\subsection{Input buffer}
+\begin{figure*}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure3}
+	\caption{Input buffer}
+	\label{fig:figure3}
+\end{figure*}
+
+The block diagram of the input buffer module is shown in Figure \ref{fig:figure3}. BRAM 0 is
+used to store complete even frames and BRAM 1 stores complete odd frames, where
+a frame is an array of pixels with shape [24,32,1]. All values are 18 bit
+signed integers. These BRAMs contain 2 write ports and 2 read ports. One write
+port is used by the I2C FSM to store and deinterlace incoming pixels from the
+sensor. One read port is used by the AXI-S FSM to read pixels in raster order
+and send them out the AXI-S interface. The second read and write ports are used
+to provide a memory mapped interface to the pixel values.
+The input buffer module contains the following memory map which is accessible through the AXI memory mapped slave interface.
+\begin{table}[hbt]
+\caption{Input buffer memory map}
+%	\centering
+\begin{tabular}{|l|r|l|l|l|}
+\toprule
+%		\multicolumn{2}{c}{Name} \\
+%		\cmidrule(r){1-2}
+Address & Bits & RW & Reset & Description \\
+\midrule
+	\hline
+	0x0	&0	&W	&1	&Bit bang SDA out (open drain) \\
+	\hline
+	0x0	&1	&R	&-	&Bit bang SDA in \\
+	\hline
+	0x0	&2	&W	&1	&Bit bang SCL out (open drain) \\
+	\hline
+	0x0	&3	&R	&-	&Bit bang SCL in \\
+	\hline
+	0x4	&0	&R/W	&0	&Run/Stop \\
+	\hline
+	0x1000	&17:0	&R/W		&&BRAM 2 EEPROM calibration coefficients for pixel compensation \\
+	\hline
+	0x2000	&17:0	&R/W		&&BRAM 0 SoC CPU access \\
+	\hline
+	0x3000	&17:0	&R/W		&&BRAM 1 SoC CPU access \\
+\bottomrule
+\end{tabular}
+\label{tab:mmap}
+\end{table}
+
+\paragraph{I2C FSM}
+The ibuf.v module contains an I2C master FSM which periodically reads IR pixel
+values from the sensor, applies per-pixel compensation factors, and stores the
+pixels in an on-chip 32x24 BRAM frame buffer. Refer to the
+\href{https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90640}{MLX90640 data sheet}.
+for details on sensor initialization, reading pixel values, and applying
+compensation factors.  The bit bang interface is used by the SoC application
+CPU to initialize the MLX90640 sensor. The sensor should be initialized with
+factory default settings except for the IR refresh rate which should be set to
+64Hz. Note that 64Hz is the interlaced rate for one subframe, the actual frame
+rate is 32Hz. It is desirable to make the refresh rate configurable in order to
+trade off thermal noise against refresh rate. At initialization, the
+calibration parameters must be read from the MLX90640 EEPROM using I2C reads,
+mathematically combined into 768 per-pixel coefficients, and stored in BRAM 2.
+Initially these coefficients can be set to unity to bypass calibration
+compensation. The compensation procedure is described in section 11.2.2 of the
+MLX90640 specification. Pixel compensation will require the use of a DSP
+multiplier and fixed point arithmetic.
+For simplicity, the input buffer can be double buffered so that one BRAM is
+receiving from the I2C FSM while the other is sending to the AXI-S FSM. Note
+that a 768-pixel frame fits in one 18x1K BRAM. The overall pseudo code for the
+I2C FSM follows.
+\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item	Poll MLX90640 until new data available
+\item	Read subframe 0 pixels from sensor RAM starting at 0x400
+\item	Multiply each pixel by its individual compensation coefficient (768 fixed point coefficients stored in BRAM 2)
+\item	Store compensated pixels in BRAM 0 (even frames)
+\item	Repeat 1-4 for subframe 1 (chess pattern interleave)
+\item	Assert interrupt to SoC CPU, trigger AXI-S FSM
+\item	Repeat 1-6 for BRAM 1 (odd frames)
+\end{enumerate}
+
+Note that if the input pixels arrive in raster order there is no need for a
+frame buffer. However, the MLX90640 sensor captures pixels in an interlaced
+chess board format. The frame buffer is designed to deinterlace the two chess
+boards into a single complete frame and then sequentially send each pixel over
+the output AXI-S interface in raster order. The frame buffer uses double
+buffered BRAM so the I2C side and AXI-S side can operate simultaneously.
+Additionally, the ibuf.v module generates an interrupt to the SoC CPU when a
+complete frame arrives (at 32Hz), so that the CPU can read the 768 raw pixel
+values in real time.
+
+\paragraph{AXI-S FSM}
+The AXI-S FSM operates concurrently with the I2C FSM and is responsible for
+emitting frames over the AXI stream interface. The overall pseudo code for the
+AXI-S FSM follows.
+\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	\item	Receive frame 0 trigger signal from I2C FSM \verb|foo_bar|
+\item	Sequentially read pixels from BRAM 0 in raster order and output to AXI-S
+\item	Rate limit AXI-S so that TVALID toggles at ~25KHz (768 pixels * 32Hz)
+\item	Assert TLAST
+\item	Repeat 1-4 for frame 1 / BRAM 1
+\end{enumerate}
+Conceptually, data on the AXI-S interface is a tensor sent sequentially in 'C'
+order and framed using TLAST. The shape of the IR sensor data is [24,32,1]. The
+pixels should be in raster order with 0,0 in the upper left corner of the
+frame.
+
+\subsection{Conv2d layer}
+The conv2d module is a parameterized Verilog module which is responsible for
+evaluating one layer in a deep model. The module parameters are defined in
+Table \ref{tab:params}.
+
+\begin{table}[hbt]
+\caption{Conv2d module parameters}
+%	\centering
+\begin{tabular}{|l|l|}
+\toprule
+%		\multicolumn{2}{c}{Name} \\
+%		\cmidrule(r){1-2}
+Parameter & Limitations \\
+\midrule
+	\hline ichan & tbd \\
+	\hline iwidth & tbd \\
+	\hline ochan & tbd \\
+	\hline kheight & tbd \\
+	\hline kwidth & tbd \\
+	\hline stride & tbd \\
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
+
+
+The conv2d block implements the functional equivalent of
+\begin{verbatim}
+tf.keras.layers.Conv2D(filters=ochan, kernel_size=[kheight,kwidth],
+strides=[stride,stride], padding='valid', activation='relu', use_bias=True,
+data_format='channels_last').
+\end{verbatim}
+
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[scale=0.5]{figure4}
+	\caption{System Diagram}
+	\label{fig:figure4}
+\end{figure}
+
+The conv2d module is responsible for evaluating one layer in a deep CNN model
+as depicted logically in Figure 4. On the input side, incoming features are
+stored in a circular row buffer which contains kheight rows corresponding to
+the convolutional kernel size. The incoming features arrive in 'C' order with
+overall shape $[iheight, iwidth, ichan]$, ending with TLAST. Each time a complete
+patch is formed in the row buffer, the output side iterates the two read port
+addresses to feed the DSP with the dot product input vectors, each with shape
+[kheight,kwidth,ichan], to calculate a single output feature. This process is
+repeated for ochan weight patches. The output of the block is a sequence of
+output features, computed in 'C' order with overall shape
+$[ceiling((iheight-kheight+1)/stride), ceiling((iwidth-kwidth+1)/stride),
+ochan]$, ending with TLAST. A RELU nonlinearity is applied and the result is
+sent to the output AXI-S interface.  A variable number of conv2d layers can be
+connected in a pipeline using AXI-S interfaces. The AXI-S interface is
+simplified because there are no stalls in the pipeline, so TREADY is not
+required. 
+Each layer in the model is parameterized by ${iwidth, ichan, stride, ochan,
+kheight, kwidth}$ where the input shape is $[iheight,iwidth,ichan]$ and the output
+shape is $[ceiling((iheight-kheight+1)/stride),
+ceiling((iwidth-kwidth+1)/stride), ochan]$. Depending on these parameters, the
+conv2d instantiation may contain a variable number of BRAM instances. Each BRAM
+is 18x1K and the total storage requirement is $18*(ichan*iwidth*kheight +
+ichan*kheight*kwidth*ochan)$. In this version of the design there is always a
+single DSP multiply accumulate unit per layer, which provides a per layer MAC
+budget of ~400M MAC/s. Refer to spreadsheet [1] for details.
+\newline
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure5}
+	\caption{System Diagram}
+	\label{fig:figure5}
+\end{figure}
+
+The conv2d block diagram is shown in Figure 5. The incoming data is stored in a
+row buffer using BRAM {0}\ldots{n}, with shape [kheight,iwidth,ichan]. The weights for
+the layer are also stored in BRAM {0}\ldots{n} with shape [ochan,kheight,kwidth,ichan].
+The total depth for BRAM 0:n is kheight*iwidth*ichan +
+ochan*kheight*kwidth*ichan. As complete patches are received into the row
+buffer with shape [kheight,kwidth,ichan], the BRAM iterator iterates the RA and
+RB read port addresses to read the data and weights for the dot product
+computation by the DSP MAC. There are ochan weights, each with shape
+[kheight,kwidth,ichan]. The dot product for each ochan is computed and emitted
+serially so that the output shape is [ceiling((iheight-kheight+1)/stride),
+ceiling((iwidth-kwidth+1)/stride),ochan]. The reduction in height and width is
+due to the use of padding='valid'. Note that the conv2d module can process
+frames with arbitrary iheight. After the dot product is computed for each
+ochan, a RELU activation function is applied before sending TDATA out.
+\newline
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[scale=0.5]{figure6}
+	\caption{System Diagram}
+	\label{fig:figure6}
+\end{figure}
+
+Figure 6 shows how the row buffer and weights are organized in the BRAM for
+kheight=3, kwidth=3. Incoming frames from the AXI-S input interface are
+circularly stored into the row buffer in 'C' order with shape [3,iwidth,ichan].
+When a complete [3,3,ichan] patch is available, the BRAM iterator uses the two
+BRAM read ports RA and RB to read the row buffer and weights in order to
+successively compute ochan dot products. A total of ochan dot products are
+generated per input patch to form an output feature vector. For each dot
+product, the same row buffer patch is multiplied by ochan different weight
+patches. All of the dot products must be finished before the next row buffer
+patch arrives in order to eliminate the need for stalls.
+
+\subsection{Output buffer}
+The output buffer contains a double buffer BRAM which stores the final CNN
+prediction output shape, generates an interrupt to the SoC CPU, and provides
+memory mapped AXI slave access to the prediction buffer.
+
+\subsection{Top level}
+The top level FPGA Verilog module contains the ibuf, obuf and multiple conv2d
+instances. For this application, the following deep model will be implemented.
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure7}
+	\caption{System Diagram}
+	\label{fig:figure7}
+\end{figure}
+
+\section{Application software}
+TBD: update this section to use MQTT transport
+\paragraph{Embedded software}
+The application software is interrupt driven. One interrupt is used to signal
+the arrival of a new frame in the input buffer. The application can read the
+pixel values using the AXI memory mapped slave interface, copy to a UDP packet
+buffer, and transmit out the ethernet SoC interface. Similarly, another
+interrupt indicates that a new prediction is available to be read from the
+output buffer. A complete frame of raw pixels requires 768*2 bytes which will
+require two UDP packets. The prediction frame requires 100*2 bytes assuming a
+final CNN shape of [1,1,100]. The UDP packets are sent to a configurable IP
+address and UDP destination port.  The application software also performs
+MLX90640 sensor initialization, EEPROM calibration data processing, and
+programming compensation coefficients to BRAM.
+The application software also programs the model weights into the conv2d BRAM
+at initialization.
+\paragraph{Cloud software}
+The server software is a python program which listens to a UDP port, receives
+packets with raw pixels and  predictions, and renders a live visualization.
+
+\section{Deep model}
+\paragraph{Model training and weight extraction}
+The conv2d layer can be used to build general purpose deep models which can be trained using standard frameworks such as tensorflow, keras, or pytorch. The overall procedure for developing and deploying a deep model is as follows.
+1.	Create tensorflow model with the same structure and conv2d layer parameters as the Verilog code
+2.	Train the model using tensorflow
+3.	Extract the weights from the trained model
+4.	Convert floating point weights to fixed point
+5.	Program weights into conv2d Verilog BRAM for each layer
+6.	The output of the last conv2d layer represents the predicted logits which must be further processed using e.g. softmax in order to generate a probability distribution.
+
+
+
+%\lipsum[6] % Dummy text
+
+%\paragraph{Paragraph} \lipsum[7] % Dummy text
+%\paragraph{Paragraph} \lipsum[8] % Dummy text
+
+%\subsection{Subsection}
+
+%\lipsum[9] % Dummy text
+
+%\begin{figure}[ht]\centering
+%	\includegraphics[width=\linewidth]{results}
+%	\caption{In-text Picture}
+%	\label{fig:results}
+%\end{figure}
+
+%Reference to Figure \ref{fig:results}.
+
+%------------------------------------------------
+
+%\section{Results and Discussion}
+
+%\lipsum[10] % Dummy text
+
+%\subsection{Subsection}
+
+%\lipsum[11] % Dummy text
+
+%\begin{table}[hbt]
+%	\caption{Table of Grades}
+%	\centering
+%	\begin{tabular}{llr}
+%		\toprule
+%		\multicolumn{2}{c}{Name} \\
+%		\cmidrule(r){1-2}
+%		First name & Last Name & Grade \\
+%		\midrule
+%		John & Doe & $7.5$ \\
+%		Richard & Miles & $2$ \\
+%		\bottomrule
+%	\end{tabular}
+%	\label{tab:label}
+%\end{table}
+
+%\subsubsection{Subsubsection}
+
+%\lipsum[12] % Dummy text
+
+%\begin{description}
+%	\item[Word] Definition
+%	\item[Concept] Explanation
+%	\item[Idea] Text
+%\end{description}
+
+%\subsubsection{Subsubsection}
+
+%\lipsum[13] % Dummy text
+
+%\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+	%\item First item in a list
+	%\item Second item in a list
+	%\item Third item in a list
+%\end{itemize}
+
+%\subsubsection{Subsubsection}
+
+%\lipsum[14] % Dummy text
+
+%\subsection{Subsection}
+
+%\lipsum[15-23] % Dummy text
+
+%------------------------------------------------
+
+\phantomsection
+\section*{Acknowledgments} % The \section*{} command stops section numbering
+
+\addcontentsline{toc}{section}{Acknowledgments} % Adds this section to the table of contents
+
+So long and thanks for all the fish \cite{conv2dxls,mlxspec}.
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\phantomsection
+\bibliographystyle{unsrt}
+\bibliography{sample.bib}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
