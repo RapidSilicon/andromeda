@@ -180,7 +180,7 @@ The \verb|dsp_clk| domain runs at 400MHz and is used to clock the AXI-S stream i
 %\end{enumerate}
 
 
-\include{ibuf}
+\input{ibuf}
 
 \subsection{Conv2d layer}
 The conv2d module is a parameterized Verilog module which is responsible for
@@ -290,8 +290,8 @@ The output buffer contains a double buffer BRAM which stores the final CNN
 prediction output shape, generates an interrupt to the SoC CPU, and provides
 memory mapped AXI slave access to the prediction buffer.
 
-\subsection{SoC interface}
-The soc\_if.v module is responsible for AXI slave decoding and interrupt control.
+\input{soc_if}
+
 \section{Application software}
 TBD: update this section to use MQTT transport
 \paragraph{Embedded software}
