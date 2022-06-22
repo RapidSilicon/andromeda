@@ -60,7 +60,6 @@ reg [17:0] params [OCHAN*KHEIGHT*KWIDTH*ICHAN-1:0];
 reg [31:0] row,col,ich; // index into rowbuffer[KHEIGHT,IWIDTH,ICHAN]
 reg [31:0] nrow;	// total rows since TLAST
 reg patch;	// asserted on TVALID, complete patch KHEIGHT*KWIDTH*ICHAN starting at col0,row0 (upper left corner)
-reg last;
 reg [31:0] row0,col0; // current patch location 
 always @(posedge clk) begin
 	if (reset | tlast_i) begin
@@ -69,23 +68,22 @@ always @(posedge clk) begin
 		col <= 'd0; // IWIDTH
 		ich <= 'd0; // ICHAN
 		patch <= 1'b0;
-		last <= 1'b0;
 	end
 	else if (tvalid_i) begin
 		rowbuf[(row*IWIDTH*ICHAN)+(col*ICHAN)+ich] <= tdata_i;
 		if (ich==(ICHAN-1)) begin
 			if ((col>=KWIDTH) && (nrow>=KHEIGHT) && ((col%STRIDE)==0) && ((nrow%STRIDE)==0)) begin
-				patch <= 1'b1; // we received a complete patch, trigger iterator
-				last <= tlast_i;
-				row0 = (row-KHEIGHT-1)%KHEIGHT;
+				patch <= 1'b1; // we received a complete patch in rowbuf[], trigger iterator
+				row0 = (row-KHEIGHT-1)%KHEIGHT; // from lower right to upper left ... more efficient to set row0<=row;
 				col0 = (col-KWIDTH-1);
 			end
 			else
 				patch <= 1'b0;
+
 			ich <= 'd0;
 			if (col==(IWIDTH-1)) begin
-				col <= 'd0;
 				nrow <= nrow+'d1;
+				col <= 'd0;
 				if (row==(KHEIGHT-1))
 					row <= 'd0;
 				else
@@ -111,11 +109,13 @@ always @(posedge clk) begin
 	if (reset) begin
 		state <= IDLE;
 		tvalid_o <= 'b0;
+		tlast_o <= 'b0;
 	end
 	else begin
 		case(state)
     		IDLE : begin
 			tvalid_o <= 'b0;
+			tlast_o <= 'b0;
 			if (patch) begin
 				// a complete patch arrived at col0,row0
 				// start computing ochan dot products
@@ -131,6 +131,7 @@ always @(posedge clk) begin
 
     		ITER : begin
 			tvalid_o <= 'b0;
+			tlast_o <= 'b0;
 			dsp_a <= rowbuf[(((row0+i)%KHEIGHT)*IWIDTH*ICHAN)+((col0+j)*ICHAN)+k];
 			dsp_b <= params[(och*KHEIGHT*KWIDTH*ICHAN)+(i*KWIDTH*ICHAN)+(j*ICHAN)+k];
 			acc <= (dsp_a*dsp_b)+acc;
@@ -141,9 +142,10 @@ always @(posedge clk) begin
 					j <= 'd0;
 					if (i==(KHEIGHT-1)) begin
 						i <= 'd0;
-						och <= och+'d1;
 						if (och==(OCHAN-1))
 							state <= DONE;
+						else
+							och <= och+'d1;
 					end
 					else
 						i <= i+'d1;
@@ -157,8 +159,8 @@ always @(posedge clk) begin
 
     		DONE : begin
 			tvalid_o <= 'b1;
-			tlast_o <= last;
-			tdata_o <= (acc<0) ? 'd0 : acc[47:30]; // RELU
+			tlast_o <= 'b1;
+			tdata_o <= (acc<0) ? 'd0 : acc[47:30]; // RELU TODO: fixed point bit slice
 			state <= INIT;
 		end
 		endcase
