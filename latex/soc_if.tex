@@ -1,2 +1,111 @@
 \subsection{SoC interface}
-The soc\_if.v module is responsible for AXI slave decoding and interrupt control.
+\paragraph{}
+The soc\_if.v module is responsible for AXI slave decoding and interrupt control. It is a Wishbone compliant memory mapped module.  The block diagram of this module is shown in  Figure 7. 
+
+
+\begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
+	\includegraphics[width=\linewidth]{figure7}
+	\caption{SoC interface}
+	\label{fig:figure7}
+\end{figure}
+
+\paragraph{Wishbone Slave Interface}
+The soc\_if module is connected to the system Wishbone bus via this Wishbone slave interface. \\
+The port-list of the Wishbone slave interface is shown Table \ref{tab:params}.
+
+\begin{table}[hbt]
+\caption{Wishbone Slave Interface Ports}
+%	\centering
+\begin{tabular}{|l|l|l|}
+\toprule
+%		\multicolumn{3}{c}{Name} \\
+%		\cmidrule(r){1-3}
+Port  & Direction & Description  \\
+\midrule
+	\hline WB\_CLK\_I & input & The clock input [CLK\_I] coordinates all activities \\  & & for the internal logic within the
+WISHBONE interface.\\
+	\hline WB\_RST\_I & input & The reset input [RST\_I] forces the WISHBONE interface to restart\\
+	\hline WBS\_STB\_I & input & The strobe input [STB\_I], when asserted, indicates that the SLAVE is selected\\
+	\hline WBS\_CYC\_I & input & The cycle input [CYC\_I], when asserted, indicates that a valid bus cycle is in progress\\
+	\hline WBS\_WE\_I & input & The write enable input [WE\_I] indicates whether the current local bus cycle is  \\  & & a READ or
+WRITE cycle\\
+	\hline WBS\_SEL\_I & input & The select input array [SEL\_I()] indicates where valid data is place\\
+	\hline WBS\_DAT\_I& input & The data input array [DAT\_I()] is used to pass binary data\\
+	\hline WBS\_ADR\_I & input & The address input array [ADR\_I()] is used to pass a binary address \\
+	\hline WBS\_ACK\_O & output & The acknowledge output [ACK\_O], when asserted, indicates  \\  & &  the termination of a normal
+bus cycle\\
+	\hline WBS\_DAT\_O & output & The data output array [DAT\_O()] is used to pass binary data\\
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
+
+\paragraph{AXI-lite interfaces} 
+The soc\_if module generates S\_COUNT AXI-lite memory mapped interfaces starting at 0x80000000. These AXI-lite interfaces are connected to the Ibuf, conv2d CNN layers and the Obuf modules as shown in the Figure 2. All the configurations of the internal modules are done via these AXI-lite interfaces.\\
+
+The port-list of these AXI-lite interfaces is shown in Table \ref{tab:params}.  
+
+\begin{table}[hbt]
+
+\caption{AXI-Lite Interface Ports}
+%	\centering
+\begin{tabular}{|l|l|l|}
+\toprule
+%		\multicolumn{3}{c}{Name} \\
+%		\cmidrule(r){1-3}
+Port  & Direction & Description  \\
+\midrule
+	\hline M\_AXI\_ACLK & Output & Clock signal. \\
+	\hline M\_AXI\_ARESETN & Output & Reset signal, active LOW\\
+	\hline M\_AXI\_AWVALID & Output & Write address valid \\
+	\hline M\_AXI\_AWREADY & input & Write address ready\\
+	\hline M\_AXI\_AWADDR & Output &Write address \\
+	\hline M\_AXI\_AWPROT & Output & Protection type\\
+	\hline M\_AXI\_WVALID & Output & Write valid \\
+	\hline M\_AXI\_WREADY & input & Write ready. \\
+	\hline M\_AXI\_WDATA & output & Write data\\
+	\hline M\_AXI\_WSTRB & output & Write strobes\\
+	\hline M\_AXI\_BVALID& input & Write response valid\\
+	\hline M\_AXI\_BREADY & Output & Response ready\\
+	\hline M\_AXI\_BRESP & input & Write response \\
+	\hline M\_AXI\_ARVALID& output & Read address valid\\
+	\hline M\_AXI\_ARREADY & input & Read address ready\\
+	\hline M\_AXI\_ARADDR & output & Read address\\
+	\hline M\_AXI\_ARPROT & Output & Protection type\\
+	\hline M\_AXI\_RVALID & Output & Read valid\\
+	\hline M\_AXI\_RREADY& input & Read ready \\
+	\hline M\_AXI\_RDATA & output & Read data\\
+	\hline M\_AXI\_RRESP  & input & Read response\\
+
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
+
+
+\paragraph{Wishbone to AXI-lite translator and decoder } 
+The Wishbone to AXI-lite translator and decoder accepts the Wishbone transactions and decodes on the basis of the address to transit the transactions to the specific AXI-lite interface of the soc\_if module. \\
+
+\paragraph{Interrupt Control}  
+The interrupts from the Ibuf and Obuf are captured and registored in a memory mapped register with in the soc\_if. This register can be can access by the system through the Wishbone interconnect. 
+An output interrupt signal is also generated based on the status of the interrupt register.
+  
+The interrupt ports are shown in Table \ref{tab:params}.  
+
+\begin{table}[hbt]
+\caption{Interrupt ports}
+%	\centering
+\begin{tabular}{|l|l|l|}
+\toprule
+%		\multicolumn{3}{c}{Name} \\
+%		\cmidrule(r){1-3}
+Port  & Direction & Description  \\
+\midrule
+	\hline ib\_intrpt & input & IBuf interrupt \\
+	\hline ob\_intrpt & input & oBuf interrupt\\
+	\hline soc\_if\_intrpt & Output & soc\_if\_intrpt\\
+
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
