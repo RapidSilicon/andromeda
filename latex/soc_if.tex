@@ -1,18 +1,19 @@
 \subsection{SoC interface}
 \paragraph{}
-The soc\_if.v module is responsible for AXI slave decoding and interrupt control. It is a Wishbone compliant memory mapped module.  The block diagram of this module is shown in  Figure 7. 
+The soc\_if.v module is responsible for AXI slave decoding and interrupt control. It is a Wishbone compliant memory mapped module.  
+The block diagram of this module is shown in  Figure \ref{fig:socif_fig1}. 
 
 
 \begin{figure}[h]\centering % Using \begin{figure*} makes the figure take up the entire width of the page
-	\includegraphics[width=\linewidth]{figure7}
+	\includegraphics[width=\linewidth]{socif_fig1}
 	\caption{SoC interface}
-	\label{fig:figure7}
+	\label{fig:socif_fig1}
 \end{figure}
 
 \paragraph{Wishbone Slave Interface}
 The soc\_if module is connected to the system Wishbone bus via this Wishbone slave interface. \\
-The port-list of the Wishbone slave interface is shown Table \ref{tab:params}.
-
+The port-list of the Wishbone slave interface is shown Table \ref{tab:socif_northbound}.
+TODO: add widths of buses e.g. $WBS\_DAT\_I[31:0]$
 \begin{table}[hbt]
 \caption{Wishbone Slave Interface Ports}
 %	\centering
@@ -37,13 +38,19 @@ bus cycle\\
 	\hline WBS\_DAT\_O & output & The data output array [DAT\_O()] is used to pass binary data\\
 \bottomrule
 \end{tabular}
-\label{tab:params}
+\label{tab:socif_northbound}
 \end{table}
 
 \paragraph{AXI-lite interfaces} 
-The soc\_if module generates S\_COUNT AXI-lite memory mapped interfaces starting at 0x80000000. These AXI-lite interfaces are connected to the Ibuf, conv2d CNN layers and the Obuf modules as shown in the Figure 2. All the configurations of the internal modules are done via these AXI-lite interfaces.\\
+The soc\_if module generates S\_COUNT AXI-lite memory mapped interfaces
+starting at 0x80000000. These AXI-lite interfaces are connected to the Ibuf,
+conv2d CNN layers and the Obuf modules as shown in the Figure \ref{fig:figure2}. All the
+configurations of the internal modules are done via these AXI-lite
+interfaces.\\
+TODO: add overall memory map including interrupt CSR, axi-lite slave region base addresses
 
-The port-list of these AXI-lite interfaces is shown in Table \ref{tab:params}.  
+The port-list of these AXI-lite interfaces is shown in Table \ref{tab:socif_southbound}.  
+TODO: add column which indicates which signals are tied to 'b0, 'b1
 
 \begin{table}[hbt]
 
@@ -79,7 +86,7 @@ Port  & Direction & Description  \\
 
 \bottomrule
 \end{tabular}
-\label{tab:params}
+\label{tab:socif_southbound}
 \end{table}
 
 
@@ -87,10 +94,13 @@ Port  & Direction & Description  \\
 The Wishbone to AXI-lite translator and decoder accepts the Wishbone transactions and decodes on the basis of the address to transit the transactions to the specific AXI-lite interface of the soc\_if module. \\
 
 \paragraph{Interrupt Control}  
-The interrupts from the Ibuf and Obuf are captured and registored in a memory mapped register with in the soc\_if. This register can be can access by the system through the Wishbone interconnect. 
-An output interrupt signal is also generated based on the status of the interrupt register.
+The interrupts from the Ibuf and Obuf are captured and registored in a memory
+mapped register with in the soc\_if. This register can be can access by the
+system through the Wishbone interconnect.  An output interrupt signal is also
+generated based on the status of the interrupt register.
+TODO: need to add register definition table with interrupt mask and clear bits
   
-The interrupt ports are shown in Table \ref{tab:params}.  
+The interrupt ports are shown in Table \ref{tab:socif_intr}.  
 
 \begin{table}[hbt]
 \caption{Interrupt ports}
@@ -107,5 +117,5 @@ Port  & Direction & Description  \\
 
 \bottomrule
 \end{tabular}
-\label{tab:params}
+\label{tab:socif_intr}
 \end{table}
