@@ -1,7 +1,7 @@
 // conv2d layer, axi-s in/out
 //
 
-module conv2d (
+module conv2d #(
     	parameter ICHAN=1, 	// number of input channels
     	parameter IWIDTH=32,	// width of row buffer
     	parameter OCHAN=32,	// number of output channels
@@ -9,11 +9,10 @@ module conv2d (
     	parameter KWIDTH=3,	// kernel width
     	parameter STRIDE=1,	// stride
 
-	localparam C_AXI_ADDR_WIDTH = 4,
-	localparam C_AXI_DATA_WIDTH = 32,
-	localparam [0:0]	OPT_SKIDBUFFER = 1'b0,
-	localparam [0:0]	OPT_LOWPOWER = 0
-)
+	parameter 		C_AXI_ADDR_WIDTH = 4,
+	parameter 		C_AXI_DATA_WIDTH = 32,
+	parameter [0:0]	OPT_SKIDBUFFER = 1'b0,
+	parameter [0:0]	OPT_LOWPOWER = 0)
 (
 	input wire clk,
 	input wire reset,
@@ -161,7 +160,7 @@ always @(posedge clk) begin
 			tvalid_o <= 'b1;
 			tlast_o <= 'b1;
 			tdata_o <= (acc<0) ? 'd0 : acc[47:30]; // RELU TODO: fixed point bit slice
-			state <= INIT;
+			state <= IDLE;
 		end
 		endcase
 	end
