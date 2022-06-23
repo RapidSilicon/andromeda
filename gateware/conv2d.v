@@ -56,28 +56,37 @@ reg [17:0] rowbuf [KHEIGHT*IWIDTH*ICHAN-1:0];
 reg [17:0] params [OCHAN*KHEIGHT*KWIDTH*ICHAN-1:0];
 
 // write incoming samples to row buffer
-reg [31:0] row,col,ich; // index into rowbuffer[KHEIGHT,IWIDTH,ICHAN]
-reg [31:0] nrow;	// total rows since TLAST
-reg patch;	// asserted on TVALID, complete patch KHEIGHT*KWIDTH*ICHAN starting at col0,row0 (upper left corner)
-reg [31:0] row0,col0; // current patch location 
+reg [3:0] row;		// KHEIGHT<16
+reg [13:0] col;		// IWIDTH<16384
+reg [15:0] ich;		// ICHAN<65536
+reg [15:0] nrow;	// total rows since TLAST
+
+// patch fifo
+reg [17:0] fifo [KHEIGHT*IWIDTH:0];	// patch coord fifo
+reg [17:0] wptr,rptr;			// fifo pointers
+
+//reg patch;	// asserted on TVALID, complete patch KHEIGHT*KWIDTH*ICHAN starting at col0,row0 (upper left corner)
+//reg [31:0] row0,col0; // current patch location 
 always @(posedge clk) begin
-	if (reset | tlast_i) begin
-		nrow <= 'd0;
+	if (reset) begin
+		nrow <= 'd0; // to compute row stride and valid padding
 		row <= 'd0; // KHEIGHT
 		col <= 'd0; // IWIDTH
 		ich <= 'd0; // ICHAN
-		patch <= 1'b0;
+		wptr <= 'd0;
+	end
+	else if (tlast_i) begin
+		nrow <= 'd0; // to compute row stride and valid padding
 	end
 	else if (tvalid_i) begin
 		rowbuf[(row*IWIDTH*ICHAN)+(col*ICHAN)+ich] <= tdata_i;
 		if (ich==(ICHAN-1)) begin
-			if ((col>=KWIDTH) && (nrow>=KHEIGHT) && ((col%STRIDE)==0) && ((nrow%STRIDE)==0)) begin
-				patch <= 1'b1; // we received a complete patch in rowbuf[], trigger iterator
-				row0 = (row-KHEIGHT-1)%KHEIGHT; // from lower right to upper left ... more efficient to set row0<=row;
-				col0 = (col-KWIDTH-1);
+			if ((col>=KWIDTH) && (nrow>=KHEIGHT) && ((col%STRIDE)==0) && ((nrow%STRIDE)==0)) begin // check valid padding and stride
+				// we received a complete patch in rowbuf[], push the coords to fifo
+				//fifo[wptr] <= {(row-KHEIGHT-1)%KHEIGHT, (col-KWIDTH-1)}; // compute upper left coord of patch
+				fifo[wptr] <= {row,col}; // lower right corner patch coords
+				wptr <= (wptr==(KHEIGHT*IWIDTH-1)) ? 'd0 : wptr+'d1; // push
 			end
-			else
-				patch <= 1'b0;
 
 			ich <= 'd0;
 			if (col==(IWIDTH-1)) begin
@@ -99,7 +108,9 @@ end
 // iterator
 reg [17:0] dsp_a, dsp_b;
 reg[47:0] acc;
-reg [31:0] och,i,j,k; // [ochan,row,col,ichan] = [och,i,j,k]
+reg [3:0] row0;		// KHEIGHT<16
+reg [13:0] col0;	// IWIDTH<16384
+reg [31:0] och,i,j,k; 	// [ochan,row,col,ichan] = [och,i,j,k]
 reg [1:0] state;
 localparam IDLE		= 'd1;
 localparam ITER		= 'd2;
@@ -109,29 +120,32 @@ always @(posedge clk) begin
 		state <= IDLE;
 		tvalid_o <= 'b0;
 		tlast_o <= 'b0;
+		rptr <= 'd0;
 	end
 	else begin
 		case(state)
     		IDLE : begin
 			tvalid_o <= 'b0;
 			tlast_o <= 'b0;
-			if (patch) begin
+			if (rptr!=wptr) begin // not empty
 				// a complete patch arrived at col0,row0
 				// start computing ochan dot products
 				// we must return to IDLE before the next patch arrives
 				state <= ITER;
+				{row0,col0} <= fifo[rptr];
+				rptr <= (rptr==(KHEIGHT*IWIDTH-1)) ? 'd0 : rptr+'d1; // pop
 				acc <= 'd0;
 				och <= 'd0;	// range(0,OCHAN)
 				i <= 'd0;	// range(0,KHEIGHT)
 				j <= 'd0;	// range(0,KWIDTH)
-				k <= 0;		// range(0,ICHAN)
+				k <= 'd0;		// range(0,ICHAN)
 			end
 		end
 
     		ITER : begin
 			tvalid_o <= 'b0;
 			tlast_o <= 'b0;
-			dsp_a <= rowbuf[(((row0+i)%KHEIGHT)*IWIDTH*ICHAN)+((col0+j)*ICHAN)+k];
+			dsp_a <= rowbuf[(((row0-KHEIGHT+i)%KHEIGHT)*IWIDTH*ICHAN)+((col0-KWIDTH+j)*ICHAN)+k];
 			dsp_b <= params[(och*KHEIGHT*KWIDTH*ICHAN)+(i*KWIDTH*ICHAN)+(j*ICHAN)+k];
 			acc <= (dsp_a*dsp_b)+acc;
 
