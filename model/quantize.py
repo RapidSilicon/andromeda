@@ -13,6 +13,7 @@ print(args)
 model = keras.models.load_model("mnist_model")
 model.summary()
 
+i=0
 for layer in model.layers:
     #print(dir(layer))
     if layer.name.startswith("conv2d"):
@@ -21,13 +22,28 @@ for layer in model.layers:
         #print(layer.name, layer.input_shape, layer.output_shape, layer.weights[0].shape, np.amin(layer.weights[0]), np.amax(layer.weights[0]),np.std(relu_output.flatten()))
         #print(layer.get_config())
         odec = int(np.ceil(np.log2(args.sigma*np.std(relu_output.flatten()))))
-        print("conv2d #(.ICHAN({}),.IWIDTH({}),.OCHAN({}),.KHEIGHT({}),.KWIDTH({}),.STRIDE({}),.ODECIMAL({})) {}".format(
+        print("conv2d #(.ICHAN({}),.IWIDTH({}),.OCHAN({}),.KHEIGHT({}),.KWIDTH({}),.STRIDE({}),.ODECIMAL({})) {} (".format(
             layer.weights[0].shape[2],layer.input_shape[2],layer.output_shape[3],layer.weights[0].shape[0],layer.weights[0].shape[1],
             layer.get_config()['strides'][0], # stride
             odec,
             layer.name
             )
         )
+        print("\t.clk(clk),")
+        print("\t.reset(reset),")
+        print("\t.tdata_i(tdata[{}]),".format(i))
+        print("\t.tvalid_i(tvalid[{}]),".format(i))
+        print("\t.tlast_i(tlast[{}]),".format(i))
+        print("\t.tdata_o(tdata[{}]),".format(i+1))
+        print("\t.tvalid_o(tvalid[{}]),".format(i+1))
+        print("\t.tlast_o(tlast[{}]),".format(i+1))
+        print("\t.S_AXI_ACLK(clk),")
+        print("\t.S_AXI_ARESETN(~reset),")
+        print("\t.S_AXI_AWVALID(1'b0),")
+        print("\t.S_AXI_BREADY(1'b0),")
+        print("\t.S_AXI_ARVALID(1'b0),")
+        print("\t.S_AXI_RREADY(1'b0)")
+        print(");")
 
         # write layer weights to .mem file
         f = open("{}.mem".format(layer.name), "w")
@@ -41,6 +57,7 @@ for layer in model.layers:
             #print(w,q,s)
             print(s,file=f)
         f.close()
+        i+=1
 
         #conv2d #(.ICHAN(1), .IWIDTH(32), .OCHAN(16), .KHEIGHT(3), .KWIDTH(3), .STRIDE(1)) u0 (
     	#parameter ICHAN=1, 	// number of input channels

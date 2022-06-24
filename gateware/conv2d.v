@@ -8,6 +8,7 @@ module conv2d #(
     	parameter KHEIGHT=3,	// kernel height
     	parameter KWIDTH=3,	// kernel width
     	parameter STRIDE=1,	// stride
+	parameter ODECIMAL=0,	// number of integer decimal places
 
 	parameter 		C_AXI_ADDR_WIDTH = 4,
 	parameter 		C_AXI_DATA_WIDTH = 32,
@@ -53,9 +54,9 @@ module conv2d #(
 
 // conv2d BRAM
 reg [17:0] rowbuf [KHEIGHT*IWIDTH*ICHAN-1:0];
-reg [17:0] params [OCHAN*KHEIGHT*KWIDTH*ICHAN-1:0];
+reg [17:0] weights [OCHAN*KHEIGHT*KWIDTH*ICHAN-1:0];
 
-// write incoming samples to row buffer
+// iterators for incoming samples
 reg [3:0] row;		// KHEIGHT<16
 reg [13:0] col;		// IWIDTH<16384
 reg [15:0] ich;		// ICHAN<65536
@@ -65,8 +66,7 @@ reg [15:0] nrow;	// total rows since TLAST
 reg [17:0] fifo [KHEIGHT*IWIDTH:0];	// patch coord fifo
 reg [17:0] wptr,rptr;			// fifo pointers
 
-//reg patch;	// asserted on TVALID, complete patch KHEIGHT*KWIDTH*ICHAN starting at col0,row0 (upper left corner)
-//reg [31:0] row0,col0; // current patch location 
+// write incoming samples to row buffer
 always @(posedge clk) begin
 	if (reset) begin
 		nrow <= 'd0; // to compute row stride and valid padding
@@ -83,7 +83,6 @@ always @(posedge clk) begin
 		if (ich==(ICHAN-1)) begin
 			if ((col>=KWIDTH) && (nrow>=KHEIGHT) && ((col%STRIDE)==0) && ((nrow%STRIDE)==0)) begin // check valid padding and stride
 				// we received a complete patch in rowbuf[], push the coords to fifo
-				//fifo[wptr] <= {(row-KHEIGHT-1)%KHEIGHT, (col-KWIDTH-1)}; // compute upper left coord of patch
 				fifo[wptr] <= {row,col}; // lower right corner patch coords
 				wptr <= (wptr==(KHEIGHT*IWIDTH-1)) ? 'd0 : wptr+'d1; // push
 			end
@@ -130,7 +129,6 @@ always @(posedge clk) begin
 			if (rptr!=wptr) begin // not empty
 				// a complete patch arrived at col0,row0
 				// start computing ochan dot products
-				// we must return to IDLE before the next patch arrives
 				state <= ITER;
 				{row0,col0} <= fifo[rptr];
 				rptr <= (rptr==(KHEIGHT*IWIDTH-1)) ? 'd0 : rptr+'d1; // pop
@@ -138,7 +136,7 @@ always @(posedge clk) begin
 				och <= 'd0;	// range(0,OCHAN)
 				i <= 'd0;	// range(0,KHEIGHT)
 				j <= 'd0;	// range(0,KWIDTH)
-				k <= 'd0;		// range(0,ICHAN)
+				k <= 'd0;	// range(0,ICHAN)
 			end
 		end
 
@@ -146,7 +144,7 @@ always @(posedge clk) begin
 			tvalid_o <= 'b0;
 			tlast_o <= 'b0;
 			dsp_a <= rowbuf[(((row0-KHEIGHT+i)%KHEIGHT)*IWIDTH*ICHAN)+((col0-KWIDTH+j)*ICHAN)+k];
-			dsp_b <= params[(och*KHEIGHT*KWIDTH*ICHAN)+(i*KWIDTH*ICHAN)+(j*ICHAN)+k];
+			dsp_b <= weights[(och*KHEIGHT*KWIDTH*ICHAN)+(i*KWIDTH*ICHAN)+(j*ICHAN)+k];
 			acc <= (dsp_a*dsp_b)+acc;
 
 			if (k==(ICHAN-1)) begin
@@ -173,7 +171,12 @@ always @(posedge clk) begin
     		DONE : begin
 			tvalid_o <= 'b1;
 			tlast_o <= 'b1;
-			tdata_o <= (acc<0) ? 'd0 : acc[47:30]; // RELU TODO: fixed point bit slice
+			if (acc<0)
+				tdata_o <= 'd0;	// RELU
+			else if (acc>=(1<<(34+ODECIMAL)))
+				tdata_o <= (1<<(34+ODECIMAL))-1; // clip
+			else
+				tdata_o <= acc[34+ODECIMAL:34+ODECIMAL-17];	// fixed point
 			state <= IDLE;
 		end
 		endcase
@@ -346,14 +349,14 @@ end
 	always @(posedge S_AXI_ACLK)
 		if (axil_write_ready)
 			if (awskd_addr[C_AXI_ADDR_WIDTH-1]==1'b0)
-				params[awskd_addr] <= wskd_data;
+				weights[awskd_addr] <= wskd_data;
 			else
 				rowbuf[awskd_addr] <= wskd_data;
 
 	always @(posedge S_AXI_ACLK)
 		if (!S_AXI_RVALID || S_AXI_RREADY)
 			if (arskd_addr[C_AXI_ADDR_WIDTH-1]==1'b0)
-				axil_read_data <= params[arskd_addr];
+				axil_read_data <= weights[arskd_addr];
 			else
 				axil_read_data <= rowbuf[arskd_addr];
 
