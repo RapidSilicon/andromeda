@@ -53,8 +53,8 @@ module conv2d #(
 );
 
 // conv2d BRAM
-reg [17:0] rowbuf [KHEIGHT*IWIDTH*ICHAN-1:0];
-reg [17:0] weights [OCHAN*KHEIGHT*KWIDTH*ICHAN-1:0];
+reg signed [17:0] rowbuf [0:KHEIGHT*IWIDTH*ICHAN-1];
+reg signed [17:0] weights [0:OCHAN*KHEIGHT*KWIDTH*ICHAN-1];
 
 // iterators for incoming samples
 reg [3:0] row;		// KHEIGHT<16
@@ -63,7 +63,7 @@ reg [15:0] ich;		// ICHAN<65536
 reg [15:0] nrow;	// total rows since TLAST
 
 // patch fifo
-reg [17:0] fifo [KHEIGHT*IWIDTH:0];	// patch coord fifo
+reg [17:0] fifo [0:KHEIGHT*IWIDTH];	// patch coord fifo
 reg [17:0] wptr,rptr;			// fifo pointers
 
 // write incoming samples to row buffer
