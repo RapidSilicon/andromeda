@@ -1,0 +1,20 @@
+\section{Application software}
+TBD: update this section to use MQTT transport
+\paragraph{Embedded software}
+The application software is interrupt driven. One interrupt is used to signal
+the arrival of a new frame in the input buffer. The application can read the
+pixel values using the AXI memory mapped slave interface, copy to a UDP packet
+buffer, and transmit out the ethernet SoC interface. Similarly, another
+interrupt indicates that a new prediction is available to be read from the
+output buffer. A complete frame of raw pixels requires 768*2 bytes which will
+require two UDP packets. The prediction frame requires 100*2 bytes assuming a
+final CNN shape of [1,1,100]. The UDP packets are sent to a configurable IP
+address and UDP destination port.  The application software also performs
+MLX90640 sensor initialization, EEPROM calibration data processing, and
+programming compensation coefficients to BRAM.
+The application software also programs the model weights into the conv2d BRAM
+at initialization.
+\paragraph{Cloud software}
+The server software is a python program which listens to a UDP port (subscribes to MQTT topic), receives
+packets with raw pixels and  predictions, and renders a live visualization.
+
