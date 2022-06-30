@@ -16,16 +16,20 @@ model.summary()
 i=0
 for layer in model.layers:
     #print(dir(layer))
-    if layer.name.startswith("conv2d"):
+    #print(layer.get_config())
+    #print(layer.__class__.__name__)
+    #exit()
+    if layer.__class__.__name__=="Conv2D":
         get_relu_output = keras.backend.function(model.layers[0].input, layer.output)
         relu_output = get_relu_output(x_test)
         #print(layer.name, layer.input_shape, layer.output_shape, layer.weights[0].shape, np.amin(layer.weights[0]), np.amax(layer.weights[0]),np.std(relu_output.flatten()))
-        #print(layer.get_config())
         odec = int(np.ceil(np.log2(args.sigma*np.std(relu_output.flatten()))))
-        print("conv2d #(.ICHAN({}),.IWIDTH({}),.OCHAN({}),.KHEIGHT({}),.KWIDTH({}),.STRIDE({}),.ODECIMAL({})) {} (".format(
+        # conv2d #(.ICHAN(1),.IWIDTH(28),.OCHAN(32),.KHEIGHT(3),.KWIDTH(3),.STRIDE(1),.ODECIMAL(5),.WEIGHTS("conv2d_00.mem")) conv2d_00 (
+        print('conv2d #(.ICHAN({}),.IWIDTH({}),.OCHAN({}),.KHEIGHT({}),.KWIDTH({}),.STRIDE({}),.ODECIMAL({}),.WEIGHTS("{}.mem")) {} ('.format(
             layer.weights[0].shape[2],layer.input_shape[2],layer.output_shape[3],layer.weights[0].shape[0],layer.weights[0].shape[1],
             layer.get_config()['strides'][0], # stride
             odec,
+            layer.name,
             layer.name
             )
         )
