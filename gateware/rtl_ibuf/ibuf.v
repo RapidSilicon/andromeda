@@ -59,8 +59,10 @@ module ibuf #(
     // *************** CSRs for ibuf.v ***************
     reg [15:0]IIR;         // interrupt identification register
     // reg [] more CSRs as we progress
-    
     // ***********************************************
+    
+    // *************** CSRs for ibuf.v ***************
+    //assign 
     
     // *************** interrupts logic ************** 
     reg                 int = 0;         
@@ -89,6 +91,14 @@ module ibuf #(
             end
         end
     end
+    // ***********************************************
+    
+    // *************** register sync *****************
+//    always @ (S_AXI_ACLK)
+//    begin
+//        if()
+//    end
+    // ***********************************************
     
     i2c_master i2c_if(
                      );
