@@ -4,7 +4,7 @@
 
 module i2c_master(
                    input wire clk,
-                   input wire rst,
+                   input wire rst_n,
                    input wire [6:0] slv_addr,
                    input wire [15:0] data_in,
                    input wire [15:0] reg_addr,
@@ -46,7 +46,7 @@ module i2c_master(
 	localparam NACK            = 15;
     localparam STOP            = 16;
 	
-	localparam DIVIDE_BY = 2;
+	localparam DIVIDE_BY = 100;
 
 //	reg [7:0] state;
 	reg [6:0] slv_address;
@@ -65,7 +65,7 @@ module i2c_master(
 	reg [7:0] rp_counter = 0;
 	reg [7:0] nk_counter = 0;
 
-	assign ready   = ((rst == 0) && (state == IDLE)) ? 1 : 0;
+	assign ready   = ((rst_n == 1) && (state == IDLE)) ? 1 : 0;
 	//assign i2c_scl = (i2c_scl_enable == 0) ? 1 : i2c_clk;
     assign i2c_scl = (((state == 8'd11) && rp_counter == 0) || (state == 8'd0) || (state == 8'd16)) ? 1'b1 : (i2c_scl_enable == 0) ? 1 : i2c_clk;
 	assign i2c_sda = (write_enable == 1) ? sda_out : 'bz;
@@ -83,9 +83,9 @@ module i2c_master(
 	end 
 
     // ====================================== i2c posedge FSM ====================================== 
-    always @(posedge i2c_clk, posedge rst) 
+    always @(posedge i2c_clk, negedge rst_n) 
     begin
-        if(rst)
+        if(!rst_n)
         begin
             state <= IDLE;
             saved_data <= 16'h0000;
@@ -332,9 +332,9 @@ module i2c_master(
     end
     
     // ====================================== i2c negedge FSM ====================================== 
-    always @(negedge i2c_clk, posedge rst) 
+    always @(negedge i2c_clk, negedge rst_n) 
     begin
-        if(rst)
+        if(!rst_n)
         begin
             write_enable   <= 1;
             sda_out        <= 1;

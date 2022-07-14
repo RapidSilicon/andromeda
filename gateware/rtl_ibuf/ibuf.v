@@ -86,9 +86,9 @@ module ibuf #
 	reg	                             aw_en;
 	
 	    
-    reg  [15:0]i2c_data_out;
+    wire  [15:0]i2c_data_out;
     wire i2c_ready;
-    reg  [7:0]i2c_state;
+    wire  [7:0]i2c_state;
 
 	assign S_AXI_AWREADY  = axi_awready;
 	assign S_AXI_WREADY	  = axi_wready;
@@ -102,19 +102,19 @@ module ibuf #
 	assign M_AXIS_ARESETN = S_AXI_ARESETN;
 	
     i2c_master i2c_inst(
-                  .clk      (S_AXI_ACLK),
-                  .rst      (S_AXI_ARESETN),
-                  .slv_addr (7'h33),
-                  .data_in  (IBDR[15:0]),
-                  .reg_addr (IBDR[31:16]),
-                  .enable   (ICSR[0]),
-                  .rw       (ICSR[1]),
-                  .data_out (i2c_data_out),
-                  .ready    (i2c_ready),
-                  .state    (i2c_state),
-                  .i2c_sda  (I2C_SDA),
-                  .i2c_scl  (I2C_SCL) 
-                 );	
+                        .clk      (S_AXI_ACLK),
+                        .rst      (S_AXI_ARESETN),
+                        .slv_addr (7'h33),
+                        .data_in  (IBDR[15:0]),      // data to be written to i2c slave registers e.g., 0x1901
+                        .reg_addr (IBDR[31:16]),     // address of the register of i2c slave e.g., 0x800D (control register)
+                        .enable   (ICSR[0]),         // set this bit to start the i2c transaction
+                        .rw       (ICSR[1]),         // set this bit for a read transaction, clear this bit for a write transaction 
+                        .data_out (i2c_data_out),    // data read from the i2c slave
+                        .ready    (i2c_ready),       // high, when i2c master is free and able to initiate a r/w transaction
+                        .state    (i2c_state),       // state of the i2c FSM
+                        .i2c_sda  (I2C_SDA),         // serial-data line
+                        .i2c_scl  (I2C_SCL)          // serial-clock line
+                       );    
 
 	always @(posedge S_AXI_ACLK)
 	begin
