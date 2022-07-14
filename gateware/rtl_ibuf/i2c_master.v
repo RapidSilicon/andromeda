@@ -1,24 +1,23 @@
-// i2c master module
-// Known issues: glitchy stop bit clock in post-synthesis simulation in state 11 (repeated start aka Restart)
-// Synthesis status: not completed yet
-// Code status: not complete yet
-// To do: 
+// Issues: glitchy stop bit clock in post-synthesis simulation
+
+`timescale 1ns / 1ps
 
 module i2c_master(
-                  input wire        clk,
-                  input wire        rst,
-                  input wire  [6:0] slv_addr,
-                  input wire [15:0] data_in,
-                  input wire [15:0] reg_addr,
-                  input wire        enable,
-                  input wire        rw,
+                   input wire clk,
+                   input wire rst,
+                   input wire [6:0] slv_addr,
+                   input wire [15:0] data_in,
+                   input wire [15:0] reg_addr,
+                   input wire enable,
+                   input wire rw,
                 
-                  output reg [15:0] data_out,
-                  output wire       ready,
+                   output reg [15:0] data_out,
+                   output wire ready,
+                   output reg [7:0] state,
                 
-                  inout wire        i2c_sda,
-                  inout wire        i2c_scl
-                 );
+                   inout i2c_sda,
+                   output wire i2c_scl
+                  );
 
     // basic connection establishment states
 	localparam IDLE            = 0;
@@ -49,25 +48,26 @@ module i2c_master(
 	
 	localparam DIVIDE_BY = 2;
 
-	reg  [7:0] state;
-	reg  [6:0] slv_address;
+//	reg [7:0] state;
+	reg [6:0] slv_address;
 	reg [15:0] reg_address;
 	reg [15:0] saved_data;
-	reg  [7:0] counter;
-	reg  [7:0] counter2       = 0;
-	reg        write_enable;
-	reg        sda_out;
-	reg        i2c_scl_enable = 0;
-	reg        i2c_clk        = 1;
-	reg        repeated_start = 0;
-	reg        rw_in;
-	reg        msb;
-	reg        wr_done        = 0;
-	reg  [7:0] rp_counter     = 0;
-	reg  [7:0] nk_counter     = 0;
+	reg [7:0] counter;
+	reg [7:0] counter2 = 0;
+	reg write_enable;
+	reg sda_out;
+	reg i2c_scl_enable = 0;
+	reg i2c_clk        = 1;
+	reg repeated_start = 0;
+	reg rw_in;
+	reg msb;
+	reg wr_done = 0;
+	reg [7:0] rp_counter = 0;
+	reg [7:0] nk_counter = 0;
 
 	assign ready   = ((rst == 0) && (state == IDLE)) ? 1 : 0;
-	assign i2c_scl = (i2c_scl_enable == 0) ? 1 : i2c_clk;
+	//assign i2c_scl = (i2c_scl_enable == 0) ? 1 : i2c_clk;
+    assign i2c_scl = (((state == 8'd11) && rp_counter == 0) || (state == 8'd0) || (state == 8'd16)) ? 1'b1 : (i2c_scl_enable == 0) ? 1 : i2c_clk;
 	assign i2c_sda = (write_enable == 1) ? sda_out : 'bz;
 	
 	// ========================================= Clock prescale =========================================
@@ -80,7 +80,7 @@ module i2c_master(
 		end
 		else 
 		    counter2 <= counter2 + 1;
-	end
+	end 
 
     // ====================================== i2c posedge FSM ====================================== 
     always @(posedge i2c_clk, posedge rst) 
@@ -273,7 +273,10 @@ module i2c_master(
                     wr_done <= 1;
                 end
                 else
-                    rp_counter <= rp_counter - 1;    
+                begin
+                    rp_counter <= rp_counter - 1;
+                    //i2c_scl_enable <= 0;    
+                end
             end
             
             // =============== state 12 (read transaction)
