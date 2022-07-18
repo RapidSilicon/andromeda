@@ -13,12 +13,12 @@
 
 
 module soc_if #(
-    parameter S_COUNT=10,                // Number of AXI inputs (slave interfaces)
+    parameter S_COUNT=15,                // Number of AXI inputs (slave interfaces)
     parameter S_SIZE=20,                 // size of memory map = 2^S_SIZE
-    parameter C_AXI_ADDR_WIDTH = 32,    
-	parameter C_AXI_DATA_WIDTH = 32,
-	parameter WISHBONE_DATA_WIDTH= 32,
-	parameter WISHBONE_ADDR_WIDTH= 32
+    parameter AXI_ADDR_WIDTH = 32,    
+	parameter AXI_DATA_WIDTH = 32,
+	parameter WB_DATA_WIDTH= 32,
+	parameter WB_ADDR_WIDTH= 32
 )
 (
 	// wishbone slave interface
@@ -28,12 +28,12 @@ module soc_if #(
     input wire									WBS_STB_I,
     input wire			 						WBS_CYC_I,
     input wire									WBS_WE_I,
-    input wire [WISHBONE_DATA_WIDTH/8-1:0]		WBS_SEL_I,
-    input wire [WISHBONE_DATA_WIDTH-1:0] 		WBS_DAT_I,
-    input wire [WISHBONE_ADDR_WIDTH-1:0] 		WBS_ADR_I,
+    input wire [WB_DATA_WIDTH/8-1:0]			WBS_SEL_I,
+    input wire [WB_DATA_WIDTH-1:0] 				WBS_DAT_I,
+    input wire [WB_ADDR_WIDTH-1:0] 				WBS_ADR_I,
 
     output reg									WBS_ACK_O,
-    output reg [WISHBONE_DATA_WIDTH-1:0] 		WBS_DAT_O,
+    output reg [WB_DATA_WIDTH-1:0] 				WBS_DAT_O,
 
 	// axi 
 	output							        	M_AXI_ACLK,
@@ -41,27 +41,27 @@ module soc_if #(
 	// write address channel
 	output	reg	 [S_COUNT-1:0]	            	M_AXI_AWVALID,
 	input	wire [S_COUNT-1:0]		        	M_AXI_AWREADY,
-	output	reg	 [C_AXI_ADDR_WIDTH-1:0]	    	M_AXI_AWADDR,
+	output	reg	 [AXI_ADDR_WIDTH-1:0]	    	M_AXI_AWADDR,
 	output	reg	 [2:0]				        	M_AXI_AWPROT,
 	// write data channel
 	output	reg	 [S_COUNT-1:0]	        		M_AXI_WVALID,
 	input	wire [S_COUNT-1:0]		        	M_AXI_WREADY,
-	output	reg	 [C_AXI_DATA_WIDTH-1:0]			M_AXI_WDATA,
-	output	reg	 [C_AXI_DATA_WIDTH/8-1:0]		M_AXI_WSTRB,
+	output	reg	 [AXI_DATA_WIDTH-1:0]			M_AXI_WDATA,
+	output	reg	 [AXI_DATA_WIDTH/8-1:0]			M_AXI_WSTRB,
 	// write response channel
 	input	wire [S_COUNT-1:0]		        	M_AXI_BVALID,
 	output	reg	 [S_COUNT-1:0]	            	M_AXI_BREADY,
-	input	wire [S_COUNT-1:0]					M_AXI_BRESP,
+	input	wire [S_COUNT*2-1:0]				M_AXI_BRESP,  // logic to be implemented
 	// read address channel 
 	output	reg	 [S_COUNT-1:0]              	M_AXI_ARVALID,
 	input	wire [S_COUNT-1:0]		        	M_AXI_ARREADY,
-	output	reg	 [C_AXI_ADDR_WIDTH-1:0]			M_AXI_ARADDR,
+	output	reg	 [AXI_ADDR_WIDTH-1:0]			M_AXI_ARADDR,
 	output	reg	 [2:0]				        	M_AXI_ARPROT,
 	// read data channel
 	input	wire  [S_COUNT-1:0]	        		M_AXI_RVALID,
 	output	reg [S_COUNT-1:0]           		M_AXI_RREADY,
-	input	wire [S_COUNT*C_AXI_DATA_WIDTH-1:0]	M_AXI_RDATA,
-	input	wire [S_COUNT-1:0]				    M_AXI_RRESP,
+	input	wire [S_COUNT*AXI_DATA_WIDTH-1:0]	M_AXI_RDATA,
+	input	wire [S_COUNT*2-1:0]				M_AXI_RRESP, // logic to be implemented
 
 	// interupt signals
 	input	wire					        	ib_intrpt,
@@ -75,6 +75,10 @@ module soc_if #(
 	reg [S_COUNT-1:0] select_intrf;
 	reg [31:0] INTRP_REG;
 	reg intrp_reg_dat_valid;
+
+	reg adr;
+	reg dat;
+	reg resp;
 
 	// 
 	wire	  AXI_SPACE_FLG;
@@ -115,13 +119,16 @@ module soc_if #(
 		  	if ( !WBS_WE_I && AXI_SPACE_FLG) begin
 				for (j=0;j<S_COUNT;j=j+1) 
 					if(select_intrf[j])
-						WBS_DAT_O <= M_AXI_RDATA[j*C_AXI_DATA_WIDTH+:32];
+						WBS_DAT_O <= M_AXI_RDATA[j*AXI_DATA_WIDTH+:32];
 				intrp_reg_dat_valid <= 'b1;
-
 		  	end
 			else if(MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && !WBS_WE_I)begin
+				// address decoding can be added here
 				WBS_DAT_O <= INTRP_REG;
 				intrp_reg_dat_valid <= 'b1;
+			end
+			else if (MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && WBS_WE_I) begin
+				intrp_reg_dat_valid <= 'b1; // to assert a dummy wb_ack_o
 			end
 			else begin
 				WBS_DAT_O <= 'b0;
@@ -166,10 +173,16 @@ module soc_if #(
 
 				M_AXI_RREADY  = 'b0;
 
+				adr			 = 1'b0;
+				dat			 = 1'b0;		
+				resp		 = 1'b0;	
+
 				if (intrp_reg_dat_valid && MEM_MAPPED_REG)
 					WBS_ACK_O     = 1'b1;
 				else
-					WBS_ACK_O     = 1'b0; 	
+					WBS_ACK_O     = 1'b0; 
+				
+
 
 		  	end
 		  	START_AXI_TR_W: begin
@@ -194,6 +207,10 @@ module soc_if #(
 				M_AXI_RREADY  = 'b0;
 				
 				WBS_ACK_O     = 1'b0;
+
+				adr			  = 1'b0;
+				dat			  = 1'b0;		
+				resp		  = 1'b0;	
 		  	end
 		  	START_AXI_TR_R: begin
 				
@@ -214,34 +231,49 @@ module soc_if #(
 				M_AXI_RREADY  = select_intrf;
 
 				WBS_ACK_O     = 1'b0;
+				adr			  = 1'b0;
+				dat			  = 1'b0;		
+				resp		  = 1'b0;	
 		  	end
 		  	WAIT_RESP: begin
 				if (WBS_WE_I) begin
-					if (|(M_AXI_AWREADY & select_intrf)) begin 
+					if ((|(M_AXI_AWREADY & select_intrf ) )|| adr) begin 
 						M_AXI_AWVALID = 'b0;
 						M_AXI_AWADDR  = 'b0;
 						M_AXI_AWPROT  = 'b0;
+						adr			  = 1'b1;
 					end	
 					else begin
 						M_AXI_AWVALID = select_intrf;
 						M_AXI_AWADDR  = WBS_ADR_I;
 						M_AXI_AWPROT  = 'b0; 
+						adr			  = 1'b0;
 					end
 
-					if (|(M_AXI_WREADY & select_intrf)) begin
+					if ((|(M_AXI_WREADY & select_intrf))|| dat) begin
 						M_AXI_WVALID  = 'b0;
 						M_AXI_WDATA   = 'b0;
 						M_AXI_WSTRB   = 'b0;
+						dat			  = 1'b1;		
+
 					end 
 					else begin
 						M_AXI_WVALID  = select_intrf;
 						M_AXI_WDATA   = WBS_DAT_I;
 						M_AXI_WSTRB   = WBS_SEL_I;
+						dat			  = 1'b0;		
+
 					end
-					if (|(M_AXI_BVALID & select_intrf) ) 
+					if (((|(M_AXI_BVALID & select_intrf)) && adr && dat) || resp ) begin
 						M_AXI_BREADY  = 'b0;
-					else 
-					M_AXI_BREADY  = select_intrf;
+						resp = 1'b1;
+					end
+					else begin
+						M_AXI_BREADY  = select_intrf;
+						resp = 1'b0;
+
+					end
+
 					M_AXI_ARVALID = 'b0;
 					M_AXI_ARADDR  = 'b0;
 					M_AXI_ARPROT  = 'b0;
@@ -259,22 +291,31 @@ module soc_if #(
 	
 					M_AXI_BREADY  = 'b0;
 	
-					if(|(M_AXI_ARREADY & select_intrf) )begin 	
+					if(|(M_AXI_ARREADY & select_intrf) || adr)begin 	
 						M_AXI_ARVALID = 'b0;
 						M_AXI_ARADDR  = 'b0;
 						M_AXI_ARPROT  = 'b0;
+						adr			  = 1'b1;
+
 					end 
 					else begin					
 						M_AXI_ARVALID = select_intrf;
 						M_AXI_ARADDR  = WBS_ADR_I;
 						M_AXI_ARPROT  = 'b0;
+						adr			  = 1'b0;
+						
+
 
 					end
-					if( |(M_AXI_RVALID & select_intrf) )begin						
+					if( |(M_AXI_RVALID & select_intrf) ||  dat)begin						
 						M_AXI_RREADY  = 'b0;
+						dat			  = 1'b1;		
+
 					end 
 					else begin
 						M_AXI_RREADY  = select_intrf;
+						dat			  = 1'b0;		
+
 					end
 					
 				end
@@ -298,6 +339,9 @@ module soc_if #(
 				M_AXI_ARPROT  = 'b0;
 				M_AXI_RREADY  = 'b0;
 				WBS_ACK_O     = 1'b0;
+				adr			  = 1'b0;
+				dat			  = 1'b0;		
+				resp		  = 1'b0;	
 			end 
 	  	endcase
   	end
