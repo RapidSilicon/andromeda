@@ -48,7 +48,7 @@ module i2c_master(
 	
 	localparam DIVIDE_BY = 100;
 
-//	reg [7:0] state;
+    //	reg [7:0] state;
 	reg [6:0] slv_address;
 	reg [15:0] reg_address;
 	reg [15:0] saved_data;

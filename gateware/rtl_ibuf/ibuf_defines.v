@@ -1,7 +1,18 @@
 // defines file for ibuf
 
+// *************** axi-l paramters *************** 
 `define IBUF_ADDR_WIDTH 4
 `define IBUF_DATA_WIDTH 32
 
-`define IBUF_REG_IIR `IBUF_ADDR_WIDTH'd0
-`define IBUF_REG_IER `IBUF_ADDR_WIDTH'd1
+// *************** register addresses *************** 
+`define IBUF_REG_ICSR `IBUF_ADDR_WIDTH'd0
+`define IBUF_REG_ICCR `IBUF_ADDR_WIDTH'd1
+`define IBUF_REG_MSCR `IBUF_ADDR_WIDTH'd2
+`define IBUF_REG_IBDR `IBUF_ADDR_WIDTH'd3
+
+// *************** BRAM parameters *************** 
+`define BRAM_DATA_WIDTH 18
+`define BRAM_ADDR_WIDTH 10
+
+// *************** default values for sensor *************** 
+`define MLXR_CTRL_DEF 32'h1301    // chess pattern, 16-bit ADC resolution, 32Hz subpage update, subpage mode enabled
