@@ -80,6 +80,7 @@ module soc_if #(
 	reg dat;
 	reg resp;
 
+	reg axi_data_valid;
 	// 
 	wire	  AXI_SPACE_FLG;
 	wire 	  MEM_MAPPED_REG;
@@ -114,25 +115,30 @@ module soc_if #(
 		if (WB_RST_I) begin
 		   WBS_DAT_O <=  'b0;
 		   intrp_reg_dat_valid <= 'b0;
+		   axi_data_valid <= 'b0;
 		end 
 		else begin  
-		  	if ( !WBS_WE_I && AXI_SPACE_FLG) begin
+		  	if ( !WBS_WE_I && AXI_SPACE_FLG && |(M_AXI_RVALID & select_intrf)) begin
 				for (j=0;j<S_COUNT;j=j+1) 
 					if(select_intrf[j])
 						WBS_DAT_O <= M_AXI_RDATA[j*AXI_DATA_WIDTH+:32];
-				intrp_reg_dat_valid <= 'b1;
+				intrp_reg_dat_valid <= 'b0;
+				axi_data_valid <= 'b1;
 		  	end
 			else if(MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && !WBS_WE_I)begin
 				// address decoding can be added here
 				WBS_DAT_O <= INTRP_REG;
-				intrp_reg_dat_valid <= 'b1;
+				intrp_reg_dat_valid <= 'b1; 
+				axi_data_valid <= 'b0;
 			end
 			else if (MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && WBS_WE_I) begin
 				intrp_reg_dat_valid <= 'b1; // to assert a dummy wb_ack_o
+				axi_data_valid <= 'b0;
 			end
 			else begin
 				WBS_DAT_O <= 'b0;
 				intrp_reg_dat_valid <= 'b0;
+				axi_data_valid <= 'b0;
 			end
 		end
   end
@@ -291,7 +297,9 @@ module soc_if #(
 	
 					M_AXI_BREADY  = 'b0;
 	
-					if(|(M_AXI_ARREADY & select_intrf) || adr)begin 	
+					//if(|(M_AXI_ARREADY & select_intrf )|| |(M_AXI_RVALID) || adr)begin 	
+					if(|(M_AXI_RVALID) || adr)begin 	
+						
 						M_AXI_ARVALID = 'b0;
 						M_AXI_ARADDR  = 'b0;
 						M_AXI_ARPROT  = 'b0;
@@ -308,18 +316,18 @@ module soc_if #(
 
 					end
 					if( |(M_AXI_RVALID & select_intrf) ||  dat)begin						
-						M_AXI_RREADY  = 'b0;
+						//M_AXI_RREADY  = 'b0;
 						dat			  = 1'b1;		
 
 					end 
 					else begin
-						M_AXI_RREADY  = select_intrf;
+						//M_AXI_RREADY  = select_intrf;
 						dat			  = 1'b0;		
 
 					end
-					
+					M_AXI_RREADY  = select_intrf;
 				end
-				if(M_AXI_AWVALID == 'b0 && M_AXI_WVALID == 'b0 && M_AXI_BREADY == 'b0 && M_AXI_ARVALID == 'b0 &&  M_AXI_RREADY == 'b0 && (intrp_reg_dat_valid || AXI_SPACE_FLG) )
+				if(M_AXI_AWVALID == 'b0 && M_AXI_WVALID == 'b0 && M_AXI_BREADY == 'b0 && M_AXI_ARVALID == 'b0 &&  M_AXI_RREADY == 'b0 && (intrp_reg_dat_valid || axi_data_valid) )
 						WBS_ACK_O = 1'b1;
 					else
 						WBS_ACK_O = 1'b0;
