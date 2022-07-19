@@ -1,26 +1,26 @@
 // andromeda verilog code
 //
 module andromeda (
-	input 	wire 								clk,
-	input 	wire 								reset,
-	input 	wire 								wb_CYC,
-	input 	wire 								wb_STB,
-	output 	wire 								wb_ACK,
-	input 	wire 								wb_WE,
-	input 	wire [29:0] 						wb_ADR,
-	output 	wire [31:0] 						wb_DAT_MISO,
-	input 	wire [31:0] 						wb_DAT_MOSI,
-	input 	wire [3:0] 							wb_SEL,
-	inout  	wire                                I2C_SDA,
-	output 	wire                                I2C_SCL,
+	input 	wire 					clk,
+	input 	wire 					reset,
+	input 	wire 					wb_CYC,
+	input 	wire 					wb_STB,
+	output 	wire 					wb_ACK,
+	input 	wire 					wb_WE,
+	input 	wire [29:0] 				wb_ADR,
+	output 	wire [31:0] 				wb_DAT_MISO,
+	input 	wire [31:0] 				wb_DAT_MOSI,
+	input 	wire [3:0] 				wb_SEL,
+	inout  	wire                                	I2C_SDA,
+	output 	wire                                	I2C_SCL,
   
-	output 	wire                                M_AXIS_ACLK,
-	output 	wire                                M_AXIS_ARESETN,
+	output 	wire                                	M_AXIS_ACLK,
+	output 	wire                                	M_AXIS_ARESETN,
 	
-	output 	wire                                M_AXIS_TVALID,
+	output 	wire                                	M_AXIS_TVALID,
 	output 	wire [C_M_AXIS_TDATA_WIDTH-1 : 0] 	M_AXIS_TDATA,
-	output 	wire                                M_AXIS_TLAST,              
-  	output 	wire                                F_GRAB_INT
+	output 	wire                                	M_AXIS_TLAST,              
+  	output 	wire                                	F_GRAB_INT
    );
 
 	// WB to axi-lite converter and decoder
@@ -40,36 +40,36 @@ module andromeda (
 	wire [S_COUNT-1:0] ack; // one ack per slave
 
 
-	wire                                M_AXI_ACLK;
-	wire                                M_AXI_ARESETN;
+	wire                               M_AXI_ACLK;
+	wire                               M_AXI_ARESETN;
 
-	wire [S_COUNT-1:0]                  M_AXI_AWVALID;
-	wire  [S_COUNT-1:0]                 M_AXI_AWREADY;
-	wire [AXI_ADDR_WIDTH-1:0]         	M_AXI_AWADDR;
-	wire [2:0]                          M_AXI_AWPROT;
+	wire [S_COUNT-1:0]                M_AXI_AWVALID;
+	wire  [S_COUNT-1:0]               M_AXI_AWREADY;
+	wire [AXI_ADDR_WIDTH-1:0]         M_AXI_AWADDR;
+	wire [2:0]                        M_AXI_AWPROT;
 
-	wire [S_COUNT-1:0]                  M_AXI_WVALID;
-	wire  [S_COUNT-1:0]                 M_AXI_WREADY ;
-	wire [AXI_DATA_WIDTH-1:0]         	M_AXI_WDATA;
-	wire [AXI_DATA_WIDTH/8-1:0]       	M_AXI_WSTRB;
+	wire [S_COUNT-1:0]                M_AXI_WVALID;
+	wire  [S_COUNT-1:0]               M_AXI_WREADY ;
+	wire [AXI_DATA_WIDTH-1:0]         M_AXI_WDATA;
+	wire [AXI_DATA_WIDTH/8-1:0]       M_AXI_WSTRB;
 
-	wire  [S_COUNT-1:0]                 M_AXI_BVALID;
-	wire [S_COUNT-1:0]                  M_AXI_BREADY;
-	wire  [S_COUNT*2-1:0]               M_AXI_BRESP;
+	wire  [S_COUNT-1:0]               M_AXI_BVALID;
+	wire [S_COUNT-1:0]                M_AXI_BREADY;
+	wire  [S_COUNT*2-1:0]             M_AXI_BRESP;
 
-	wire [S_COUNT-1:0]                  M_AXI_ARVALID;
-	wire  [S_COUNT-1:0]                 M_AXI_ARREADY;
-	wire [AXI_ADDR_WIDTH-1:0]         	M_AXI_ARADDR;
-	wire [2:0]                          M_AXI_ARPROT;
+	wire [S_COUNT-1:0]                M_AXI_ARVALID;
+	wire  [S_COUNT-1:0]               M_AXI_ARREADY;
+	wire [AXI_ADDR_WIDTH-1:0]         M_AXI_ARADDR;
+	wire [2:0]                        M_AXI_ARPROT;
 
-	wire  [S_COUNT-1:0]                 M_AXI_RVALID;
-	wire [S_COUNT-1:0]                  M_AXI_RREADY;
-	wire  [S_COUNT*AXI_DATA_WIDTH-1:0] 	M_AXI_RDATA  ;
-	wire  [S_COUNT*2-1:0]               M_AXI_RRESP;
+	wire  [S_COUNT-1:0]               M_AXI_RVALID;
+	wire [S_COUNT-1:0]                M_AXI_RREADY;
+	wire [S_COUNT*AXI_DATA_WIDTH-1:0] M_AXI_RDATA  ;
+	wire  [S_COUNT*2-1:0]             M_AXI_RRESP;
 
-	wire                                ib_intrpt    ;
-	wire                                ob_intrpt    ;
-	wire                                soc_if_intrpt;
+	wire                              ib_intrpt    ;
+	wire                              ob_intrpt    ;
+	wire                              soc_if_intrpt;
 
 soc_if
 	#(
