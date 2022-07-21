@@ -16,7 +16,8 @@ module i2c_master(
                    output reg [7:0] state,
                 
                    inout i2c_sda,
-                   output wire i2c_scl
+                   output wire i2c_scl,
+                   output wire i2c_clk_out
                   );
 
     // basic connection establishment states
@@ -69,6 +70,7 @@ module i2c_master(
 	//assign i2c_scl = (i2c_scl_enable == 0) ? 1 : i2c_clk;
     assign i2c_scl = (((state == 8'd11) && rp_counter == 0) || (state == 8'd0) || (state == 8'd16)) ? 1'b1 : (i2c_scl_enable == 0) ? 1 : i2c_clk;
 	assign i2c_sda = (write_enable == 1) ? sda_out : 'bz;
+	assign i2c_clk_out = i2c_clk;
 	
 	// ========================================= Clock prescale =========================================
 	always @ (posedge clk) 
