@@ -10,20 +10,20 @@ module sdp_bram
                  input  wire clk_a,
                  input  wire wen_a,
                  input  wire ren_a,
-                 input  wire addr_a,
-                 input  wire data_in_a,
-                 output reg  data_out_a,
+                 input  wire [`BRAM_ADDR_WIDTH-1:0] addr_a,
+                 input  wire [`BRAM_DATA_WIDTH-1:0] data_in_a,
+                 output reg  [`BRAM_DATA_WIDTH-1:0] data_out_a,
                  
                  // port B signals
                  input  wire clk_b,
                  input  wire wen_b,
                  input  wire ren_b,
-                 input  wire addr_b,
-                 input  wire data_in_b,
-                 output reg  data_out_b 
+                 input  wire [`BRAM_ADDR_WIDTH-1:0] addr_b,
+                 input  wire [`BRAM_DATA_WIDTH-1:0] data_in_b,
+                 output reg  [`BRAM_DATA_WIDTH-1:0] data_out_b 
                 );
     
-    localparam BRAM_DEPTH = 2**`BRAM_DATA_WIDTH;
+    localparam BRAM_DEPTH = `PXL_BRAM_DEPTH;
     
     reg [`BRAM_DATA_WIDTH-1 : 0] b_mem [BRAM_DEPTH-1 : 0];
     
