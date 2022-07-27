@@ -9,4 +9,9 @@ to do:
 1. Add indication to ICSR that a frame is ready to be read
 2. Add STAT register polling logic
 
-
+-> updates July 28
+1. The ICSR is now tied to frame grab logic and indicates completion of a frame
+2. STAT register polling logic is also added
+3. Basic testing of the IP is done
+4. Synthesis is done
+5. i2c master was tested on hardware and actual communication with the sensor was successfully made
