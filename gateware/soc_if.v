@@ -1,5 +1,26 @@
-//////////////////////////////////
-// TODO
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Rapid Silicon
+// Engineer: Zafar Ali
+// 
+// Create Date: 07/22/2022 06:31:52 PM
+// Design Name: andromeda 
+// Module Name: soc_if
+// Project Name: Andromeda AI Reference Application for Gemini
+// Target Devices: Artix 7 100t, Gemini (Caster)
+// Tool Versions: Vivado 2017, Raptor, litex
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// TODO:
 // -> add interrupt logic 
 // -> add interrupt masking logic  
 // -> RRESP and BRESP signals not used
@@ -7,13 +28,11 @@
 // -> 
 
 
-`define MEM_MAPPED_ADDR 12'h800
-`define AXI_ADDR_SPACE	 12'h801
-
-
+`define MEM_MAPPED_ADDR 12'h000
+`define AXI_ADDR_SPACE	 12'h001
 
 module soc_if #(
-    parameter S_COUNT=15,                // Number of AXI inputs (slave interfaces)
+    parameter S_COUNT=1,                // Number of AXI inputs (slave interfaces)
     parameter S_SIZE=20,                 // size of memory map = 2^S_SIZE
     parameter AXI_ADDR_WIDTH = 32,    
 	parameter AXI_DATA_WIDTH = 32,
@@ -74,18 +93,23 @@ module soc_if #(
 	reg	[1:0] state;
 	reg [S_COUNT-1:0] select_intrf;
 	reg [31:0] INTRP_REG;
-	reg intrp_reg_dat_valid;
 
 	reg adr;
 	reg dat;
 	reg resp;
 
-	reg axi_data_valid;
+	reg wb_we_reg;
+	reg mm_reg;
+	reg axi_valid_data;
+
 	// 
 	wire	  AXI_SPACE_FLG;
 	wire 	  MEM_MAPPED_REG;
 	// states
-	localparam  START = 0, START_AXI_TR_R = 1, START_AXI_TR_W = 2, WAIT_RESP = 3;
+	localparam [1:0]  START = 2'b0;
+	localparam [1:0] START_AXI_TR_R = 2'b01;
+	localparam [1:0] START_AXI_TR_W = 2'b10;
+	localparam [1:0] WAIT_RESP = 2'b11;
 
 
 	// axi clock and reset
@@ -101,7 +125,7 @@ module soc_if #(
   		end 
   		else begin  
 			if ( WBS_CYC_I && WBS_STB_I) begin
-				for(i=1;i < S_COUNT;i=i+1)begin
+				for(i=1;i < S_COUNT+1;i=i+1)begin
 					select_intrf[i-1] <= WBS_ADR_I[S_SIZE+:8] == i[7:0] ? 'b1 : 'b0;					
 				end
 			end
@@ -113,33 +137,27 @@ module soc_if #(
 	integer j;
 	always @(posedge WB_CLK_I or posedge WB_RST_I) begin
 		if (WB_RST_I) begin
-		   WBS_DAT_O <=  'b0;
-		   intrp_reg_dat_valid <= 'b0;
-		   axi_data_valid <= 'b0;
+		   	WBS_DAT_O <=  'b0;
+			axi_valid_data <= 1'b0;
 		end 
 		else begin  
-		  	if ( !WBS_WE_I && AXI_SPACE_FLG && |(M_AXI_RVALID & select_intrf)) begin
-				for (j=0;j<S_COUNT;j=j+1) 
-					if(select_intrf[j])
+			if(|(M_AXI_RVALID & select_intrf) )begin
+				for (j=0;j<S_COUNT;j=j+1) begin 
+				  	if(select_intrf[j])begin
 						WBS_DAT_O <= M_AXI_RDATA[j*AXI_DATA_WIDTH+:32];
-				intrp_reg_dat_valid <= 'b0;
-				axi_data_valid <= 'b1;
-		  	end
-			else if(MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && !WBS_WE_I)begin
+						axi_valid_data <= 1'b1;
+					end
+				end
+				if(!WBS_STB_I)
+					axi_valid_data <= 1'b0;
+			end
+			else if((mm_reg || MEM_MAPPED_REG)  && !WBS_WE_I && WBS_ACK_O )begin
 				// address decoding can be added here
 				WBS_DAT_O <= INTRP_REG;
-				intrp_reg_dat_valid <= 'b1; 
-				axi_data_valid <= 'b0;
+				axi_valid_data <= 1'b0;
+
 			end
-			else if (MEM_MAPPED_REG &&  WBS_CYC_I && WBS_STB_I && WBS_WE_I) begin
-				intrp_reg_dat_valid <= 'b1; // to assert a dummy wb_ack_o
-				axi_data_valid <= 'b0;
-			end
-			else begin
-				WBS_DAT_O <= 'b0;
-				intrp_reg_dat_valid <= 'b0;
-				axi_data_valid <= 'b0;
-			end
+			
 		end
   end
 
@@ -152,14 +170,41 @@ module soc_if #(
 			INTRP_REG <=  'b0;
 		end 
 		else begin  
-			INTRP_REG <= {30'b0,ob_intrpt,ib_intrpt};
+			INTRP_REG <= {30'hAFAF000,2'b00,ob_intrpt,ib_intrpt};
 		end
   	end
 
 	assign soc_if_intrpt = |INTRP_REG;
-	 
+	
+	always @(posedge WB_CLK_I or posedge WB_RST_I) begin
+		if (WB_RST_I) begin
+			adr  <= 1'b0;
+			dat  <= 1'b0;
+			resp <= 1'b0;	
+
+		end 
+		else begin  
+			if(state != 2'b00) begin
+			    if(WBS_WE_I) begin
+				    adr  <= ((|(M_AXI_AWREADY & select_intrf ) ) || adr);
+			        dat  <= ((|(M_AXI_WREADY & select_intrf))|| dat);
+			        resp <= (((|(M_AXI_BVALID & select_intrf)) && adr && dat) || resp );
+			    end	
+			    else begin
+			        adr  <= (|(M_AXI_ARREADY & select_intrf) || adr);
+                    dat  <= ( |(M_AXI_RVALID & select_intrf) ||  dat);
+                    resp <= 1'b0;    
+			    end		
+			end
+			else begin
+                    adr  <= 1'b0;
+                    dat  <= 1'b0;
+                    resp <= 1'b0;   
+            end 
+		end
+  	end
   	// WB AXI Translator and Decoder FSM
-  	always @ (*) begin
+  	always @ (*) begin // FIXME:  
 	  	case (state)
 		  	START: begin
 				
@@ -179,17 +224,11 @@ module soc_if #(
 
 				M_AXI_RREADY  = 'b0;
 
-				adr			 = 1'b0;
-				dat			 = 1'b0;		
-				resp		 = 1'b0;	
-
-				if (intrp_reg_dat_valid && MEM_MAPPED_REG)
+				if (mm_reg)
 					WBS_ACK_O     = 1'b1;
 				else
 					WBS_ACK_O     = 1'b0; 
 				
-
-
 		  	end
 		  	START_AXI_TR_W: begin
 
@@ -214,9 +253,6 @@ module soc_if #(
 				
 				WBS_ACK_O     = 1'b0;
 
-				adr			  = 1'b0;
-				dat			  = 1'b0;		
-				resp		  = 1'b0;	
 		  	end
 		  	START_AXI_TR_R: begin
 				
@@ -237,55 +273,30 @@ module soc_if #(
 				M_AXI_RREADY  = select_intrf;
 
 				WBS_ACK_O     = 1'b0;
-				adr			  = 1'b0;
-				dat			  = 1'b0;		
-				resp		  = 1'b0;	
+
 		  	end
 		  	WAIT_RESP: begin
-				if (WBS_WE_I) begin
-					if ((|(M_AXI_AWREADY & select_intrf ) )|| adr) begin 
-						M_AXI_AWVALID = 'b0;
-						M_AXI_AWADDR  = 'b0;
-						M_AXI_AWPROT  = 'b0;
-						adr			  = 1'b1;
-					end	
+				if (WBS_WE_I || resp) begin
+					if ( resp ) begin
+					    M_AXI_AWVALID = 'b0;
+                        M_AXI_WVALID  = 'b0;					
+					end
 					else begin
 						M_AXI_AWVALID = select_intrf;
-						M_AXI_AWADDR  = WBS_ADR_I;
-						M_AXI_AWPROT  = 'b0; 
-						adr			  = 1'b0;
+                        M_AXI_WVALID  = select_intrf;
 					end
-
-					if ((|(M_AXI_WREADY & select_intrf))|| dat) begin
-						M_AXI_WVALID  = 'b0;
-						M_AXI_WDATA   = 'b0;
-						M_AXI_WSTRB   = 'b0;
-						dat			  = 1'b1;		
-
-					end 
-					else begin
-						M_AXI_WVALID  = select_intrf;
-						M_AXI_WDATA   = WBS_DAT_I;
-						M_AXI_WSTRB   = WBS_SEL_I;
-						dat			  = 1'b0;		
-
-					end
-					if (((|(M_AXI_BVALID & select_intrf)) && adr && dat) || resp ) begin
-						M_AXI_BREADY  = 'b0;
-						resp = 1'b1;
-					end
-					else begin
-						M_AXI_BREADY  = select_intrf;
-						resp = 1'b0;
-
-					end
-
+					
+					M_AXI_BREADY  = resp?select_intrf:'b0;
+					M_AXI_AWADDR  = WBS_ADR_I;
+                    M_AXI_AWPROT  = 'b0;
+					M_AXI_WSTRB   = WBS_SEL_I;
 					M_AXI_ARVALID = 'b0;
 					M_AXI_ARADDR  = 'b0;
 					M_AXI_ARPROT  = 'b0;
-	
+					M_AXI_WDATA   = WBS_DAT_I;
 					M_AXI_RREADY  = 'b0;
-				
+
+
 				end else begin
 					M_AXI_AWVALID = 'b0;
 					M_AXI_AWADDR  = 'b0;
@@ -297,40 +308,16 @@ module soc_if #(
 	
 					M_AXI_BREADY  = 'b0;
 	
-					//if(|(M_AXI_ARREADY & select_intrf )|| |(M_AXI_RVALID) || adr)begin 	
-					if(|(M_AXI_RVALID) || adr)begin 	
-						
-						M_AXI_ARVALID = 'b0;
-						M_AXI_ARADDR  = 'b0;
-						M_AXI_ARPROT  = 'b0;
-						adr			  = 1'b1;
-
-					end 
-					else begin					
-						M_AXI_ARVALID = select_intrf;
-						M_AXI_ARADDR  = WBS_ADR_I;
-						M_AXI_ARPROT  = 'b0;
-						adr			  = 1'b0;
-						
-
-
-					end
-					if( |(M_AXI_RVALID & select_intrf) ||  dat)begin						
-						//M_AXI_RREADY  = 'b0;
-						dat			  = 1'b1;		
-
-					end 
-					else begin
-						//M_AXI_RREADY  = select_intrf;
-						dat			  = 1'b0;		
-
-					end
 					M_AXI_RREADY  = select_intrf;
+					M_AXI_ARVALID = select_intrf;
+                    M_AXI_ARADDR  = WBS_ADR_I;
+                    M_AXI_ARPROT  = 'b0;
 				end
-				if(M_AXI_AWVALID == 'b0 && M_AXI_WVALID == 'b0 && M_AXI_BREADY == 'b0 && M_AXI_ARVALID == 'b0 &&  M_AXI_RREADY == 'b0 && (intrp_reg_dat_valid || axi_data_valid) )
-						WBS_ACK_O = 1'b1;
-					else
-						WBS_ACK_O = 1'b0;
+
+				if((adr && dat && (wb_we_reg && resp) && WBS_STB_I) || axi_valid_data ) 
+					WBS_ACK_O = 1'b1;
+				else
+					WBS_ACK_O = 1'b0;
 			end
 			default: begin
 			
@@ -346,10 +333,7 @@ module soc_if #(
 				M_AXI_ARADDR  = 'b0;
 				M_AXI_ARPROT  = 'b0;
 				M_AXI_RREADY  = 'b0;
-				WBS_ACK_O     = 1'b0;
-				adr			  = 1'b0;
-				dat			  = 1'b0;		
-				resp		  = 1'b0;	
+				WBS_ACK_O    = 1'b0;
 			end 
 	  	endcase
   	end
@@ -377,7 +361,7 @@ module soc_if #(
 					state <= WAIT_RESP;
 				end
 				WAIT_RESP: begin
-					if (WBS_ACK_O) 
+					if ((resp || axi_valid_data)  && !WBS_STB_I) 
 						state <= START;
 					else
 						state <= WAIT_RESP;
@@ -386,4 +370,23 @@ module soc_if #(
 		  	endcase
 		end
   	end
+
+	always @ (posedge WB_CLK_I or posedge WB_RST_I) begin
+		if (WB_RST_I) begin
+			wb_we_reg 	<= 1'b0;
+			mm_reg 		<= 1'b0;
+		end
+		else begin
+			if (WBS_STB_I) begin
+				wb_we_reg <= WBS_WE_I;
+				mm_reg 	  <= MEM_MAPPED_REG;
+			end
+			else begin
+				wb_we_reg 	<= 1'b0;
+				mm_reg 		<= 1'b0;
+			end
+			
+		end
+	end
 endmodule
+
