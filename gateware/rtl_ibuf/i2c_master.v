@@ -47,6 +47,7 @@ module i2c_master(
 	localparam NACK            = 15;
     localparam STOP            = 16;
 	
+	// change this to 100
 	localparam DIVIDE_BY = 100;
 
     //	reg [7:0] state;
@@ -65,11 +66,13 @@ module i2c_master(
 	reg wr_done = 0;
 	reg [7:0] rp_counter = 0;
 	reg [7:0] nk_counter = 0;
+	reg [7:0] previous_i2c_state = 0;
+    wire      i2c_stop_to_idle_detect;
 
 	assign ready   = ((rst_n == 1) && (state == IDLE)) ? 1 : 0;
-	//assign i2c_scl = (i2c_scl_enable == 0) ? 1 : i2c_clk;
-    assign i2c_scl = (((state == 8'd11) && rp_counter == 0) || (state == 8'd0) || (state == 8'd16)) ? 1'b1 : (i2c_scl_enable == 0) ? 1 : i2c_clk;
+    assign i2c_scl = (((state == 8'd11) && rp_counter == 0) || (state == 8'd0) || (i2c_stop_to_idle_detect)) ? 1'b1 : (i2c_scl_enable == 0) ? 1 : i2c_clk;
 	assign i2c_sda = (write_enable == 1) ? sda_out : 'bz;
+	assign i2c_stop_to_idle_detect = ((previous_i2c_state == 16) && (state == 0));
 	assign i2c_clk_out = i2c_clk;
 	
 	// ========================================= Clock prescale =========================================
@@ -84,6 +87,19 @@ module i2c_master(
 		    counter2 <= counter2 + 1;
 	end 
 
+    // ====================================== i2c posedge FSM ====================================== 
+    always @(posedge i2c_clk, negedge rst_n)
+    begin
+        if(!rst_n)
+        begin
+            previous_i2c_state <= 8'd0;
+        end
+        else
+        begin
+            previous_i2c_state <= state;  
+        end
+    end
+    
     // ====================================== i2c posedge FSM ====================================== 
     always @(posedge i2c_clk, negedge rst_n) 
     begin
@@ -147,8 +163,8 @@ module i2c_master(
             // =============== state 4 (common state)   
             ACK_ADDR_SLV:
             begin
-                //if(i2c_sda == 0)
-                if(1)
+                if(i2c_sda == 0)      // uncomment
+//                if(1)
                 begin
                     if(repeated_start)
                     begin
@@ -182,8 +198,8 @@ module i2c_master(
             // =============== state 6 (common state)           
             ACK_ADDR_REG:
             begin            
-                //if(i2c_sda == 0)
-                if(1)
+                if(i2c_sda == 0)       // uncomment
+//                if(1)
                 begin
                     if(msb) 
                     begin
@@ -235,8 +251,8 @@ module i2c_master(
             // =============== state 9 (write transaction)
             ACK_DATA_WRITE:
             begin  
-                //if(i2c_sda == 0)
-                if(1)
+                if(i2c_sda == 0)       // uncomment
+//                if(1)
                 begin
                     if(msb) 
                     begin
@@ -349,6 +365,7 @@ module i2c_master(
             IDLE:
             begin
                 i2c_scl_enable <= 0;
+                sda_out <= 1;
             end
             // =============== state 1            
             START:           
@@ -482,8 +499,7 @@ module i2c_master(
             STOP:
             begin
                 write_enable <= 1;
-                sda_out <= 1;
-                i2c_scl_enable <= 0;
+                sda_out <= 0;
             end
             endcase
         end

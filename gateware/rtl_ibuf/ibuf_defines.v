@@ -13,9 +13,14 @@
 // *************** BRAM parameters *************** 
 `define BRAM_DATA_WIDTH 16
 `define BRAM_ADDR_WIDTH 10
-`define PXL_BRAM_DEPTH  16
+`define PXL_BRAM_DEPTH  768  // <<<<<<<<<<<<<<< This depth
 
 // *************** default values for sensor *************** 
 `define MLXR_CTRL_DEF      16'h1301    // chess pattern, 16-bit ADC resolution, 32Hz subpage update, subpage mode enabled 
 `define MLXR_RAM_ADDR_SP0  16'h0400
 `define MLXR_RAM_ADDR_SP1  16'h0401
+
+// *************** misc.x *********************
+`define PIXEL_LIMIT   16'd768  // <<<<<<<<<<<<<< This pixel
+`define BRAM_SP0_ADDR 10'h0000
+`define BRAM_SP1_ADDR 10'h0001
