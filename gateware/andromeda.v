@@ -33,9 +33,6 @@ module andromeda (
     inout  wire I2C_SDA,
     output wire I2C_SCL,
 
-    output wire M_AXIS_ACLK,
-    output wire M_AXIS_ARESETN,
-
     output wire                          M_AXIS_TVALID,
     output wire [AXIS_TDATA_WIDTH-1 : 0] M_AXIS_TDATA,
     output wire                          M_AXIS_TLAST,
@@ -58,9 +55,6 @@ module andromeda (
   wire [            S_COUNT*32-1:0] rdata;  // rdata[31:0] per slave
   wire [               S_COUNT-1:0] ack;  // one ack per slave
 
-
-  wire                              M_AXI_ACLK;
-  wire                              M_AXI_ARESETN;
 
   wire [               S_COUNT-1:0] M_AXI_AWVALID;
   wire [               S_COUNT-1:0] M_AXI_AWREADY;
@@ -143,7 +137,7 @@ module andromeda (
   );
 
 
-  ibuffer #(
+  ibuf #(
       .C_S_AXI_DATA_WIDTH  (AXI_DATA_WIDTH),
       .C_S_AXI_ADDR_WIDTH  (AXI_ADDR_WIDTH),
       .C_M_AXIS_TDATA_WIDTH(AXIS_TDATA_WIDTH)

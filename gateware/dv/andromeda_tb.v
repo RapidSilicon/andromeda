@@ -1,3 +1,5 @@
+`timescale 1 ns / 1ps
+
 module andromeda_tb;
 
   // Parameters
@@ -51,26 +53,41 @@ module andromeda_tb;
       .wb_SEL(wb_SEL),
       .I2C_SDA(I2C_SDA),
       .I2C_SCL(I2C_SCL),
-      .M_AXIS_ACLK(M_AXIS_ACLK),
-      .M_AXIS_ARESETN(M_AXIS_ARESETN),
       .M_AXIS_TVALID(M_AXIS_TVALID),
       .M_AXIS_TDATA(M_AXIS_TDATA),
       .M_AXIS_TLAST(M_AXIS_TLAST),
-      .F_GRAB_INT(F_GRAB_INT)
+      .F_GRAB_INT(F_GRAB_INT) 
   );
-
+  reg [31:0] wb_out;
+  reg [31:0] wrt_data;
+  integer csr_cnt;
+  integer all_slv;
   initial begin
 
     RESET();
-    repeat (3) @(posedge clk);
-    wb_read(32'h00000000);
-
-    repeat (5) @(posedge clk);
-    wb_write('h00100000, 'hdeadbeef);
-    repeat (2) @(posedge clk);
-    wb_read(32'h00100000);
     repeat (4) @(posedge clk);
-    all_slv_rw(S_COUNT, 4);
+
+    csr_wr(32'h00100000);
+        repeat (4) @(posedge clk);
+
+    csr_wr(32'h00100008);
+        repeat (4) @(posedge clk);
+
+    csr_wr(32'h0010000C);
+        repeat (4) @(posedge clk);
+
+    wb_read(32'h00100004);
+        repeat (4) @(posedge clk);
+
+    wb_read(32'h00100010);
+        repeat (4) @(posedge clk);
+
+    wb_read(32'h00100014);
+         repeat (4) @(posedge clk);
+
+        
+    wb_read(32'h00000000);
+               
     repeat (10) @(posedge clk);
 
     $display("\t\t************************************************************");
@@ -81,7 +98,7 @@ module andromeda_tb;
 
   end
 
-  always #100 clk = !clk;
+  always #10 clk = !clk;
 
   // ---------------------------------------------------------------
   //  WB WRITE TASK
@@ -96,36 +113,36 @@ module andromeda_tb;
   endtask
 
   // ---------------------------------------------------------------
-  //  all slave csr access
-  reg [31:0] wb_out;
-  reg [31:0] wrt_data;
-  integer csr_cnt;
-  integer all_slv;
+  // 
+  initial begin
+        $dumpfile("dump.vcd");
+        $dumpvars;
+    end
 
   reg [31:0] slv_addr;
-  task all_slv_rw(input [31:0] n_slaves, input [31:0] n_csrs);
+  task csr_wr(input [31:0] addr);
     begin
       wb_out = 'b0;
       error_cnts = 0;
-      for (all_slv = 1; all_slv <= n_slaves; all_slv = all_slv + 1) begin
-        for (csr_cnt = 0; csr_cnt < n_csrs; csr_cnt = csr_cnt + 1) begin
+      
           wrt_data = $random;
-          slv_addr = {8'h00, all_slv[3:0], 20'h00000};
-          wb_write((slv_addr + (csr_cnt * 4)), wrt_data);
-
+         
+          wb_write(addr, wrt_data);
+         
           repeat (4) @(posedge clk);
-          wb_read((slv_addr + (csr_cnt * 4)));
-
+          
+          wb_read(addr);
+          
           repeat (4) @(posedge clk);
 
           if (wrt_data != wb_out) begin
             error_cnts = error_cnts + 1;
             $display($time, " ERROR:MISMATCH DATA! %00d != %00d ", wrt_data, wb_out);
           end
+            wb_write(addr, 32'h00000000);  
+            repeat (4) @(posedge clk);
         end
-      end
-      repeat (4) @(posedge clk);
-    end
+
   endtask
   // ---------------------------------------------------------------
   //  WB WRITE TASK
@@ -137,7 +154,7 @@ module andromeda_tb;
       wb_STB <= 1'b1;
       wb_SEL <= 4'hF;
       wb_WE <= 1'b1;
-      wait (wb_ACK);
+      @ (posedge wb_ACK);
       repeat (1) @(posedge clk);
       wb_ADR <= 'b0;
       wb_DAT_MOSI <= 'b0;
@@ -158,7 +175,8 @@ module andromeda_tb;
       wb_SEL <= 4'hF;
       wb_WE  <= 1'b0;
       @(posedge wb_ACK);
-      #2 wb_out <= wb_DAT_MISO;
+      #2;
+      wb_out <= wb_DAT_MISO;
       repeat (1) @(posedge clk);
       wb_ADR <= 'b0;
       wb_CYC <= 1'b0;
