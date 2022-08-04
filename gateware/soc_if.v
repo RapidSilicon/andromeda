@@ -28,8 +28,8 @@
 // ->
 
 
-`define MEM_MAPPED_ADDR 12'h000
-`define AXI_ADDR_SPACE 12'h001
+`define MEM_MAPPED_ADDR 12'h800
+`define AXI_ADDR_SPACE 12'h801
 
 module soc_if #(
     parameter S_COUNT        = 1,   // Number of AXI inputs (slave interfaces)
@@ -119,8 +119,9 @@ module soc_if #(
         for (i = 1; i < S_COUNT + 1; i = i + 1) begin
           select_intrf[i-1] <= WBS_ADR_I[S_SIZE+:8] == i[7:0] ? 'b1 : 'b0;
         end
+      end else begin
+        select_intrf <= 'b0;
       end
-
     end
   end
 
@@ -131,7 +132,7 @@ module soc_if #(
       WBS_DAT_O <= 'b0;
       WBS_ACK_O <= 1'b0;
     end else begin
-      if (WBS_STB_I) begin
+      if (WBS_STB_I && WBS_CYC_I) begin
         if (|(M_AXI_RVALID & select_intrf)) begin
           for (j = 0; j < S_COUNT; j = j + 1) begin
             if (select_intrf[j]) begin
@@ -152,15 +153,15 @@ module soc_if #(
   end
 
   // address space decode
-  assign AXI_SPACE_FLG  = (WBS_STB_I && WBS_ADR_I[31:20] >= `AXI_ADDR_SPACE) ? 1'b1 : 1'b0;
-  assign MEM_MAPPED_REG = (WBS_STB_I && WBS_ADR_I[31:20] == `MEM_MAPPED_ADDR) ? 1'b1 : 1'b0;
+  assign AXI_SPACE_FLG  = (WBS_STB_I && WBS_CYC_I && WBS_CYC_I&& WBS_ADR_I[31:20] >= `AXI_ADDR_SPACE) ? 1'b1 : 1'b0;
+  assign MEM_MAPPED_REG = (WBS_STB_I && WBS_CYC_I && WBS_ADR_I[31:20] == `MEM_MAPPED_ADDR) ? 1'b1 : 1'b0;
 
   // Interrupt Registor
   always @(posedge WB_CLK_I) begin
     if (WB_RST_I) begin
       INTRP_REG <= 'b0;
     end else begin
-      INTRP_REG <= {30'hAFAF000, ob_intrpt, ib_intrpt};
+      INTRP_REG <= {30'h2B7A, ob_intrpt, ib_intrpt};
     end
   end
 
@@ -174,7 +175,7 @@ module soc_if #(
       resp <= 1'b0;
 
     end else begin
-      if (WBS_STB_I) begin
+      if (WBS_STB_I && WBS_CYC_I) begin
         if (WBS_WE_I) begin
           adr  <= ((|(M_AXI_AWREADY & select_intrf)) || adr);
           dat  <= (((|(M_AXI_WREADY & select_intrf))) || dat);
@@ -209,7 +210,7 @@ module soc_if #(
 
     end else begin
 
-      if (WBS_STB_I) begin
+      if (WBS_STB_I && WBS_CYC_I) begin
         if (|(M_AXI_BVALID & select_intrf)) begin
           M_AXI_BREADY  <= select_intrf;
           M_AXI_AWVALID <= 'b0;
@@ -259,7 +260,7 @@ module soc_if #(
       M_AXI_ARADDR <= 'b0;
 
     end else begin
-      if (WBS_STB_I) begin
+      if (WBS_STB_I && WBS_CYC_I) begin
         wb_we_reg <= WBS_WE_I;
         mm_reg    <= MEM_MAPPED_REG;
         if (WBS_WE_I) begin

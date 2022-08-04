@@ -23,20 +23,18 @@ module andromeda (
     input  wire        reset,
     input  wire        wb_CYC,
     input  wire        wb_STB,
-    output wire        wb_ACK,
     input  wire        wb_WE,
     input  wire [29:0] wb_ADR,
-    output wire [31:0] wb_DAT_MISO,
     input  wire [31:0] wb_DAT_MOSI,
     input  wire [ 3:0] wb_SEL,
 
+    output wire        wb_ACK,
+    output wire [31:0] wb_DAT_MISO,
+    
     inout  wire I2C_SDA,
-    output wire I2C_SCL,
+    output wire I2C_SCL
 
-    output wire                          M_AXIS_TVALID,
-    output wire [AXIS_TDATA_WIDTH-1 : 0] M_AXIS_TDATA,
-    output wire                          M_AXIS_TLAST,
-    output wire                          F_GRAB_INT
+
 );
 
   // WB to axi-lite converter and decoder
@@ -48,13 +46,8 @@ module andromeda (
   parameter WB_ADDR_WIDTH = 32;
   parameter AXIS_TDATA_WIDTH = 32;
 
-  wire [                      31:0] addr;
-  wire [               S_COUNT-1:0] stb;  // one strobe per slave
-  wire                              we;
-  wire [                      31:0] wdata;
-  wire [            S_COUNT*32-1:0] rdata;  // rdata[31:0] per slave
-  wire [               S_COUNT-1:0] ack;  // one ack per slave
-
+  wire                              M_AXI_ACLK;
+  wire                              M_AXI_ARESETN;
 
   wire [               S_COUNT-1:0] M_AXI_AWVALID;
   wire [               S_COUNT-1:0] M_AXI_AWREADY;
@@ -84,6 +77,12 @@ module andromeda (
   wire                              ob_intrpt;
   wire                              soc_if_intrpt;
 
+  wire                          M_AXIS_TVALID;
+  wire [AXIS_TDATA_WIDTH-1 : 0] M_AXIS_TDATA;
+  wire                          M_AXIS_TLAST;
+  wire                          F_GRAB_INT;
+    
+
   soc_if #(
       .S_COUNT(S_COUNT),
       .S_SIZE(S_SIZE),
@@ -99,7 +98,7 @@ module andromeda (
       .WBS_WE_I (wb_WE),
       .WBS_SEL_I(wb_SEL),
       .WBS_DAT_I(wb_DAT_MOSI),
-      .WBS_ADR_I({2'b0, wb_ADR}),
+      .WBS_ADR_I({wb_ADR,2'b0}),
 
       .WBS_ACK_O(wb_ACK),
       .WBS_DAT_O(wb_DAT_MISO),
@@ -165,8 +164,6 @@ module andromeda (
       .S_AXI_RREADY(M_AXI_RREADY[0]),
       .I2C_SDA(I2C_SDA),
       .I2C_SCL(I2C_SCL),
-      .M_AXIS_ACLK(M_AXIS_ACLK),
-      .M_AXIS_ARESETN(M_AXIS_ARESETN),
       .M_AXIS_TVALID(M_AXIS_TVALID),
       .M_AXIS_TDATA(M_AXIS_TDATA),
       .M_AXIS_TLAST(M_AXIS_TLAST),

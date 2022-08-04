@@ -52,11 +52,7 @@ module andromeda_tb;
       .wb_DAT_MOSI(wb_DAT_MOSI),
       .wb_SEL(wb_SEL),
       .I2C_SDA(I2C_SDA),
-      .I2C_SCL(I2C_SCL),
-      .M_AXIS_TVALID(M_AXIS_TVALID),
-      .M_AXIS_TDATA(M_AXIS_TDATA),
-      .M_AXIS_TLAST(M_AXIS_TLAST),
-      .F_GRAB_INT(F_GRAB_INT) 
+      .I2C_SCL(I2C_SCL)
   );
   reg [31:0] wb_out;
   reg [31:0] wrt_data;
@@ -67,26 +63,26 @@ module andromeda_tb;
     RESET();
     repeat (4) @(posedge clk);
 
-    csr_wr(32'h00100000);
+    csr_wr(30'h20040000);
         repeat (4) @(posedge clk);
 
-    csr_wr(32'h00100008);
+    csr_wr(30'h20040002);
         repeat (4) @(posedge clk);
 
-    csr_wr(32'h0010000C);
+    csr_wr(30'h20040003);
         repeat (4) @(posedge clk);
 
-    wb_read(32'h00100004);
+    wb_read(30'h20040001);
         repeat (4) @(posedge clk);
 
-    wb_read(32'h00100010);
+    wb_read(30'h20040004);
         repeat (4) @(posedge clk);
 
-    wb_read(32'h00100014);
+    wb_read(30'h20040005);
          repeat (4) @(posedge clk);
 
         
-    wb_read(32'h00000000);
+    wb_read(30'h20000000);
                
     repeat (10) @(posedge clk);
 
@@ -120,7 +116,7 @@ module andromeda_tb;
     end
 
   reg [31:0] slv_addr;
-  task csr_wr(input [31:0] addr);
+  task csr_wr(input [29:0] addr);
     begin
       wb_out = 'b0;
       error_cnts = 0;
@@ -146,7 +142,7 @@ module andromeda_tb;
   endtask
   // ---------------------------------------------------------------
   //  WB WRITE TASK
-  task wb_write(input reg [32-1:0] wb_adr, input reg [32-1:0] wb_dat);
+  task wb_write(input reg [30-1:0] wb_adr, input reg [32-1:0] wb_dat);
     begin
       wb_ADR <= wb_adr;
       wb_DAT_MOSI <= wb_dat;
@@ -167,7 +163,7 @@ module andromeda_tb;
 
   // ---------------------------------------------------------------
   //  WB READ TASK
-  task wb_read(input [31:0] wb_adr);
+  task wb_read(input [29:0] wb_adr);
     begin
       wb_ADR <= wb_adr;
       wb_CYC <= 1'b1;
