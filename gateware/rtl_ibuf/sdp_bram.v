@@ -1,5 +1,5 @@
 // BRAM module that should be inferred as a BRAM in the fabric
-//`include "ibuf_defines.v"
+`include "ibuf_defines.v"
 
 module sdp_bram
                 (
