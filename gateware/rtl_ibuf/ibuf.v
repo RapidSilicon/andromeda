@@ -5,7 +5,7 @@
 // To do: 
 // Updated: 20th Jul
 
-//`include "ibuf_defines.v"
+`include "ibuf_defines.v"
 
 module ibuf #
               (

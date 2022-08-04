@@ -492,7 +492,10 @@ module i2c_master(
             begin
                 write_enable <= 1;
                 i2c_scl_enable <= 1;
-                sda_out <= 1;
+                if(nk_counter)
+                    sda_out <= 1;
+                else
+                    sda_out <= 0;
             end
             
             // =============== state 16
