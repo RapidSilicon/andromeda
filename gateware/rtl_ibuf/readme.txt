@@ -15,3 +15,7 @@ to do:
 3. Basic testing of the IP is done
 4. Synthesis is done
 5. i2c master was tested on hardware and actual communication with the sensor was successfully made
+
+-> updates August 5
+1. ibuf tested with microblaze setup, successfully read RAM values and write/read CSRs of the sensor
+2. i2c master can now be fully used by the vexrisc-v through the ICCR, IBDR and ICSR registers
