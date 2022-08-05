@@ -763,12 +763,15 @@ module ibuf #
 	        if(frame_number != 0)
 	        begin
 	            if(!((frame_number - 1) % 2))   // even frame
-	                ICSR <= 32'h00000003;
+//	                ICSR <= 32'h00000003;
+                    ICSR <= {i2c_data_out, 16'h0003};
 	            else
-	                ICSR <= 32'h00000005;    // odd frame
+//	                ICSR <= 32'h00000005;    // odd frame
+	                ICSR <= {i2c_data_out, 16'h0005};
 	        end 
 	        else
-	            ICSR <= ICSR;
+//	            ICSR <= ICSR;
+	            ICSR <= {i2c_data_out, 16'h0000};
 	    end
 	end
 
