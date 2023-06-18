@@ -30,6 +30,7 @@ for i in range(args.ochan):
     s+='case(addr[{}:{}])\n'.format(i*args.waddr+args.waddr-1,i*args.waddr)
     for j in range(args.depth):
         s+='{}\'d{}: data_{} <= \'d{};\n'.format(args.waddr,j,i,random.randint(0,2**args.tdata))
+    s+='default: data_{} <= \'bx;\n'.format(i)
     s+='endcase\n'
     s+='end\n'
     s+='assign data[{}:{}] = data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
