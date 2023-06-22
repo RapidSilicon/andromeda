@@ -11,7 +11,7 @@ parser.add_argument('--waddr', help='WADDR parameter, weight_rom read address wi
 parser.add_argument('--tdata', help='TDATA parameter, weight_rom width',default=8, type=int)
 parser.add_argument('--depth', help='weight_rom depth',default=1024, type=int)
 parser.add_argument('--rom', help='rom file',default='weight_rom.v')
-parser.add_argument('--clk', help='FPGA clock rate',default=500000000., type=float)
+parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
 parser.add_argument('--tflite', help='flatbuffer model',default='model.tflite')
 args = parser.parse_args()
@@ -21,7 +21,7 @@ s=''
 s+='module weight_rom (clk, addr, data);\n'
 s+='input clk;\n'
 s+='input [{}:0] addr;\n'.format(args.ochan*args.waddr-1)
-s+='output [{}:0] data;\n'.format(args.ochan*args.tdata-1)
+s+='output reg [{}:0] data;\n'.format(args.ochan*args.tdata-1)
 s+='\n'
 for i in range(args.ochan):
     s+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
@@ -33,7 +33,8 @@ for i in range(args.ochan):
     s+='default: data_{} <= \'bx;\n'.format(i)
     s+='endcase\n'
     s+='end\n'
-    s+='assign data[{}:{}] = data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
+    s+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
+    #s+='assign data[{}:{}] = data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
     s+='\n'
 s+='\n'
 s+='endmodule\n'
