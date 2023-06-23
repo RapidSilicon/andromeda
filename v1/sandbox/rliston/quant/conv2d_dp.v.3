@@ -53,12 +53,53 @@ generate
 endgenerate
 
 // weight ROM per OCHAN
-wire [TDATA*OCHAN-1:0] weight_rd;
-weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
+wire [TDATA*OCHA-1:0] weight_rd;
+weight_rom weight_rom (.addr(weight_ra), .data(weight_rd));
+
 wire [TDATA-1:0] weight [OCHAN-1:0];
-generate for (i=0;i<OCHAN;i=i+1)
-    assign weight[i] = weight_rd[i*TDATA +: TDATA];
+generate for (i=0;i<OCHAN;i=i+1) begin
+    assign weight[i] = weight_rd[i*TDATA +: TDATA;
 endgenerate
+
+wrom_ochan001 wrom_ochan001 (.addr(weight_ra[i*WADDR +: WADDR]), .tdata(weight[i]));
+wrom_ochan001 wrom_ochan001 (.addr(weight_ra[i*WADDR +: WADDR]), .tdata(weight[i]));
+wrom_ochan001 wrom_ochan001 (.addr(weight_ra[i*WADDR +: WADDR]), .tdata(weight[i]));
+wrom_ochan001 wrom_ochan001 (.addr(weight_ra[i*WADDR +: WADDR]), .tdata(weight[i]));
+wrom_ochan001 wrom_ochan001 (.addr(weight_ra[i*WADDR +: WADDR]), .tdata(weight[i]));
+
+/*
+(*rom_style = "block" *) reg [TDATA-1:0] weight [OCHAN-1:0];
+generate
+    for (i=0;i<OCHAN;i=i+1) begin
+        always @(posedge clk) begin
+            //weight[i] = weight[i][weight_ra[i*WADDR +: WADDR]];
+            case(weight_ra[i*WADDR +: WADDR])
+                'b000000: weight[i] <= 'h0200A; 'b100000: weight[i] <= 'h02222;
+                'b000001: weight[i] <= 'h00300; 'b100001: weight[i] <= 'h04001;
+                'b000010: weight[i] <= 'h08101; 'b100010: weight[i] <= 'h00342;
+                'b000011: weight[i] <= 'h04000; 'b100011: weight[i] <= 'h0232B;
+                'b000100: weight[i] <= 'h08601; 'b100100: weight[i] <= 'h00900;
+                'b000101: weight[i] <= 'h0233A; 'b100101: weight[i] <= 'h00302;
+                'b000110: weight[i] <= 'h00300; 'b100110: weight[i] <= 'h00102;
+                'b000111: weight[i] <= 'h08602; 'b100111: weight[i] <= 'h04002;
+                default: weight[i] <= 'bx;
+            endcase
+        end
+    end
+endgenerate
+*/
+
+//reg [TDATA-1:0] weight_rd [OCHAN-1:0];
+/*
+// weights READ PORT
+generate
+    for (i=0;i<OCHAN;i=i+1) begin
+        always @(posedge clk) begin
+            weight[i] = weight[i][weight_ra[i*WADDR +: WADDR]];
+        end
+    end
+endgenerate
+*/
 
 // NSTRIDE*OCHAN DSP instances
 reg [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];

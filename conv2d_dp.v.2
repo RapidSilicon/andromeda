@@ -55,9 +55,10 @@ endgenerate
 // weight ROM per OCHAN
 wire [TDATA*OCHAN-1:0] weight_rd;
 weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
-wire [TDATA-1:0] weight [OCHAN-1:0];
+reg [TDATA-1:0] weight [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
-    assign weight[i] = weight_rd[i*TDATA +: TDATA];
+    always @(posedge clk)
+        weight[i] = weight_rd[i*TDATA +: TDATA];
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances

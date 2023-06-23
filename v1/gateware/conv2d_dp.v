@@ -52,12 +52,25 @@ generate
     end
 endgenerate
 
-// weight ROM per OCHAN
-wire [TDATA*OCHAN-1:0] weight_rd;
-weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
-wire [TDATA-1:0] weight [OCHAN-1:0];
-generate for (i=0;i<OCHAN;i=i+1)
-    assign weight[i] = weight_rd[i*TDATA +: TDATA];
+// weights RAM
+reg [TDATA-1:0] weight [OCHAN-1:0][2**WADDR-1:0];
+reg [TDATA-1:0] weight_rd [OCHAN-1:0];
+
+// statically initialize weight RAM, TODO replace with e.g. readmemb("rams_20c.data", ram, 0, 63);
+/*
+initial
+    for (k=0; k<OCHAN; k=k+1)
+        for (m=0; m<2**WADDR; m=m+1)
+            weight[k][m] = 0;
+*/
+
+// weights READ PORT
+generate
+    for (i=0;i<OCHAN;i=i+1) begin
+        always @(posedge clk) begin
+            weight_rd[i] = weight[i][weight_ra[i*WADDR +: WADDR]];
+        end
+    end
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
@@ -69,7 +82,7 @@ generate
         for (j=0;j<OCHAN;j=j+1) begin
             always @(posedge clk) begin
                 reg_a[i][j] = patch[i];
-                reg_b[i][j] = weight[j];
+                reg_b[i][j] = weight_rd[j];
                 case (dsp_op)
                     'd0 : reg_z[i][j] = reg_z[i][j];
                     'd1 : reg_z[i][j] = reg_a[i][j] * reg_b[i][j] + reg_z[i][j];

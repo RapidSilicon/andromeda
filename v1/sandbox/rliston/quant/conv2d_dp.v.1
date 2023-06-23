@@ -1,5 +1,5 @@
 // conv2d.v data path
-module conv2d_dp #(parameter TDATA=8, parameter NSTRIPE=3, parameter ICHAN=3, parameter OCHAN=8, parameter SADDR=12, parameter WADDR=10) (
+module conv2d_dp #(parameter TDATA=8, parameter NSTRIPE=3, parameter ICHAN=8, parameter OCHAN=16, parameter SADDR=15, parameter WADDR=12) (
     input clk, reset,
     input [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     input [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
@@ -16,7 +16,7 @@ genvar i,j;
 integer k,m;
 
 // padded stripes TDP BRAM state
-reg [ICHAN*TDATA-1:0] stripe [NSTRIPE-1:0][2**SADDR-1:0];
+reg [ICHAN*TDATA-1:0] stripe [NSTRIPE-1:0][2**SADDR-1:0]; 
 reg [ICHAN*TDATA-1:0] stripe_rd [NSTRIPE-1:0];
 
 // padded stripes WRITE PORT
@@ -24,7 +24,7 @@ generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
             if(stripe_wen[i])
-                stripe[i][stripe_wa[i*SADDR +: SADDR]] = tdata_i;
+                stripe[i][stripe_wa[i*SADDR +: SADDR]] <= tdata_i;
         end
     end
 endgenerate
@@ -33,7 +33,7 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
-            stripe_rd[i] = stripe[i][stripe_ra[i*SADDR +: SADDR]];
+            stripe_rd[i] <= stripe[i][stripe_ra[i*SADDR +: SADDR]];
         end
     end
 endgenerate
@@ -52,12 +52,17 @@ generate
     end
 endgenerate
 
-// weight ROM per OCHAN
-wire [TDATA*OCHAN-1:0] weight_rd;
-weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
-wire [TDATA-1:0] weight [OCHAN-1:0];
-generate for (i=0;i<OCHAN;i=i+1)
-    assign weight[i] = weight_rd[i*TDATA +: TDATA];
+// weights RAM
+reg [TDATA-1:0] weight [OCHAN-1:0][2**WADDR-1:0]; 
+reg [TDATA-1:0] weight_rd [OCHAN-1:0];
+
+// weights READ PORT
+generate
+    for (i=0;i<OCHAN;i=i+1) begin
+        always @ (posedge clk) begin
+            weight_rd[i] <= weight[i][weight_ra[i*WADDR +: WADDR]];
+        end
+    end
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
@@ -69,14 +74,13 @@ generate
         for (j=0;j<OCHAN;j=j+1) begin
             always @(posedge clk) begin
                 reg_a[i][j] = patch[i];
-                reg_b[i][j] = weight[j];
+                reg_b[i][j] = weight_rd[j];
                 case (dsp_op)
                     'd0 : reg_z[i][j] = reg_z[i][j];
                     'd1 : reg_z[i][j] = reg_a[i][j] * reg_b[i][j] + reg_z[i][j];
                     'd2 : reg_z[i][j] = reg_z[i][j][31:24];
                     'd3 : reg_z[i][j] = 'b0;
                     //'d4 : reg_z[i][j] = saturate/shift/round
-                    default : reg_z[i][j] = 'bx;
                 endcase
             end
         end
