@@ -1,141 +1,70 @@
 module conv2d #(
-    parameter TDATA=8,      // with of model dtype (int8, bfloat16)
-    parameter NSTRIPE=16,   // number of vertical stripes to evaluate in parallel
-    parameter ICHAN=64,     // number of input channels
-    parameter OCHAN=64,     // number of output channels, will be evaluated in parallel
+    parameter TDATA=8,      // width of model dtype (int8, bfloat16)
+    parameter OCHAN=8,     // number of output channels, evaluated in parallel
+    parameter NSTRIPE=3,   // number of vertical stripes to evaluate in parallel
+    parameter ICHAN=8,     // number of input channels
     parameter SADDR=12,     // stripe data input buffer address width
     parameter WADDR=10,     // weight ROM address width
     parameter IWIDTH=28,    // input tensor width
-    parameter IHEIGHT=28,   // output tensor height
+    parameter IHEIGHT=28,   // input tensor height
     parameter KWIDTH=3,     // filter kernel width
     parameter KHEIGHT=3,    // filter kernel height
-    parameter STRIDE=1      // x and y stride
+    parameter STRIDE=1     // x and y stride
 ) (
-    input clk, reset,
-    input [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
-    input [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
-
-module conv2d (
     input wire clk,
-    input wire rst,
-    input wire [31:0] s_axis_data,
+    input wire reset,
+    input wire [OCHAN*TDATA-1:0] weight_rd,
+    output [OCHAN*WADDR-1:0] weight_ra,
+    input wire [ICHAN*TDATA-1:0] s_axis_data,
     input wire s_axis_tvalid,
     input wire s_axis_tlast,
-    output wire [31:0] m_axis_data,
+    output wire s_axis_tready,
+    output wire [OCHAN*TDATA-1:0] m_axis_data,
     output wire m_axis_tvalid,
-    output wire m_axis_tlast
+    output wire m_axis_tlast,
+    input wire m_axis_tready
 );
 
-parameter INPUT_WIDTH = 28;
-parameter INPUT_HEIGHT = 28;
-parameter INPUT_CHANNELS = 1;
-parameter FILTER_WIDTH = 5;
-parameter FILTER_HEIGHT = 5;
-parameter OUTPUT_CHANNELS = 6;
-parameter STRIDE = 1;
+wire [2:0] dsp_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
+wire [31:0] dsp_arg; // m0 = normalized scaling factor, 0.5 to 1.0
+wire [NSTRIPE*SADDR-1:0] stripe_wa;
+wire [NSTRIPE-1:0] stripe_wen;
+wire [NSTRIPE*SADDR-1:0] stripe_ra;
+wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
+wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 
-wire input_ram_data_in, input_ram_write_enable;
-wire [15:0] input_ram_write_addr, input_ram_read_addr;
-wire [31:0] input_ram_data_out, weights_ram_data_out;
-wire alu_mac_enable, alu_mac_clear;
-wire [31:0] alu_output_data, relu_output_data;
-
-// Instantiate data path modules
-axi_stream_in axi_stream_in_inst (
+conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SADDR) u0 (
     .clk(clk),
-    .rst(rst),
-    .data(s_axis_data),
-    .tvalid(s_axis_tvalid),
-    .tlast(s_axis_tlast),
-    .output_data(input_ram_data_in),
-    .output_valid(input_ram_write_enable),
-    .output_addr(input_ram_write_addr)
+    .reset(reset),
+    .dsp_op(dsp_op),
+    .dsp_arg(dsp_arg),
+    .stripe_wa(stripe_wa),
+    .stripe_wen(stripe_wen),
+    .stripe_ra(stripe_ra),
+    .weight_rd(weight_rd),
+    .ichan_sel(ichan_sel),
+    .stripe_sel(stripe_sel),
+    .tdata_i(s_axis_data),
+    .tdata_o(m_axis_data)
 );
 
-input_ram input_ram_inst (
+conv2d_ctrl #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE) u1 (
     .clk(clk),
-    .rst(rst),
-    .data_in(input_ram_data_in),
-    .write_enable(input_ram_write_enable),
-    .write_addr(input_ram_write_addr),
-    .read_addr(input_ram_read_addr),
-    .data_out(input_ram_data_out)
-);
-
-weights_ram weights_ram_inst (
-    .clk(clk),
-    .rst(rst),
-    .read_addr(weights_ram_read_addr),
-    .data_out(weights_ram_data_out)
-);
-
-alu alu_inst (
-    .clk(clk),
-    .rst(rst),
-    .input_data(input_ram_data_out),
-    .weights_data(weights_ram_data_out),
-    .mac_enable(alu_mac_enable),
-    .mac_clear(alu_mac_clear),
-    .output_data(alu_output_data)
-);
-
-relu relu_inst (
-    .clk(clk),
-    .rst(rst),
-    .data_in(alu_output_data),
-    .data_out(relu_output_data)
-);
-
-axi_stream_out axi_stream_out_inst (
-    .clk(clk),
-    .rst(rst),
-    .input_data(relu_output_data),
-    .input_valid(m_axis_tvalid),
-    .input_tlast(m_axis_tlast),
-    .output_data(m_axis_data),
-    .output_tvalid(m_axis_tvalid),
-    .output_tlast(m_axis_tlast)
-);
-
-wire patch_ready;
-wire [31:0] patch_origin;
-
-// Instantiate control modules
-control_module_a ctrl_a (
-    .clk(clk),
-    .rst(rst),
-    .s_axis_tready(input_ram_write_enable),
-    .tlast(s_axis_tlast),
-    .write_enable(input_ram_write_enable),
-    .write_addr(input_ram_write_addr)
-);
-
-control_module_b ctrl_b (
-    .clk(clk),
-    .rst(rst),
-    .s_axis_tready(input_ram_write_enable),
-    .write_counter(input_ram_write_addr),
-    .input_width(INPUT_WIDTH),
-    .input_height(INPUT_HEIGHT),
-    .filter_width(FILTER_WIDTH),
-    .filter_height(FILTER_HEIGHT),
-    .input_channels(INPUT_CHANNELS),
-    .stride(STRIDE),
-    .patch_ready(patch_ready),
-    .patch_origin(patch_origin)
-);
-
-control_module_c ctrl_c (
-    .clk(clk),
-    .rst(rst),
-    .patch_ready(patch_ready),
-    .patch_origin(patch_origin),
-    .input_ram_read_addr(input_ram_read_addr),
-    .weights_ram_read_addr(weights_ram_read_addr),
-    .alu_mac_enable(alu_mac_enable),
-    .alu_mac_clear(alu_mac_clear),
-    .output_ready(m_axis_tvalid),
-    .output_tlast(m_axis_tlast)
+    .reset(reset),
+    .dsp_op(dsp_op),
+    .dsp_arg(dsp_arg),
+    .stripe_wa(stripe_wa),
+    .stripe_wen(stripe_wen),
+    .stripe_ra(stripe_ra),
+    .weight_ra(weight_ra),
+    .ichan_sel(ichan_sel),
+    .stripe_sel(stripe_sel),
+    .s_axis_tvalid(s_axis_tvalid),
+    .s_axis_tlast(s_axis_tlast),
+    .s_axis_tready(s_axis_tready),
+    .m_axis_tvalid(s_axis_tvalid),
+    .m_axis_tlast(s_axis_tlast),
+    .m_axis_tready(s_axis_tready)
 );
 
 endmodule

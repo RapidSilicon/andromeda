@@ -1,13 +1,13 @@
 // conv2d.v data path
-module conv2d_dp #(parameter TDATA=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SADDR=12, parameter WADDR=10) (
+module conv2d_data #(parameter TDATA=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SADDR=12) (
     input clk, reset,
     input [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     input [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
     input [NSTRIPE*SADDR-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [NSTRIPE*SADDR-1:0] stripe_ra,
+    input wire [OCHAN*TDATA-1:0] weight_rd, // data from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
-    input [OCHAN*WADDR-1:0] weight_ra,
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input [ICHAN*TDATA-1:0] tdata_i,
     output reg [OCHAN*TDATA-1:0] tdata_o
@@ -56,8 +56,8 @@ generate
 endgenerate
 
 // weight ROM per OCHAN
-wire [TDATA*OCHAN-1:0] weight_rd;
-weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
+//wire [TDATA*OCHAN-1:0] weight_rd;
+//weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
 wire [TDATA-1:0] weight [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
         assign weight[i] = weight_rd[i*TDATA +: TDATA];
