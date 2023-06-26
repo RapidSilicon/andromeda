@@ -59,7 +59,7 @@ s+='    input wire m_axis_tready\n'
 s+=');\n\n'
 
 for j,l in enumerate(layers):
-    s+='wire [{}*{}-1:0] axis_data_{};\n'.format(l.oshape[-1], args.tdata,j)
+    s+='wire [{}*{}-1:0] axis_data_{};\n'.format(l.oshape[-1], args.tdata,j+1)
     
 for j,l in enumerate(layers):
     s+='wire axis_tvalid_{};\n'.format(j)
@@ -117,7 +117,7 @@ for j,l in enumerate(layers):
     w+='module weight_rom_{} (clk, addr, data);\n'.format(j)
     w+='input clk;\n'
     w+='input [{}*{}-1:0] addr;\n'.format(l.oshape[-1], l.waddr)
-    w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.tdata)
+    w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.tdata)
     w+='\n'
     for i in range(l.oshape[-1]):
         w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
@@ -140,5 +140,7 @@ for j,l in enumerate(layers):
     w+='endmodule\n'
     w+='\n'
 
-print(s)
-print(w)
+with open('./{}.v'.format(args.model), 'w') as f:
+    print(s,file=f)
+with open('./{}_rom.v'.format(args.model), 'w') as f:
+    print(w,file=f)

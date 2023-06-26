@@ -62,9 +62,9 @@ conv2d_ctrl #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGH
     .s_axis_tvalid(s_axis_tvalid),
     .s_axis_tlast(s_axis_tlast),
     .s_axis_tready(s_axis_tready),
-    .m_axis_tvalid(s_axis_tvalid),
-    .m_axis_tlast(s_axis_tlast),
-    .m_axis_tready(s_axis_tready)
+    .m_axis_tvalid(m_axis_tvalid),
+    .m_axis_tlast(m_axis_tlast),
+    .m_axis_tready(m_axis_tready)
 );
 
 endmodule
