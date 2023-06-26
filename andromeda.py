@@ -26,22 +26,33 @@ layers=[]
 graph = model.Subgraphs(0)
 for j in range(graph.OperatorsLength()):
     if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONV_2D:
-        layer=Layer()
-        layer.ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
-        layer.wshape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
-        layer.bshape = graph.Tensors(graph.Operators(j).Inputs(2)).ShapeAsNumpy()
-        layer.oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
-        layer.weight = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(1)).Buffer()).DataAsNumpy().reshape(layer.wshape)
-        layer.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy().astype(np.int32)
-        # TODO: infer stride from oshape/ishape
-        # TODO: infer saddr, compute stripe buffer size
-        # TODO: infer waddr, log2(len(l.weight)+len(l.bias))
-        # TODO: infer nstripe using performance calculation for args.fps, args.clk
-        layer.stride = 1
-        layer.saddr = 10
-        layer.waddr = 12
-        layer.nstripe = 3
-        layers.append(layer)
+        l=Layer()
+        l.ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
+        l.wshape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
+        l.bshape = graph.Tensors(graph.Operators(j).Inputs(2)).ShapeAsNumpy()
+        l.oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
+        l.weight = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(1)).Buffer()).DataAsNumpy().reshape(l.wshape)
+        l.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy()
+        # DONE: infer stride from oshape/ishape
+        # DONE: infer waddr, log2(len(l.weight)+len(l.bias))
+        # DONE: infer nstripe using performance calculation for args.fps, args.clk
+        # DONE: infer sdepth, compute stripe buffer size
+        l.stride = int(np.round(l.ishape[-2]/l.oshape[-2]))
+        #if (l.oshape[-2]==((l.ishape[-2]-2)/2)) and (l.oshape[-3]==((l.ishape[-3]-2)/2)):
+        #    l.stride = 2
+        #else:
+        #    l.stride = 1
+        #l.waddr = int(np.ceil(np.log2(np.prod(l.wshape)+len(l.bias)/l.oshape[-1])))
+        l.wdepth = np.prod(l.wshape)+len(l.bias)//l.oshape[-1] # TODO assumes int8 TDATA
+        l.waddr = int(np.ceil(np.log2(l.wdepth)))
+        rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
+        nmac = np.ceil(rate/args.clk)
+        #print('j',j,'rate',rate,'nmac',nmac)
+        #print(((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride)), l.wshape[-1]*l.wshape[-2]*l.wshape[-3])
+        l.nstripe = int(np.ceil(nmac/l.oshape[-1]))
+        #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
+        l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
+        layers.append(l)
 
 # top level module
 s=''
@@ -72,9 +83,9 @@ for j,l in enumerate(layers):
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)\n'
+    s+='// conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)\n'
     s+='conv2d #({},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.tdata, l.oshape[-1], l.nstripe, l.ishape[-1], l.saddr, l.waddr, l.ishape[-2], l.ishape[-3], l.wshape[-2], l.wshape[-3], l.stride, j)
+        args.tdata, l.oshape[-1], l.nstripe, l.ishape[-1], l.sdepth, l.wdepth, l.ishape[-2], l.ishape[-3], l.wshape[-2], l.wshape[-3], l.stride, j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
@@ -120,7 +131,8 @@ for j,l in enumerate(layers):
     w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.tdata)
     w+='\n'
     for i in range(l.oshape[-1]):
-        w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
+        #w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
+        w+='(*rom_style = "distributed" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
         w+='always @(posedge clk)\n'
         w+='begin\n'
         w+='case(addr[{}:{}])\n'.format(i*l.waddr+l.waddr-1,i*l.waddr)

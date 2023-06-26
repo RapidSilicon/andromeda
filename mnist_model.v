@@ -36,20 +36,20 @@ wire axis_tvalid_5;
 wire axis_tlast_5;
 wire axis_tready_5;
 wire [32*8-1:0] weight_rd_0;
-wire [32*12-1:0] weight_ra_0;
+wire [32*9-1:0] weight_ra_0;
 wire [32*8-1:0] weight_rd_1;
-wire [32*12-1:0] weight_ra_1;
+wire [32*14-1:0] weight_ra_1;
 wire [32*8-1:0] weight_rd_2;
-wire [32*12-1:0] weight_ra_2;
+wire [32*14-1:0] weight_ra_2;
 wire [32*8-1:0] weight_rd_3;
-wire [32*12-1:0] weight_ra_3;
+wire [32*14-1:0] weight_ra_3;
 wire [32*8-1:0] weight_rd_4;
-wire [32*12-1:0] weight_ra_4;
+wire [32*14-1:0] weight_ra_4;
 wire [10*8-1:0] weight_rd_5;
-wire [10*12-1:0] weight_ra_5;
+wire [10*11-1:0] weight_ra_5;
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,1,10,12,28,28,3,3,1) u0 (
+conv2d #(8,32,3,1,6,9,28,28,3,3,1) u0 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_0),
@@ -71,7 +71,7 @@ weight_rom_0 rom0 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,10,12,26,26,3,3,1) u1 (
+conv2d #(8,32,16,32,10,14,26,26,3,3,2) u1 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_1),
@@ -93,7 +93,7 @@ weight_rom_1 rom1 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,10,12,12,12,3,3,1) u2 (
+conv2d #(8,32,13,32,9,14,12,12,3,3,1) u2 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_2),
@@ -115,7 +115,7 @@ weight_rom_2 rom2 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,10,12,10,10,3,3,1) u3 (
+conv2d #(8,32,3,32,11,14,10,10,3,3,2) u3 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_3),
@@ -137,7 +137,7 @@ weight_rom_3 rom3 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,10,12,4,4,3,3,1) u4 (
+conv2d #(8,32,2,32,9,14,4,4,3,3,1) u4 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_4),
@@ -159,7 +159,7 @@ weight_rom_4 rom4 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,10,3,32,10,12,2,2,2,2,1) u5 (
+conv2d #(8,10,1,32,9,11,2,2,2,2,1) u5 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_5),
