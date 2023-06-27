@@ -45,14 +45,21 @@ for j in range(graph.OperatorsLength()):
         #l.waddr = int(np.ceil(np.log2(np.prod(l.wshape)+len(l.bias)/l.oshape[-1])))
         l.wdepth = np.prod(l.wshape)+len(l.bias)//l.oshape[-1] # TODO assumes int8 TDATA
         l.waddr = int(np.ceil(np.log2(l.wdepth)))
-        rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
-        nmac = np.ceil(rate/args.clk)
+        l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
+        l.nmac = np.ceil(l.rate/args.clk)
         #print('j',j,'rate',rate,'nmac',nmac)
         #print(((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride)), l.wshape[-1]*l.wshape[-2]*l.wshape[-3])
-        l.nstripe = int(np.ceil(nmac/l.oshape[-1]))
+        l.nstripe = int(np.ceil(l.nmac/l.oshape[-1]))
         #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
         l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
         layers.append(l)
+        #print('layer {:4d} nstripe {:4d} sdepth {:6d} wdepth {:6d} stride {:4d} rate {:6.3e} nmac {:6.0f}\n\tishape {} oshape {} wshape {} bshape {}'.format(
+        print('layer {:4d} nstripe {:4d} stride {:4d} sdepth {:6d} wdepth {:6d} rate {:6.3e} nmac {:6.0f} shapes {} {} {} {}'.format(
+            j,l.nstripe,l.stride,l.sdepth,l.wdepth,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape))
+        #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
+print('\ntotal stripe RAM bits {:9d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.tdata for l in layers])))
+print('total weight RAM bits {:9d}'.format(sum([l.wdepth*l.oshape[-1]*args.tdata for l in layers])))
+print('total MAC instances {:6.0f}'.format(sum([l.nmac for l in layers])))
 
 # top level module
 s=''
