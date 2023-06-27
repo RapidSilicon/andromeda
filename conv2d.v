@@ -3,8 +3,8 @@ module conv2d #(
     parameter OCHAN=8,     // number of output channels, evaluated in parallel
     parameter NSTRIPE=3,   // number of vertical stripes to evaluate in parallel
     parameter ICHAN=8,     // number of input channels
-    parameter SADDR=12,     // stripe data input buffer address width
-    parameter WADDR=10,     // weight ROM address width
+    parameter SDEPTH=1024,    // stripe data input buffer depth, address width = $clog2(SDEPTH)
+    parameter WDEPTH=1024,     // weight ROM depth
     parameter IWIDTH=28,    // input tensor width
     parameter IHEIGHT=28,   // input tensor height
     parameter KWIDTH=3,     // filter kernel width
@@ -14,7 +14,7 @@ module conv2d #(
     input wire clk,
     input wire reset,
     input wire [OCHAN*TDATA-1:0] weight_rd,
-    output [OCHAN*WADDR-1:0] weight_ra,
+    output [OCHAN*$clog2(WDEPTH)-1:0] weight_ra,
     input wire [ICHAN*TDATA-1:0] s_axis_data,
     input wire s_axis_tvalid,
     input wire s_axis_tlast,
@@ -27,13 +27,13 @@ module conv2d #(
 
 wire [2:0] dsp_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
 wire [31:0] dsp_arg; // m0 = normalized scaling factor, 0.5 to 1.0
-wire [NSTRIPE*SADDR-1:0] stripe_wa;
+wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
-wire [NSTRIPE*SADDR-1:0] stripe_ra;
+wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra;
 wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
 wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 
-conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SADDR) u0 (
+conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),
@@ -48,7 +48,7 @@ conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SADDR) u0 (
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(TDATA,OCHAN,NSTRIPE,ICHAN,SADDR,WADDR,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE) u1 (
+conv2d_ctrl #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE) u1 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),

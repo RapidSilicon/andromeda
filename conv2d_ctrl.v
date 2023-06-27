@@ -4,8 +4,8 @@ module conv2d_ctrl #(
     parameter OCHAN=64,     // number of output channels, evaluated in parallel
     parameter NSTRIPE=16,   // number of vertical stripes to evaluate in parallel
     parameter ICHAN=64,     // number of input channels
-    parameter SADDR=12,     // stripe data input buffer address width
-    parameter WADDR=10,     // weight ROM address width
+    parameter SDEPTH=1024,     // stripe data input buffer address width
+    parameter WDEPTH=1024,     // weight ROM address width
     parameter IWIDTH=28,    // input tensor width
     parameter IHEIGHT=28,   // input tensor height
     parameter KWIDTH=3,     // filter kernel width
@@ -15,9 +15,9 @@ module conv2d_ctrl #(
     input clk, reset,
     output reg [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     output reg [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
-    output reg [NSTRIPE*SADDR-1:0] stripe_wa,
+    output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
-    output reg [NSTRIPE*SADDR-1:0] stripe_ra,
+    output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
@@ -26,11 +26,11 @@ module conv2d_ctrl #(
     output m_axis_tvalid,
     output m_axis_tlast,
     input m_axis_tready,
-    output reg [OCHAN*WADDR-1:0] weight_ra
+    output reg [OCHAN*$clog2(WDEPTH)-1:0] weight_ra
 );
 
 // dummy implementation
-reg [SADDR-1:0] sa0,sa1;
+reg [$clog2(SDEPTH)-1:0] sa0,sa1;
 always @(posedge clk) begin
     if (reset) begin
         dsp_op <= 'd0;

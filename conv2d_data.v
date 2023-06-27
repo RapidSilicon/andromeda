@@ -1,11 +1,11 @@
 // conv2d.v data path
-module conv2d_data #(parameter TDATA=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SADDR=12) (
+module conv2d_data #(parameter TDATA=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024) (
     input clk, reset,
     input [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     input [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
-    input [NSTRIPE*SADDR-1:0] stripe_wa,
+    input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
-    input [NSTRIPE*SADDR-1:0] stripe_ra,
+    input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
     input wire [OCHAN*TDATA-1:0] weight_rd, // data from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
@@ -16,7 +16,7 @@ genvar i,j;
 integer k,m;
 
 // padded stripes TDP BRAM state
-reg [ICHAN*TDATA-1:0] stripe [NSTRIPE-1:0][2**SADDR-1:0];
+reg [ICHAN*TDATA-1:0] stripe [NSTRIPE-1:0][SDEPTH-1:0];
 reg [ICHAN*TDATA-1:0] stripe_rd [NSTRIPE-1:0];
 reg [ICHAN*TDATA-1:0] stripe_rq [NSTRIPE-1:0];
 
@@ -25,7 +25,7 @@ generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
             if(stripe_wen[i])
-                stripe[i][stripe_wa[i*SADDR +: SADDR]] <= tdata_i;
+                stripe[i][stripe_wa[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]] <= tdata_i;
         end
     end
 endgenerate
@@ -34,7 +34,7 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
-            stripe_rd[i] <= stripe[i][stripe_ra[i*SADDR +: SADDR]];
+            stripe_rd[i] <= stripe[i][stripe_ra[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]];
             stripe_rq[i] <= stripe_rd[i]; // pipeline register
         end
     end
