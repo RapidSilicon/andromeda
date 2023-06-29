@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('--model', help='flatbuffer model name',default='mnist_model')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
-parser.add_argument('--tdata', help='dtype width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
 args = parser.parse_args()
 print(args)
 
@@ -43,7 +43,7 @@ for j in range(graph.OperatorsLength()):
         #else:
         #    l.stride = 1
         #l.waddr = int(np.ceil(np.log2(np.prod(l.wshape)+len(l.bias)/l.oshape[-1])))
-        l.wdepth = np.prod(l.wshape)+len(l.bias)//l.oshape[-1] # TODO assumes int8 TDATA
+        l.wdepth = (np.prod(l.wshape)+len(l.bias))//l.oshape[-1] # TODO assumes int8 DTYPE
         l.waddr = int(np.ceil(np.log2(l.wdepth)))
         l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
         l.nmac = np.ceil(l.rate/args.clk)
@@ -51,33 +51,35 @@ for j in range(graph.OperatorsLength()):
         #print(((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride)), l.wshape[-1]*l.wshape[-2]*l.wshape[-3])
         l.nstripe = int(np.ceil(l.nmac/l.oshape[-1]))
         #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
-        l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
+        #l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
+        l.sdepth = int(np.ceil(l.ishape[-2]/l.nstripe)*l.ishape[-1]*(l.wshape[-3]+l.stride))
         layers.append(l)
         #print('layer {:4d} nstripe {:4d} sdepth {:6d} wdepth {:6d} stride {:4d} rate {:6.3e} nmac {:6.0f}\n\tishape {} oshape {} wshape {} bshape {}'.format(
         print('layer {:4d} nstripe {:4d} stride {:4d} sdepth {:6d} wdepth {:6d} rate {:6.3e} nmac {:6.0f} shapes {} {} {} {}'.format(
             j,l.nstripe,l.stride,l.sdepth,l.wdepth,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape))
         #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
-print('\ntotal stripe RAM bits {:9d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.tdata for l in layers])))
-print('total weight RAM bits {:9d}'.format(sum([l.wdepth*l.oshape[-1]*args.tdata for l in layers])))
-print('total MAC instances {:6.0f}'.format(sum([l.nmac for l in layers])))
+print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
+print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.dtype for l in layers])))
+print('total required MAC units {:12.0f}'.format(sum([l.nmac for l in layers])))
+print('total used MAC units {:12.0f}'.format(sum([l.nstripe*l.oshape[-1] for l in layers])))
 
 # top level module
 s=''
 s+='module {} (\n'.format(args.model)
 s+='    input wire clk,\n'
 s+='    input wire reset,\n'
-s+='    input wire [{}*{}-1:0] s_axis_data,\n'.format(layers[0].ishape[-1], args.tdata)
+s+='    input wire [{}*{}-1:0] s_axis_data,\n'.format(layers[0].ishape[-1], args.dtype)
 s+='    input wire s_axis_tvalid,\n'
 s+='    input wire s_axis_tlast,\n'
 s+='    output wire s_axis_tready,\n'
-s+='    output wire [{}*{}-1:0] m_axis_data,\n'.format(layers[-1].oshape[-1], args.tdata)
+s+='    output wire [{}*{}-1:0] m_axis_data,\n'.format(layers[-1].oshape[-1], args.dtype)
 s+='    output wire m_axis_tvalid,\n'
 s+='    output wire m_axis_tlast,\n'
 s+='    input wire m_axis_tready\n'
 s+=');\n\n'
 
 for j,l in enumerate(layers):
-    s+='wire [{}*{}-1:0] axis_data_{};\n'.format(l.oshape[-1], args.tdata,j+1)
+    s+='wire [{}*{}-1:0] axis_data_{};\n'.format(l.oshape[-1], args.dtype,j+1)
     
 for j,l in enumerate(layers):
     s+='wire axis_tvalid_{};\n'.format(j)
@@ -85,14 +87,14 @@ for j,l in enumerate(layers):
     s+='wire axis_tready_{};\n'.format(j)
     
 for j,l in enumerate(layers):
-    s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.tdata,j)
+    s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.dtype,j)
     s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(l.oshape[-1], l.waddr,j)
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)\n'
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE\n'
     s+='conv2d #({},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.tdata, l.oshape[-1], l.nstripe, l.ishape[-1], l.sdepth, l.wdepth, l.ishape[-2], l.ishape[-3], l.wshape[-2], l.wshape[-3], l.stride, j)
+        args.dtype,l.nstripe,l.sdepth,l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
@@ -135,11 +137,11 @@ for j,l in enumerate(layers):
     w+='module weight_rom_{} (clk, addr, data);\n'.format(j)
     w+='input clk;\n'
     w+='input [{}*{}-1:0] addr;\n'.format(l.oshape[-1], l.waddr)
-    w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.tdata)
+    w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.dtype)
     w+='\n'
     for i in range(l.oshape[-1]):
-        #w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
-        w+='(*rom_style = "distributed" *) reg [{}:0] data_{};\n'.format(args.tdata-1,i)
+        #w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.dtype-1,i)
+        w+='(*rom_style = "distributed" *) reg [{}:0] data_{};\n'.format(args.dtype-1,i)
         w+='always @(posedge clk)\n'
         w+='begin\n'
         w+='case(addr[{}:{}])\n'.format(i*l.waddr+l.waddr-1,i*l.waddr)
@@ -153,8 +155,8 @@ for j,l in enumerate(layers):
         w+='default: data_{} <= \'bx;\n'.format(i)
         w+='endcase\n'
         w+='end\n'
-        w+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
-        #s+='assign data[{}:{}] = data_{};\n'.format(i*args.tdata+args.tdata-1,i*args.tdata,i)
+        w+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
+        #s+='assign data[{}:{}] = data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
         w+='\n'
     w+='endmodule\n'
     w+='\n'

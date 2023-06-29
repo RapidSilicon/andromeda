@@ -1,25 +1,27 @@
 module conv2d #(
-    parameter TDATA=8,      // width of model dtype (int8, bfloat16)
-    parameter OCHAN=8,     // number of output channels, evaluated in parallel
+    parameter DTYPE=8,      // width of model dtype (int8, bfloat16)
     parameter NSTRIPE=3,   // number of vertical stripes to evaluate in parallel
-    parameter ICHAN=8,     // number of input channels
     parameter SDEPTH=1024,    // stripe data input buffer depth, address width = $clog2(SDEPTH)
     parameter WDEPTH=1024,     // weight ROM depth
-    parameter IWIDTH=28,    // input tensor width
     parameter IHEIGHT=28,   // input tensor height
-    parameter KWIDTH=3,     // filter kernel width
+    parameter IWIDTH=28,    // input tensor width
+    parameter ICHAN=8,     // number of input channels
+    parameter OHEIGHT=21,   // output tensor height
+    parameter OWIDTH=26,    // output tensor width
+    parameter OCHAN=8,     // number of output channels, evaluated in parallel
     parameter KHEIGHT=3,    // filter kernel height
+    parameter KWIDTH=3,     // filter kernel width
     parameter STRIDE=1     // x and y stride
 ) (
     input wire clk,
     input wire reset,
-    input wire [OCHAN*TDATA-1:0] weight_rd,
+    input wire [OCHAN*DTYPE-1:0] weight_rd,
     output [OCHAN*$clog2(WDEPTH)-1:0] weight_ra,
-    input wire [ICHAN*TDATA-1:0] s_axis_data,
+    input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
     input wire s_axis_tlast,
     output wire s_axis_tready,
-    output wire [OCHAN*TDATA-1:0] m_axis_data,
+    output wire [OCHAN*DTYPE-1:0] m_axis_data,
     output wire m_axis_tvalid,
     output wire m_axis_tlast,
     input wire m_axis_tready
@@ -33,7 +35,7 @@ wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra;
 wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
 wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 
-conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
+conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),
@@ -48,7 +50,7 @@ conv2d_data #(TDATA,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE) u1 (
+conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE) u1 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),

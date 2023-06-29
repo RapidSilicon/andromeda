@@ -1,15 +1,17 @@
 // conv2d.v control path
 module conv2d_ctrl #(
-    parameter TDATA=8,      // width of model dtype (int8, bfloat16)
-    parameter OCHAN=64,     // number of output channels, evaluated in parallel
-    parameter NSTRIPE=16,   // number of vertical stripes to evaluate in parallel
-    parameter ICHAN=64,     // number of input channels
-    parameter SDEPTH=1024,     // stripe data input buffer address width
-    parameter WDEPTH=1024,     // weight ROM address width
-    parameter IWIDTH=28,    // input tensor width
+    parameter DTYPE=8,      // width of model dtype (int8, bfloat16)
+    parameter NSTRIPE=3,   // number of vertical stripes to evaluate in parallel
+    parameter SDEPTH=1024,    // stripe data input buffer depth, address width = $clog2(SDEPTH)
+    parameter WDEPTH=1024,     // weight ROM depth
     parameter IHEIGHT=28,   // input tensor height
-    parameter KWIDTH=3,     // filter kernel width
+    parameter IWIDTH=28,    // input tensor width
+    parameter ICHAN=8,     // number of input channels
+    parameter OHEIGHT=21,   // output tensor height
+    parameter OWIDTH=26,    // output tensor width
+    parameter OCHAN=8,     // number of output channels, evaluated in parallel
     parameter KHEIGHT=3,    // filter kernel height
+    parameter KWIDTH=3,     // filter kernel width
     parameter STRIDE=1     // x and y stride
 ) (
     input clk, reset,
