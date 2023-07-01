@@ -52,13 +52,18 @@ for j in range(graph.OperatorsLength()):
         l.nstripe = int(np.ceil(l.nmac/l.oshape[-1]))
         #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
         #l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
-        l.sdepth = int(np.ceil(l.ishape[-2]/l.nstripe)*l.ishape[-1]*(l.wshape[-3]+l.stride))
+        l.nrow = l.wshape[-3]+l.stride
+        l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
+        l.stripe = np.zeros([l.nrow,l.ncol,l.nstripe,l.ishape[-1]])
+        #print('l.stripe.shape',l.stripe.shape)
+        #l.sdepth = int(np.ceil(l.ishape[-2]/l.nstripe)*l.ishape[-1]*(l.wshape[-3]+l.stride))
         layers.append(l)
         #print('layer {:4d} nstripe {:4d} sdepth {:6d} wdepth {:6d} stride {:4d} rate {:6.3e} nmac {:6.0f}\n\tishape {} oshape {} wshape {} bshape {}'.format(
-        print('layer {:4d} nstripe {:4d} stride {:4d} sdepth {:6d} wdepth {:6d} rate {:6.3e} nmac {:6.0f} shapes {} {} {} {}'.format(
-            j,l.nstripe,l.stride,l.sdepth,l.wdepth,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape))
+        print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:6.0f} shapes {} {} {} {} {}'.format(
+            j,l.nstripe,l.stride,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape,l.stripe.shape))
         #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
-print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
+#print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
+print('\ntotal stripe RAM bits {:12d}'.format(sum([np.prod(l.stripe.shape)*args.dtype for l in layers])))
 print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.dtype for l in layers])))
 print('total required MAC units {:12.0f}'.format(sum([l.nmac for l in layers])))
 print('total used MAC units {:12.0f}'.format(sum([l.nstripe*l.oshape[-1] for l in layers])))
@@ -93,8 +98,8 @@ for j,l in enumerate(layers):
 s+='\n'
 for j,l in enumerate(layers):
     s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.sdepth,l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,j)
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
