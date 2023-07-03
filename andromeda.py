@@ -43,23 +43,40 @@ for j in range(graph.OperatorsLength()):
         #else:
         #    l.stride = 1
         #l.waddr = int(np.ceil(np.log2(np.prod(l.wshape)+len(l.bias)/l.oshape[-1])))
-        l.wdepth = (np.prod(l.wshape)+len(l.bias))//l.oshape[-1] # TODO assumes int8 DTYPE
+        l.wdepth = (np.prod(l.wshape)+len(l.bias))//l.oshape[-1] # TODO assumes int32 DTYPE for bias?
         l.waddr = int(np.ceil(np.log2(l.wdepth)))
-        l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
-        l.nmac = np.ceil(l.rate/args.clk)
+        #l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
+        l.rate = l.oshape[-2]*l.oshape[-3]*args.fps*np.prod(l.wshape)
+        l.nmac = l.rate/args.clk
         #print('j',j,'rate',rate,'nmac',nmac)
         #print(((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride)), l.wshape[-1]*l.wshape[-2]*l.wshape[-3])
-        l.nstripe = int(np.ceil(l.nmac/l.oshape[-1]))
+        l.nstripe = int(np.ceil(l.nmac/l.oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
         #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
         #l.sdepth = (l.ishape[-2]*l.ishape[-1]*(l.wshape[-3]+l.stride)) // l.nstripe
         l.nrow = l.wshape[-3]+l.stride
-        l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
-        l.stripe = np.zeros([l.nrow,l.ncol,l.nstripe,l.ishape[-1]])
+        #l.ncol = int(np.ceil(l.oshape[-2]/l.nstripe))
+        if l.stride==1:
+            l.ncol = int(np.ceil(l.oshape[-2]/l.nstripe))+2
+        elif l.stride==2:
+            l.ncol = int(np.ceil(l.oshape[-2]/l.nstripe))*2+1
+        l.stripe = np.zeros([l.nstripe,l.nrow,l.ncol,l.ishape[-1]])
         #print('l.stripe.shape',l.stripe.shape)
         #l.sdepth = int(np.ceil(l.ishape[-2]/l.nstripe)*l.ishape[-1]*(l.wshape[-3]+l.stride))
+        if l.stride==1:
+            l.overlap=2
+        elif l.stride==2:
+            l.overlap=1
+
+        if j==0:
+            l.prev_ncol = l.ncol
+            l.prev_nstripe = l.nstripe
+        else:
+            l.prev_ncol = layers[-1].ncol
+            l.prev_nstripe = layers[-1].nstripe
+
         layers.append(l)
         #print('layer {:4d} nstripe {:4d} sdepth {:6d} wdepth {:6d} stride {:4d} rate {:6.3e} nmac {:6.0f}\n\tishape {} oshape {} wshape {} bshape {}'.format(
-        print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:6.0f} shapes {} {} {} {} {}'.format(
+        print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:8.2f} shape i {} o {} w {} b {} s {}'.format(
             j,l.nstripe,l.stride,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape,l.stripe.shape))
         #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
 #print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
@@ -97,9 +114,9 @@ for j,l in enumerate(layers):
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,j)
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NCOL,OVERLAP\n'
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.ncol,l.overlap,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)

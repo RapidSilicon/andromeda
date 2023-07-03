@@ -11,7 +11,11 @@ module conv2d #(
     parameter OCHAN=8,     // number of output channels, evaluated in parallel
     parameter KHEIGHT=3,    // filter kernel height
     parameter KWIDTH=3,     // filter kernel width
-    parameter STRIDE=1     // x and y stride
+    parameter STRIDE=1,     // x and y stride
+    parameter PREV_NSTRIPE=1,
+    parameter PREV_SWIDTH=1,
+    parameter NCOL=1,
+    parameter OVERLAP=1
 ) (
     input wire clk,
     input wire reset,
@@ -50,7 +54,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE) u1 (
+conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NCOL,OVERLAP) u1 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),

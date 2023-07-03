@@ -12,7 +12,12 @@ module conv2d_ctrl #(
     parameter OCHAN=8,     // number of output channels, evaluated in parallel
     parameter KHEIGHT=3,    // filter kernel height
     parameter KWIDTH=3,     // filter kernel width
-    parameter STRIDE=1     // x and y stride
+    parameter STRIDE=1,     // x and y stride
+    parameter PREV_NSTRIPE=1,
+    parameter PREV_SWIDTH=1,
+    parameter NCOL=1,
+    parameter OVERLAP=1,
+    parameter SADDR=$clog2(SDEPTH)
 ) (
     input clk, reset,
     output reg [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
@@ -31,13 +36,64 @@ module conv2d_ctrl #(
     output reg [OCHAN*$clog2(WDEPTH)-1:0] weight_ra
 );
 
+reg [31:0] row, col, stripe, scol, icol;
+always @(posedge clk) begin
+    if (reset || s_axis_tlast) begin
+        row <= 'd0;
+        col <= 'd0;
+        stripe <= 'd0;
+        scol <= 'd0;
+    end
+    else if (s_axis_tvalid) begin
+        if (stripe==PREV_NSTRIPE-1) begin
+            stripe <= 'd0;
+            scol <= scol + 'd1;
+        end
+        else begin
+            stripe <= stripe + 'd1;
+        end
+        icol <= stripe*PREV_SWIDTH+scol;
+
+//        for (k=0; k<NSTRIPE; k=k+1) begin
+//            stripe_wa[k*SADDR+SADDR-1:k*SADDR] = icol-k*NCOL;
+//            if ((icol >= k*NCOL) && (icol < k*NCOL+NCOL+OVERLAP))
+//                stripe_wen[k] <= 1'b1;
+//            else
+//                stripe_wen[k] <= 1'b0;
+//        end
+
+        if (col==IWIDTH-1) begin
+            scol <= 'd0;
+            col <= 'd0;
+            row <= row+'d1;
+        end
+        else
+            col <= col+'d1;
+    end
+end
+
+genvar i;
+generate
+    for (i=0;i<NSTRIPE;i=i+1) begin
+        always @ (posedge clk) begin
+            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL;
+            if ((icol >= i*NCOL) && (icol < i*NCOL+NCOL+OVERLAP))
+                stripe_wen[i] <= 1'b1;
+            else
+                stripe_wen[i] <= 1'b0;
+//            if(stripe_wen[i])
+//                stripe[i][stripe_wa[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]] <= tdata_i;
+        end
+    end
+endgenerate
+
 // dummy implementation
 reg [$clog2(SDEPTH)-1:0] sa0,sa1;
 always @(posedge clk) begin
     if (reset) begin
         dsp_op <= 'd0;
         dsp_arg <= 'd12345;
-        stripe_wen <= 'd1;
+        //stripe_wen <= 'd1;
         ichan_sel <= 'd1;
         stripe_sel <= 'd1;
         sa0 <= 'd1;
@@ -48,14 +104,14 @@ always @(posedge clk) begin
         weight_ra <= weight_ra+'d1;
         dsp_op <= dsp_op+'d1;
         dsp_arg <= dsp_arg+'d1;
-        stripe_wen <= (stripe_wen<<1)|stripe_wen[NSTRIPE-1];
+        //stripe_wen <= (stripe_wen<<1)|stripe_wen[NSTRIPE-1];
         ichan_sel <= (ichan_sel<<1)|ichan_sel[ICHAN-1];
         stripe_sel <= (stripe_sel<<1)|stripe_sel[NSTRIPE-1];
         sa0 <= sa0+'d1;
         sa1 <= sa1+'d1;
     end
 end
-assign stripe_wa = {NSTRIPE*{sa0}};
+//assign stripe_wa = {NSTRIPE*{sa0}};
 assign stripe_ra = {NSTRIPE*{sa1}};
 
 endmodule
