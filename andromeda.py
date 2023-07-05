@@ -1,22 +1,29 @@
 import numpy as np ; print('numpy',np.__version__)
-#import tensorflow as tf ; print('tensorflow', tf.__version__)
 #from tensorflow import keras
 #from tensorflow.keras import layers
 import argparse
 import random
 import tflite
+import array
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--model', help='flatbuffer model name',default='mnist_model')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
 parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--analyze', help='run TFLite analyzer',default=False, action='store_true')
+parser.add_argument('--debug', help='verbose output',default=False, action='store_true')
 args = parser.parse_args()
 print(args)
 
 # extract layer graph and weights from tflite file
 class Layer:
     pass
+
+if args.analyze:
+    import tensorflow as tf ; print('tensorflow', tf.__version__)
+    tf.lite.experimental.Analyzer.analyze(model_path='./{}.tflite'.format(args.model))
+    exit()
 
 with open('./{}.tflite'.format(args.model), 'rb') as f:
     buf = f.read()
@@ -25,14 +32,32 @@ with open('./{}.tflite'.format(args.model), 'rb') as f:
 layers=[]
 graph = model.Subgraphs(0)
 for j in range(graph.OperatorsLength()):
+    #print(dir(graph.Tensors(graph.Operators(j).Inputs(1))))
+    #print(dir(graph.Tensors(graph.Operators(j).Inputs(1)).Quantization()))
+    #exit()
     if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONV_2D:
+#        for i in range(3):
+#            print(i,graph.Tensors(graph.Operators(j).Inputs(i)).Quantization().ScaleAsNumpy())
+#            print(i,graph.Tensors(graph.Operators(j).Inputs(i)).Quantization().ZeroPointAsNumpy())
+#        print('output',graph.Tensors(graph.Operators(j).Outputs(i)).Quantization().ScaleAsNumpy())
+#        print('output',graph.Tensors(graph.Operators(j).Outputs(i)).Quantization().ZeroPointAsNumpy())
         l=Layer()
         l.ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
         l.wshape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
         l.bshape = graph.Tensors(graph.Operators(j).Inputs(2)).ShapeAsNumpy()
         l.oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
         l.weight = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(1)).Buffer()).DataAsNumpy().reshape(l.wshape)
-        l.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy()
+        #l.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy().astype(np.int32)
+        l.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy().tobytes()
+        #print('j',j,'bias',l.bias,len(l.bias))
+        l.bias = array.array('i', l.bias)
+        #print('j',j,'bias',l.bias)
+        l.bias = np.array(l.bias, dtype=np.int32)
+        #print('j',j,'bias',l.bias,len(l.bias))
+#        print('weight',l.weight.shape,l.weight.dtype,l.weight)
+#        print('bias',l.bias.shape,l.bias.dtype,l.bias)
+        l.scale = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().ScaleAsNumpy()
+#        print('scale',l.scale.shape,l.scale.dtype,l.scale)
         # DONE: infer stride from oshape/ishape
         # DONE: infer waddr, log2(len(l.weight)+len(l.bias))
         # DONE: infer nstripe using performance calculation for args.fps, args.clk
@@ -48,7 +73,7 @@ for j in range(graph.OperatorsLength()):
         #l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
         l.rate = l.oshape[-2]*l.oshape[-3]*args.fps*np.prod(l.wshape)
         l.nmac = l.rate/args.clk
-        #print('j',j,'rate',rate,'nmac',nmac)
+        #print('j',j,'rate',l.rate,'nmac',l.nmac)
         #print(((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride)), l.wshape[-1]*l.wshape[-2]*l.wshape[-3])
         l.nstripe = int(np.ceil(l.nmac/l.oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
         #l.saddr = int(np.ceil(np.log2(((l.nstripe*2*l.stride+l.ishape[-2])*(l.wshape[-2]+l.stride)*l.ishape[-1])/l.nstripe)))
@@ -82,7 +107,7 @@ for j in range(graph.OperatorsLength()):
 #print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
 print('\ntotal stripe RAM bits {:12d}'.format(sum([np.prod(l.stripe.shape)*args.dtype for l in layers])))
 print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.dtype for l in layers])))
-print('total required MAC units {:12.0f}'.format(sum([l.nmac for l in layers])))
+print('total required MAC units {:12.4f}'.format(sum([l.nmac for l in layers])))
 print('total used MAC units {:12.0f}'.format(sum([l.nstripe*l.oshape[-1] for l in layers])))
 
 # top level module
@@ -111,16 +136,20 @@ for j,l in enumerate(layers):
 for j,l in enumerate(layers):
     s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.dtype,j)
     s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(l.oshape[-1], l.waddr,j)
+    s+='wire [{}*{}-1:0] bias_rd_{};\n'.format(l.oshape[-1], 32,j)
+    s+='wire [{}*{}-1:0] scale_rd_{};\n'.format(l.oshape[-1], 32,j)
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NCOL,OVERLAP\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.ncol,l.overlap,j)
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP\n'
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
     s+='.weight_ra(weight_ra_{}),\n'.format(j)
+    s+='.bias_rd(bias_rd_{}),\n'.format(j)
+    s+='.scale_rd(scale_rd_{}),\n'.format(j)
     if j==0:
         s+='.s_axis_data(s_axis_data),\n'
         s+='.s_axis_tvalid(s_axis_tvalid),\n'
@@ -150,6 +179,17 @@ for j,l in enumerate(layers):
     s+='.addr(weight_ra_{}),\n'.format(j)
     s+='.data(weight_rd_{})\n'.format(j)
     s+=');\n\n'
+
+    s+='// bias_rom\n'
+    s+='bias_rom_{} bias{} (\n'.format(j,j)
+    s+='.data(bias_rd_{})\n'.format(j)
+    s+=');\n\n'
+
+    s+='// scale_rom\n'
+    s+='scale_rom_{} scale{} (\n'.format(j,j)
+    s+='.data(scale_rd_{})\n'.format(j)
+    s+=');\n\n'
+
 s+='endmodule\n'
 
 w=''
@@ -180,6 +220,22 @@ for j,l in enumerate(layers):
         w+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
         #s+='assign data[{}:{}] = data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
         w+='\n'
+    w+='endmodule\n'
+    w+='\n'
+
+    w+='module bias_rom_{} (data);\n'.format(j)
+    w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
+    w+='\n'
+    for i in range(l.oshape[-1]):
+        w+='assign data[{}:{}] = \'d{};\n'.format(i*32+31,i*32,l.bias[i])
+    w+='endmodule\n'
+    w+='\n'
+
+    w+='module scale_rom_{} (data);\n'.format(j)
+    w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
+    w+='\n'
+    for i in range(l.oshape[-1]):
+        w+='assign data[{}:{}] = \'d{};\n'.format(i*32+31,i*32,int(l.scale[i]*pow(2,32)))
     w+='endmodule\n'
     w+='\n'
 

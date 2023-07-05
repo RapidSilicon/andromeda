@@ -4,7 +4,7 @@ read_verilog ../t4_rom.v
 read_verilog -sv ../conv2d_data.v
 read_verilog -sv ../conv2d_ctrl.v
 read_verilog -sv ../conv2d.v
-#read_xdc conv2d_dp.xdc
+read_xdc t4.xdc
 #synth_design -top t4 -part "xc7vx485tffg1761-2"
 synth_design -top t4 -part "xc7vx1140tflg1926-1"
 report_utilization

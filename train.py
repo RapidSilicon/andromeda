@@ -75,10 +75,10 @@ tf.lite.experimental.Analyzer.analyze(model_content=tflite_model)
 
 tflite_models_dir = pathlib.Path("./")
 tflite_models_dir.mkdir(exist_ok=True, parents=True)
-tflite_model_file = tflite_models_dir/"mnist_model.tflite"
+tflite_model_file = tflite_models_dir/"mnist.tflite"
 tflite_model_file.write_bytes(tflite_model)
 
-interpreter = tf.lite.Interpreter(model_path='./mnist_model.tflite')
+interpreter = tf.lite.Interpreter(model_path='./mnist.tflite')
 print(dir(interpreter))
 interpreter.allocate_tensors()
 print(interpreter.get_input_details())

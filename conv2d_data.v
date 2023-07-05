@@ -7,6 +7,8 @@ module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64
     input [NSTRIPE-1:0] stripe_wen,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
     input wire [OCHAN*DTYPE-1:0] weight_rd, // data from ROM
+    input wire [OCHAN*32-1:0] bias_rd, // int32 from ROM
+    input wire [OCHAN*32-1:0] scale_rd, // int32 from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input [ICHAN*DTYPE-1:0] tdata_i,
@@ -59,16 +61,22 @@ endgenerate
 //wire [DTYPE*OCHAN-1:0] weight_rd;
 //weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
 wire [DTYPE-1:0] weight [OCHAN-1:0];
+wire [32-1:0] bias [OCHAN-1:0];
+wire [32-1:0] scale [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
+    begin
         assign weight[i] = weight_rd[i*DTYPE +: DTYPE];
+        assign bias[i] = bias_rd[i*32 +: 32];
+        assign scale[i] = scale_rd[i*32 +: 32];
+    end
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
-reg signed [31:0] mult [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [15:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [15:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [DTYPE-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
@@ -92,9 +100,11 @@ generate
                 case (dsp_op)
                     'd0 : reg_z[i][j] <= reg_z[i][j];
                     'd1 : reg_z[i][j] <= acc[i][j];
-                    'd2 : reg_z[i][j] <= reg_z[i][j][31:24];
+                    'd2 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
                     'd3 : reg_z[i][j] <= 'b0;
-                    //'d4 : reg_z[i][j] <= saturate/shift/round
+                    'd4 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
+                    'd5 : reg_z[i][j] <= reg_z[i][j][31:16] * scale[j][31:16]; // int16*uint16
+                    'd6 : reg_z[i][j] <= reg_z[i][j] >> 16;
                     default : reg_z[i][j] <= 'bx;
                 endcase
             end

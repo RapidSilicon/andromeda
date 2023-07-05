@@ -15,6 +15,7 @@ module conv2d_ctrl #(
     parameter STRIDE=1,     // x and y stride
     parameter PREV_NSTRIPE=1,
     parameter PREV_SWIDTH=1,
+    parameter NROW=1,
     parameter NCOL=1,
     parameter OVERLAP=1,
     parameter SADDR=$clog2(SDEPTH)
@@ -33,16 +34,18 @@ module conv2d_ctrl #(
     output m_axis_tvalid,
     output m_axis_tlast,
     input m_axis_tready,
-    output reg [OCHAN*$clog2(WDEPTH)-1:0] weight_ra
+    output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
-reg [31:0] row, col, stripe, scol, icol;
+reg [31:0] row, col, stripe, srow, scol, icol;
+reg start_dot, start_alu, start_emit;
 always @(posedge clk) begin
     if (reset || s_axis_tlast) begin
         row <= 'd0;
         col <= 'd0;
         stripe <= 'd0;
         scol <= 'd0;
+        srow <= 'd0;
     end
     else if (s_axis_tvalid) begin
         if (stripe==PREV_NSTRIPE-1) begin
@@ -54,21 +57,20 @@ always @(posedge clk) begin
         end
         icol <= stripe*PREV_SWIDTH+scol;
 
-//        for (k=0; k<NSTRIPE; k=k+1) begin
-//            stripe_wa[k*SADDR+SADDR-1:k*SADDR] = icol-k*NCOL;
-//            if ((icol >= k*NCOL) && (icol < k*NCOL+NCOL+OVERLAP))
-//                stripe_wen[k] <= 1'b1;
-//            else
-//                stripe_wen[k] <= 1'b0;
-//        end
-
         if (col==IWIDTH-1) begin
+            start_dot <= 1'b1;
             scol <= 'd0;
             col <= 'd0;
             row <= row+'d1;
+            if (srow==NROW-1)
+                srow <= 'd0;
+            else
+                srow <= srow+'d1;
         end
-        else
+        else begin
             col <= col+'d1;
+            start_dot <= 1'b0;
+        end
     end
 end
 
@@ -76,13 +78,11 @@ genvar i;
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
-            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL;
+            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL+srow*NCOL;
             if ((icol >= i*NCOL) && (icol < i*NCOL+NCOL+OVERLAP))
                 stripe_wen[i] <= 1'b1;
             else
                 stripe_wen[i] <= 1'b0;
-//            if(stripe_wen[i])
-//                stripe[i][stripe_wa[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]] <= tdata_i;
         end
     end
 endgenerate

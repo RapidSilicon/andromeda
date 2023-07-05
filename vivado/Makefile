@@ -1,4 +1,5 @@
 default:
+	#vivado -log mnist.log -mode tcl -source mnist.tcl
 	vivado -log t4.log -mode tcl -source t4.tcl
 	#vivado -log t3.log -mode tcl -source t3.tcl
 	#vivado -log mnist_model.log -mode tcl -source mnist_model.tcl

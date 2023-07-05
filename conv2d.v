@@ -14,13 +14,16 @@ module conv2d #(
     parameter STRIDE=1,     // x and y stride
     parameter PREV_NSTRIPE=1,
     parameter PREV_SWIDTH=1,
+    parameter NROW=1,
     parameter NCOL=1,
     parameter OVERLAP=1
 ) (
     input wire clk,
     input wire reset,
     input wire [OCHAN*DTYPE-1:0] weight_rd,
-    output [OCHAN*$clog2(WDEPTH)-1:0] weight_ra,
+    output [$clog2(WDEPTH)-1:0] weight_ra,
+    input wire [OCHAN*32-1:0] bias_rd,
+    input wire [OCHAN*32-1:0] scale_rd,
     input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
     input wire s_axis_tlast,
@@ -48,13 +51,15 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .stripe_wen(stripe_wen),
     .stripe_ra(stripe_ra),
     .weight_rd(weight_rd),
+    .bias_rd(bias_rd),
+    .scale_rd(scale_rd),
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
     .tdata_i(s_axis_data),
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NCOL,OVERLAP) u1 (
+conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP) u1 (
     .clk(clk),
     .reset(reset),
     .dsp_op(dsp_op),
