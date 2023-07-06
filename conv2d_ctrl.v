@@ -29,15 +29,14 @@ module conv2d_ctrl #(
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
-    input s_axis_tlast,
-    output reg s_axis_tready,
+    input s_axis_tlast, // unused (?)
+    output reg s_axis_tready, // not required
     output reg m_axis_tvalid,
     output reg m_axis_tlast,
-    input m_axis_tready,
+    input m_axis_tready, // not required
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
-//reg [31:0] row, col, stripe, srow, scol, icol;
 reg [$clog2(IHEIGHT)-1:0] row;
 reg [$clog2(IWIDTH)-1:0] col;
 reg [$clog2(PREV_NSTRIPE)-1:0] stripe;
@@ -45,6 +44,8 @@ reg [$clog2(NROW)-1:0] srow;
 reg [$clog2(NCOL)-1:0] scol;
 reg [$clog2(IWIDTH)-1:0] icol;
 reg start_dot, start_alu;
+
+// write incoming features into the stripe buffers
 always @(posedge clk) begin
     if (reset) begin
         row <= 'd0;
@@ -172,34 +173,40 @@ reg [$clog2(NSTRIPE)-1:0] os; // process output stripes sequentially
 localparam ALU_IDLE = 'd0;
 localparam ALU_1 = 'd1;
 localparam ALU_2 = 'd2;
-localparam ALU_ITER = 'd3;
+localparam ALU_3 = 'd3;
+localparam ALU_ITER = 'd4;
 always @(posedge clk) begin
     if (reset) begin
         alu_state <= 'd0;
-        m_axis_tvalid <= 1'b0;
     end
     else begin
         case (alu_state)
         ALU_IDLE: begin
             m_axis_tvalid <= 1'b0;
             os <= 'd0;
-            if (start_alu) begin
+            alu_op <= 'd0;
+            if (start_alu)
                 alu_state <= ALU_1;
-            end
         end
         ALU_1: begin
             m_axis_tvalid <= 1'b0;
             stripe_sel <= 1'b1 << os;
-            alu_op <= 'd2;
+            alu_op <= 'd0;
             alu_state <= ALU_2;
         end
         ALU_2: begin
             m_axis_tvalid <= 1'b0;
-            alu_op <= 'd3;
+            alu_op <= 'd1;
+            alu_state <= ALU_3;
+        end
+        ALU_3: begin
+            m_axis_tvalid <= 1'b0;
+            alu_op <= 'd2;
             alu_state <= ALU_ITER;
         end
         ALU_ITER: begin
             m_axis_tvalid <= 1'b1;
+            alu_op <= 'd3;
             if (os==NSTRIPE-1)
                 alu_state <= ALU_IDLE;
             else begin
@@ -212,39 +219,5 @@ always @(posedge clk) begin
         endcase
     end
 end
-
-// dummy implementation
-always @(posedge clk) begin
-     m_axis_tlast <= 1'b0;
-     s_axis_tready <= 1'b1;
-end
-
-/*
-//reg [$clog2(SDEPTH)-1:0] sa0,sa1;
-always @(posedge clk) begin
-    if (reset) begin
-        //clr_acc <= 1'b0;
-        alu_op <= 'd0;
-        //stripe_wen <= 'd1;
-        //ichan_sel <= 'd1;
-        stripe_sel <= 'd1;
-        //sa0 <= 'd1;
-        //sa1 <= 'd2;
-        //weight_ra <= 'd1;
-    end
-    else begin
-        //clr_acc <= ~clr_acc;
-        //weight_ra <= weight_ra+'d1;
-        alu_op <= alu_op+'d1;
-        //stripe_wen <= (stripe_wen<<1)|stripe_wen[NSTRIPE-1];
-        //ichan_sel <= (ichan_sel<<1)|ichan_sel[ICHAN-1];
-        stripe_sel <= (stripe_sel<<1)|stripe_sel[NSTRIPE-1];
-        //sa0 <= sa0+'d1;
-        //sa1 <= sa1+'d1;
-    end
-end
-//assign stripe_wa = {NSTRIPE*{sa0}};
-//assign stripe_ra = {NSTRIPE*{sa1}};
-*/
 
 endmodule

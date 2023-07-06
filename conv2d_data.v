@@ -98,14 +98,18 @@ generate
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
                 case (alu_op)
-                    'd0 : reg_z[i][j] <= reg_z[i][j];
-                    'd1 : reg_z[i][j] <= acc[i][j];
-                    'd2 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
-                    'd3 : reg_z[i][j] <= 'b0;
-                    'd4 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
+                    'd0 : reg_z[i][j] <= acc[i][j];
+                    'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
+                    'd2 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
+                    'd3 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
+                    //'d0 : reg_z[i][j] <= reg_z[i][j];
+                    //'d1 : reg_z[i][j] <= acc[i][j];
+                    //'d2 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
+                    //'d3 : reg_z[i][j] <= 'b0;
+                    //'d4 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
                     //'d5 : reg_z[i][j] <= reg_z[i][j][31:16] * scale[j][31:16]; // int16*uint16
-                    'd5 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
-                    'd6 : reg_z[i][j] <= reg_z[i][j] >> 16;
+                    //'d5 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
+                    //'d6 : reg_z[i][j] <= reg_z[i][j] >> 16;
                     default : reg_z[i][j] <= 'bx;
                 endcase
             end
@@ -133,7 +137,7 @@ generate
         always @(posedge clk) begin
             tdata_o[j*DTYPE +: DTYPE] = 0;
             for (m=0;m<NSTRIPE;m=m+1) begin
-                tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j] & stripe_sel[m];
+                tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j][31:32-DTYPE] & stripe_sel[m];
             end
         end
     end
