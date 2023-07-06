@@ -34,8 +34,8 @@ module conv2d #(
     input wire m_axis_tready
 );
 
-wire [2:0] dsp_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
-wire [31:0] dsp_arg; // m0 = normalized scaling factor, 0.5 to 1.0
+wire clr_acc;
+wire [2:0] alu_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra;
@@ -45,8 +45,8 @@ wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
     .clk(clk),
     .reset(reset),
-    .dsp_op(dsp_op),
-    .dsp_arg(dsp_arg),
+    .clr_acc(clr_acc),
+    .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),
     .stripe_ra(stripe_ra),
@@ -62,8 +62,8 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
 conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP) u1 (
     .clk(clk),
     .reset(reset),
-    .dsp_op(dsp_op),
-    .dsp_arg(dsp_arg),
+    .clr_acc(clr_acc),
+    .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),
     .stripe_ra(stripe_ra),

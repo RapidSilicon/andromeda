@@ -68,7 +68,8 @@ for j in range(graph.OperatorsLength()):
         #else:
         #    l.stride = 1
         #l.waddr = int(np.ceil(np.log2(np.prod(l.wshape)+len(l.bias)/l.oshape[-1])))
-        l.wdepth = (np.prod(l.wshape)+len(l.bias))//l.oshape[-1] # TODO assumes int32 DTYPE for bias?
+        #l.wdepth = (np.prod(l.wshape)+len(l.bias))//l.oshape[-1] # TODO assumes int32 DTYPE for bias?
+        l.wdepth = np.prod(l.wshape)//l.oshape[-1]
         l.waddr = int(np.ceil(np.log2(l.wdepth)))
         #l.rate = ((l.ishape[-2]*l.ishape[-3]*args.fps)/(l.stride*l.stride))*l.wshape[-1]*l.wshape[-2]*l.wshape[-3]*l.oshape[-1]
         l.rate = l.oshape[-2]*l.oshape[-3]*args.fps*np.prod(l.wshape)
@@ -135,7 +136,7 @@ for j,l in enumerate(layers):
     
 for j,l in enumerate(layers):
     s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.dtype,j)
-    s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(l.oshape[-1], l.waddr,j)
+    s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(1, l.waddr,j)
     s+='wire [{}*{}-1:0] bias_rd_{};\n'.format(l.oshape[-1], 32,j)
     s+='wire [{}*{}-1:0] scale_rd_{};\n'.format(l.oshape[-1], 32,j)
  

@@ -1,8 +1,8 @@
 // conv2d.v data path
 module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024) (
     input clk, reset,
-    input [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
-    input [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
+    input clr_acc,
+    input [2:0] alu_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
@@ -82,7 +82,7 @@ generate
         for (j=0;j<OCHAN;j=j+1) begin
             always @(posedge clk) begin
                 mult[i][j] <= reg_a[i][j] * reg_b[i][j];
-                if (dsp_op=='d3)
+                if (clr_acc)
                     acc[i][j] <= 'd0;
                 else
                     acc[i][j] <= mult[i][j] + acc[i][j];
@@ -97,13 +97,14 @@ generate
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
-                case (dsp_op)
+                case (alu_op)
                     'd0 : reg_z[i][j] <= reg_z[i][j];
                     'd1 : reg_z[i][j] <= acc[i][j];
                     'd2 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
                     'd3 : reg_z[i][j] <= 'b0;
                     'd4 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
-                    'd5 : reg_z[i][j] <= reg_z[i][j][31:16] * scale[j][31:16]; // int16*uint16
+                    //'d5 : reg_z[i][j] <= reg_z[i][j][31:16] * scale[j][31:16]; // int16*uint16
+                    'd5 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
                     'd6 : reg_z[i][j] <= reg_z[i][j] >> 16;
                     default : reg_z[i][j] <= 'bx;
                 endcase

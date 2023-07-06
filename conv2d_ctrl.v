@@ -21,8 +21,8 @@ module conv2d_ctrl #(
     parameter SADDR=$clog2(SDEPTH)
 ) (
     input clk, reset,
-    output reg [2:0] dsp_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
-    output reg [31:0] dsp_arg, // m0 = normalized scaling factor, 0.5 to 1.0
+    output reg clr_acc,
+    output reg [2:0] alu_op, // 0=NOP, 
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
@@ -46,6 +46,7 @@ always @(posedge clk) begin
         stripe <= 'd0;
         scol <= 'd0;
         srow <= 'd0;
+        start_dot <= 1'b0;
     end
     else if (s_axis_tvalid) begin
         if (stripe==PREV_NSTRIPE-1) begin
@@ -87,23 +88,55 @@ generate
     end
 endgenerate
 
+// FSM
+reg [7:0] state;
+reg [31:0] vi, vk; 
+always @(posedge clk) begin
+    if (reset) begin
+        state <= 'd0;
+        weight_ra <= 'd0;
+        clr_acc <= 1'b0;
+    end
+    else begin
+        case (state)
+        'd0: begin
+            if (start_dot) begin
+                state <= 'd1;
+                clr_acc <= 1'b1;
+                vi <= srow;
+                vk <= 'd0;
+            end
+        end
+        'd1: begin
+            stripe_ra <= vi*NCOL+vk;
+            clr_acc <= 1'b0;
+            weight_ra <= weight_ra+'d1;
+            if (vk==NCOL-1)
+                state <= 'd0;
+            else
+                vk <= vk+'d1;
+        end
+        endcase
+    end
+end
+
 // dummy implementation
 reg [$clog2(SDEPTH)-1:0] sa0,sa1;
 always @(posedge clk) begin
     if (reset) begin
-        dsp_op <= 'd0;
-        dsp_arg <= 'd12345;
+        //clr_acc <= 1'b0;
+        alu_op <= 'd0;
         //stripe_wen <= 'd1;
         ichan_sel <= 'd1;
         stripe_sel <= 'd1;
         sa0 <= 'd1;
         sa1 <= 'd2;
-        weight_ra <= 'd1;
+        //weight_ra <= 'd1;
     end
     else begin
-        weight_ra <= weight_ra+'d1;
-        dsp_op <= dsp_op+'d1;
-        dsp_arg <= dsp_arg+'d1;
+        //clr_acc <= ~clr_acc;
+        //weight_ra <= weight_ra+'d1;
+        alu_op <= alu_op+'d1;
         //stripe_wen <= (stripe_wen<<1)|stripe_wen[NSTRIPE-1];
         ichan_sel <= (ichan_sel<<1)|ichan_sel[ICHAN-1];
         stripe_sel <= (stripe_sel<<1)|stripe_sel[NSTRIPE-1];
@@ -112,6 +145,6 @@ always @(posedge clk) begin
     end
 end
 //assign stripe_wa = {NSTRIPE*{sa0}};
-assign stripe_ra = {NSTRIPE*{sa1}};
+//assign stripe_ra = {NSTRIPE*{sa1}};
 
 endmodule
