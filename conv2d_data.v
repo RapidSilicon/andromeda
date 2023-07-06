@@ -5,7 +5,7 @@ module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64
     input [2:0] alu_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
-    input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
+    input [$clog2(SDEPTH)-1:0] stripe_ra,
     input wire [OCHAN*DTYPE-1:0] weight_rd, // data from ROM
     input wire [OCHAN*32-1:0] bias_rd, // int32 from ROM
     input wire [OCHAN*32-1:0] scale_rd, // int32 from ROM
@@ -36,7 +36,7 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
-            stripe_rd[i] <= stripe[i][stripe_ra[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]];
+            stripe_rd[i] <= stripe[i][stripe_ra];
             stripe_rq[i] <= stripe_rd[i]; // pipeline register
         end
     end
@@ -72,9 +72,9 @@ generate for (i=0;i<OCHAN;i=i+1)
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
-reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
 reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [DTYPE-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 generate

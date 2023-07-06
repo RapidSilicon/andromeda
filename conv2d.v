@@ -38,7 +38,7 @@ wire clr_acc;
 wire [2:0] alu_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
-wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra;
+wire [$clog2(SDEPTH)-1:0] stripe_ra;
 wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
 wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 

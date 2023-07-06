@@ -25,22 +25,28 @@ module conv2d_ctrl #(
     output reg [2:0] alu_op, // 0=NOP, 
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
-    output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_ra,
+    output reg [$clog2(SDEPTH)-1:0] stripe_ra,
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
     input s_axis_tlast,
-    output s_axis_tready,
-    output m_axis_tvalid,
-    output m_axis_tlast,
+    output reg s_axis_tready,
+    output reg m_axis_tvalid,
+    output reg m_axis_tlast,
     input m_axis_tready,
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
-reg [31:0] row, col, stripe, srow, scol, icol;
-reg start_dot, start_alu, start_emit;
+//reg [31:0] row, col, stripe, srow, scol, icol;
+reg [$clog2(IHEIGHT)-1:0] row;
+reg [$clog2(IWIDTH)-1:0] col;
+reg [$clog2(PREV_NSTRIPE)-1:0] stripe;
+reg [$clog2(NROW)-1:0] srow;
+reg [$clog2(NCOL)-1:0] scol;
+reg [$clog2(IWIDTH)-1:0] icol;
+reg start_dot, start_alu;
 always @(posedge clk) begin
-    if (reset || s_axis_tlast) begin
+    if (reset) begin
         row <= 'd0;
         col <= 'd0;
         stripe <= 'd0;
@@ -60,9 +66,22 @@ always @(posedge clk) begin
 
         if (col==IWIDTH-1) begin
             start_dot <= 1'b1;
-            scol <= 'd0;
             col <= 'd0;
-            row <= row+'d1;
+            if (row==IHEIGHT-1) begin
+                m_axis_tlast <= 1'b1;
+                row <= 'd0;
+                col <= 'd0;
+                stripe <= 'd0;
+                scol <= 'd0;
+                srow <= 'd0;
+                start_dot <= 1'b0;
+            end
+            else begin
+                row <= row+'d1;
+                m_axis_tlast <= 1'b0;
+            end
+
+            scol <= 'd0;
             if (srow==NROW-1)
                 srow <= 'd0;
             else
@@ -88,49 +107,129 @@ generate
     end
 endgenerate
 
-// FSM
-reg [7:0] state;
-reg [31:0] vi, vk; 
+// dot product FSM
+reg [2:0] state;
+reg [$clog2(KHEIGHT)-1:0] ky;
+reg [$clog2(KWIDTH)-1:0] kx;
+reg [$clog2(ICHAN)-1:0] ic;
+localparam DP_IDLE = 'd0;
+localparam DP_RUN = 'd1;
+localparam DP_FINISH = 'd2;
 always @(posedge clk) begin
     if (reset) begin
         state <= 'd0;
         weight_ra <= 'd0;
         clr_acc <= 1'b0;
+        ky <= 'd0;
+        kx <= 'd0;
+        ic <= 'd0;
     end
     else begin
         case (state)
-        'd0: begin
+        DP_IDLE: begin
+            weight_ra <= 'd0;
+            clr_acc <= 1'b1;
+            ky <= 'd0;
+            kx <= 'd0;
+            ic <= 'd0;
+            start_alu <= 1'b0;
             if (start_dot) begin
-                state <= 'd1;
-                clr_acc <= 1'b1;
-                vi <= srow;
-                vk <= 'd0;
+                state <= DP_RUN;
             end
         end
-        'd1: begin
-            stripe_ra <= vi*NCOL+vk;
+        DP_RUN: begin
             clr_acc <= 1'b0;
             weight_ra <= weight_ra+'d1;
-            if (vk==NCOL-1)
-                state <= 'd0;
+            stripe_ra <= ((ky*NCOL+srow)%NROW) + kx;
+            ichan_sel <= 'b1 << ic;
+            if (ic==ICHAN-1) begin
+                if (kx==KWIDTH-1) begin
+                    if (ky==KHEIGHT-1) begin
+                        state <= DP_FINISH;
+                    end
+                    else
+                        ky <= ky+'d1;
+                end
+                else
+                    kx <= kx+'d1;
+            end
             else
-                vk <= vk+'d1;
+                ic <= ic+'d1;
         end
+        DP_FINISH: begin
+            start_alu <= 'b1;
+            state <= DP_IDLE;
+        end
+        default:
+            state <= 'bx;
+        endcase
+    end
+end
+
+// alu FSM
+reg [2:0] alu_state;
+reg [$clog2(NSTRIPE)-1:0] os; // process output stripes sequentially
+localparam ALU_IDLE = 'd0;
+localparam ALU_1 = 'd1;
+localparam ALU_2 = 'd2;
+localparam ALU_ITER = 'd3;
+always @(posedge clk) begin
+    if (reset) begin
+        alu_state <= 'd0;
+        m_axis_tvalid <= 1'b0;
+    end
+    else begin
+        case (alu_state)
+        ALU_IDLE: begin
+            m_axis_tvalid <= 1'b0;
+            os <= 'd0;
+            if (start_alu) begin
+                alu_state <= ALU_1;
+            end
+        end
+        ALU_1: begin
+            m_axis_tvalid <= 1'b0;
+            stripe_sel <= 1'b1 << os;
+            alu_op <= 'd2;
+            alu_state <= ALU_2;
+        end
+        ALU_2: begin
+            m_axis_tvalid <= 1'b0;
+            alu_op <= 'd3;
+            alu_state <= ALU_ITER;
+        end
+        ALU_ITER: begin
+            m_axis_tvalid <= 1'b1;
+            if (os==NSTRIPE-1)
+                alu_state <= ALU_IDLE;
+            else begin
+                os <= os+'d1;
+                alu_state <= ALU_1;
+            end
+        end
+        default:
+            alu_state <= 'bx;
         endcase
     end
 end
 
 // dummy implementation
-reg [$clog2(SDEPTH)-1:0] sa0,sa1;
+always @(posedge clk) begin
+     m_axis_tlast <= 1'b0;
+     s_axis_tready <= 1'b1;
+end
+
+/*
+//reg [$clog2(SDEPTH)-1:0] sa0,sa1;
 always @(posedge clk) begin
     if (reset) begin
         //clr_acc <= 1'b0;
         alu_op <= 'd0;
         //stripe_wen <= 'd1;
-        ichan_sel <= 'd1;
+        //ichan_sel <= 'd1;
         stripe_sel <= 'd1;
-        sa0 <= 'd1;
-        sa1 <= 'd2;
+        //sa0 <= 'd1;
+        //sa1 <= 'd2;
         //weight_ra <= 'd1;
     end
     else begin
@@ -138,13 +237,14 @@ always @(posedge clk) begin
         //weight_ra <= weight_ra+'d1;
         alu_op <= alu_op+'d1;
         //stripe_wen <= (stripe_wen<<1)|stripe_wen[NSTRIPE-1];
-        ichan_sel <= (ichan_sel<<1)|ichan_sel[ICHAN-1];
+        //ichan_sel <= (ichan_sel<<1)|ichan_sel[ICHAN-1];
         stripe_sel <= (stripe_sel<<1)|stripe_sel[NSTRIPE-1];
-        sa0 <= sa0+'d1;
-        sa1 <= sa1+'d1;
+        //sa0 <= sa0+'d1;
+        //sa1 <= sa1+'d1;
     end
 end
 //assign stripe_wa = {NSTRIPE*{sa0}};
 //assign stripe_ra = {NSTRIPE*{sa1}};
+*/
 
 endmodule
