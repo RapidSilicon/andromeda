@@ -13,7 +13,7 @@ parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
 parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
 parser.add_argument('--rega', help='rega width (int8, bfloat16)',default=8, type=int)
-parser.add_argument('--regb', help='regb width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--regb', help='regb width (weight) (int8, bfloat16)',default=8, type=int)
 parser.add_argument('--analyze', help='run TFLite analyzer',default=False, action='store_true')
 parser.add_argument('--debug', help='verbose output',default=False, action='store_true')
 args = parser.parse_args()
@@ -110,7 +110,7 @@ for j in range(graph.OperatorsLength()):
         #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
 #print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
 print('\ntotal stripe RAM bits {:12d}'.format(sum([np.prod(l.stripe.shape)*args.dtype for l in layers])))
-print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.dtype for l in layers])))
+print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.regb for l in layers])))
 print('total required MAC units {:12.4f}'.format(sum([l.nmac for l in layers])))
 print('total used MAC units {:12.0f}'.format(sum([l.nstripe*l.oshape[-1] for l in layers])))
 
@@ -138,7 +138,7 @@ for j,l in enumerate(layers):
     s+='wire axis_tready_{};\n'.format(j)
     
 for j,l in enumerate(layers):
-    s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.dtype,j)
+    s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.regb,j)
     s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(1, l.waddr,j)
     s+='wire [{}*{}-1:0] bias_rd_{};\n'.format(l.oshape[-1], 32,j)
     s+='wire [{}*{}-1:0] scale_rd_{};\n'.format(l.oshape[-1], 32,j)
@@ -202,26 +202,23 @@ for j,l in enumerate(layers):
     #print('l.bias.shape',l.bias.shape)
     w+='module weight_rom_{} (clk, addr, data);\n'.format(j)
     w+='input clk;\n'
-    w+='input [{}*{}-1:0] addr;\n'.format(l.oshape[-1], l.waddr)
-    w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.dtype)
+    w+='input [{}-1:0] addr;\n'.format(l.waddr)
+    w+='output reg [{}*{}-1:0] data;\n'.format(l.oshape[-1], args.regb)
     w+='\n'
     for i in range(l.oshape[-1]):
         #w+='(*rom_style = "block" *) reg [{}:0] data_{};\n'.format(args.dtype-1,i)
-        w+='(*rom_style = "distributed" *) reg [{}:0] data_{};\n'.format(args.dtype-1,i)
+        w+='(*rom_style = "distributed" *) reg [{}:0] data_{};\n'.format(args.regb-1,i)
         w+='always @(posedge clk)\n'
         w+='begin\n'
-        w+='case(addr[{}:{}])\n'.format(i*l.waddr+l.waddr-1,i*l.waddr)
+        w+='case(addr)\n'
         k=0
         for w0 in l.weight[i].flatten():
-            w+='{}\'d{}: data_{} <= \'d{};\n'.format(l.waddr,k,i,w0)
-            k+=1
-        for w0 in l.bias[i*4+3:i*4]:
             w+='{}\'d{}: data_{} <= \'d{};\n'.format(l.waddr,k,i,w0)
             k+=1
         w+='default: data_{} <= \'bx;\n'.format(i)
         w+='endcase\n'
         w+='end\n'
-        w+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
+        w+='always @(posedge clk) data[{}:{}] <= data_{};\n'.format(i*args.regb+args.regb-1,i*args.regb,i)
         #s+='assign data[{}:{}] = data_{};\n'.format(i*args.dtype+args.dtype-1,i*args.dtype,i)
         w+='\n'
     w+='endmodule\n'
