@@ -7,7 +7,8 @@ import tflite
 import array
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--model', help='flatbuffer model name',default='mnist_model')
+parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
+parser.add_argument('--top', help='top level module name',default='mnist')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
 parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
@@ -24,10 +25,10 @@ class Layer:
 
 if args.analyze:
     import tensorflow as tf ; print('tensorflow', tf.__version__)
-    tf.lite.experimental.Analyzer.analyze(model_path='./{}.tflite'.format(args.model))
+    tf.lite.experimental.Analyzer.analyze(model_path=args.tflite)
     exit()
 
-with open('./{}.tflite'.format(args.model), 'rb') as f:
+with open(args.tflite, 'rb') as f:
     buf = f.read()
     model = tflite.Model.GetRootAsModel(buf, 0)
 
@@ -115,7 +116,7 @@ print('total used MAC units {:12.0f}'.format(sum([l.nstripe*l.oshape[-1] for l i
 
 # top level module
 s=''
-s+='module {} (\n'.format(args.model)
+s+='module {} (\n'.format(args.top)
 s+='    input wire clk,\n'
 s+='    input wire reset,\n'
 s+='    input wire [{}*{}-1:0] s_axis_data,\n'.format(layers[0].ishape[-1], args.dtype)
@@ -242,7 +243,7 @@ for j,l in enumerate(layers):
     w+='endmodule\n'
     w+='\n'
 
-with open('./{}.v'.format(args.model), 'w') as f:
+with open('./{}.v'.format(args.top), 'w') as f:
     print(s,file=f)
-with open('./{}_rom.v'.format(args.model), 'w') as f:
+with open('./{}_rom.v'.format(args.top), 'w') as f:
     print(w,file=f)
