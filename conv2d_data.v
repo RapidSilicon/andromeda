@@ -58,8 +58,6 @@ generate
 endgenerate
 
 // weight ROM per OCHAN
-//wire [DTYPE*OCHAN-1:0] weight_rd;
-//weight_rom weight_rom (.clk(clk), .addr(weight_ra), .data(weight_rd));
 wire [DTYPE-1:0] weight [OCHAN-1:0];
 wire [32-1:0] bias [OCHAN-1:0];
 wire [32-1:0] scale [OCHAN-1:0];
@@ -100,36 +98,14 @@ generate
                 case (alu_op)
                     'd0 : reg_z[i][j] <= acc[i][j];
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
-                    'd2 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
+                    'd2 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*uint32, high half
                     'd3 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
-                    //'d0 : reg_z[i][j] <= reg_z[i][j];
-                    //'d1 : reg_z[i][j] <= acc[i][j];
-                    //'d2 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
-                    //'d3 : reg_z[i][j] <= 'b0;
-                    //'d4 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
-                    //'d5 : reg_z[i][j] <= reg_z[i][j][31:16] * scale[j][31:16]; // int16*uint16
-                    //'d5 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*int32, high half
-                    //'d6 : reg_z[i][j] <= reg_z[i][j] >> 16;
                     default : reg_z[i][j] <= 'bx;
                 endcase
             end
         end
     end
 endgenerate
-
-/*
-// dsp
-reg signed [47:0] mult,acc;
-reg acc_clear;
-always @(posedge clk) begin
-	mult <= rowbuf_rd*weights_rd;
-	if (acc_clear)
-		acc <= 'd0;
-	else
-		acc <= mult+acc;
-end
-*/
-
 
 // for each NSTRIPE, generate a OCHAN:1 mux which is DTYPE bits wide, using stripe_sel to select
 generate

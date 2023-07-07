@@ -63,7 +63,7 @@ always @(posedge clk) begin
         else begin
             stripe <= stripe + 'd1;
         end
-        icol <= stripe*PREV_SWIDTH+scol;
+        icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
 
         if (col==IWIDTH-1) begin
             start_dot <= 1'b1;
