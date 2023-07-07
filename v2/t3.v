@@ -84,44 +84,44 @@ wire axis_tvalid_17;
 wire axis_tlast_17;
 wire axis_tready_17;
 wire [8*8-1:0] weight_rd_0;
-wire [8*8-1:0] weight_ra_0;
+wire [8*5-1:0] weight_ra_0;
 wire [8*8-1:0] weight_rd_1;
-wire [8*10-1:0] weight_ra_1;
+wire [8*7-1:0] weight_ra_1;
 wire [16*8-1:0] weight_rd_2;
-wire [16*11-1:0] weight_ra_2;
+wire [16*7-1:0] weight_ra_2;
 wire [16*8-1:0] weight_rd_3;
-wire [16*12-1:0] weight_ra_3;
+wire [16*8-1:0] weight_ra_3;
 wire [32*8-1:0] weight_rd_4;
-wire [32*13-1:0] weight_ra_4;
+wire [32*8-1:0] weight_ra_4;
 wire [32*8-1:0] weight_rd_5;
-wire [32*14-1:0] weight_ra_5;
+wire [32*9-1:0] weight_ra_5;
 wire [32*8-1:0] weight_rd_6;
-wire [32*14-1:0] weight_ra_6;
+wire [32*9-1:0] weight_ra_6;
 wire [32*8-1:0] weight_rd_7;
-wire [32*14-1:0] weight_ra_7;
+wire [32*9-1:0] weight_ra_7;
 wire [32*8-1:0] weight_rd_8;
-wire [32*14-1:0] weight_ra_8;
+wire [32*9-1:0] weight_ra_8;
 wire [32*8-1:0] weight_rd_9;
-wire [32*14-1:0] weight_ra_9;
+wire [32*9-1:0] weight_ra_9;
 wire [32*8-1:0] weight_rd_10;
-wire [32*14-1:0] weight_ra_10;
+wire [32*9-1:0] weight_ra_10;
 wire [32*8-1:0] weight_rd_11;
-wire [32*14-1:0] weight_ra_11;
+wire [32*9-1:0] weight_ra_11;
 wire [32*8-1:0] weight_rd_12;
-wire [32*14-1:0] weight_ra_12;
+wire [32*9-1:0] weight_ra_12;
 wire [32*8-1:0] weight_rd_13;
-wire [32*14-1:0] weight_ra_13;
+wire [32*9-1:0] weight_ra_13;
 wire [16*8-1:0] weight_rd_14;
-wire [16*13-1:0] weight_ra_14;
+wire [16*9-1:0] weight_ra_14;
 wire [16*8-1:0] weight_rd_15;
-wire [16*12-1:0] weight_ra_15;
+wire [16*8-1:0] weight_ra_15;
 wire [8*8-1:0] weight_rd_16;
-wire [8*11-1:0] weight_ra_16;
+wire [8*8-1:0] weight_ra_16;
 wire [8*8-1:0] weight_rd_17;
-wire [8*10-1:0] weight_ra_17;
+wire [8*7-1:0] weight_ra_17;
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,8,14,3,3291,220,3840,2160,3,3,1) u0 (
+conv2d #(8,8,14,3,3291,31,3840,2160,3,3,1) u0 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_0),
@@ -143,7 +143,7 @@ weight_rom_0 rom0 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,8,9,8,17057,580,3838,2158,3,3,2) u1 (
+conv2d #(8,8,9,8,17057,76,3838,2158,3,3,2) u1 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_1),
@@ -165,7 +165,7 @@ weight_rom_1 rom1 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,16,9,8,6819,1156,1918,1078,3,3,1) u2 (
+conv2d #(8,16,9,8,6819,76,1918,1078,3,3,1) u2 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_2),
@@ -187,7 +187,7 @@ weight_rom_2 rom2 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,16,5,16,30656,2308,1916,1076,3,3,2) u3 (
+conv2d #(8,16,5,16,30656,148,1916,1076,3,3,2) u3 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_3),
@@ -209,7 +209,7 @@ weight_rom_3 rom3 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,5,16,12249,4612,957,537,3,3,1) u4 (
+conv2d #(8,32,5,16,12249,148,957,537,3,3,1) u4 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_4),
@@ -231,7 +231,7 @@ weight_rom_4 rom4 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,50933,9220,955,535,3,3,2) u5 (
+conv2d #(8,32,3,32,50933,292,955,535,3,3,2) u5 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_5),
@@ -253,7 +253,7 @@ weight_rom_5 rom5 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,3,32,20352,9220,477,267,3,3,1) u6 (
+conv2d #(8,32,3,32,20352,292,477,267,3,3,1) u6 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_6),
@@ -275,7 +275,7 @@ weight_rom_6 rom6 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,76000,9220,475,265,3,3,2) u7 (
+conv2d #(8,32,1,32,76000,292,475,265,3,3,2) u7 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_7),
@@ -297,7 +297,7 @@ weight_rom_7 rom7 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,30336,9220,237,132,3,3,1) u8 (
+conv2d #(8,32,1,32,30336,292,237,132,3,3,1) u8 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_8),
@@ -319,7 +319,7 @@ weight_rom_8 rom8 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,37600,9220,235,130,3,3,2) u9 (
+conv2d #(8,32,1,32,37600,292,235,130,3,3,2) u9 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_9),
@@ -341,7 +341,7 @@ weight_rom_9 rom9 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,14976,9220,117,64,3,3,1) u10 (
+conv2d #(8,32,1,32,14976,292,117,64,3,3,1) u10 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_10),
@@ -363,7 +363,7 @@ weight_rom_10 rom10 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,18400,9220,115,62,3,3,2) u11 (
+conv2d #(8,32,1,32,18400,292,115,62,3,3,2) u11 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_11),
@@ -385,7 +385,7 @@ weight_rom_11 rom11 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,7296,9220,57,30,3,3,1) u12 (
+conv2d #(8,32,1,32,7296,292,57,30,3,3,1) u12 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_12),
@@ -407,7 +407,7 @@ weight_rom_12 rom12 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,32,1,32,8800,9220,55,28,3,3,2) u13 (
+conv2d #(8,32,1,32,8800,292,55,28,3,3,2) u13 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_13),
@@ -429,7 +429,7 @@ weight_rom_13 rom13 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,16,1,32,3456,4612,27,13,3,3,1) u14 (
+conv2d #(8,16,1,32,3456,292,27,13,3,3,1) u14 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_14),
@@ -451,7 +451,7 @@ weight_rom_14 rom14 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,16,1,16,2000,2308,25,11,3,3,2) u15 (
+conv2d #(8,16,1,16,2000,148,25,11,3,3,2) u15 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_15),
@@ -473,7 +473,7 @@ weight_rom_15 rom15 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,8,1,16,768,1156,12,5,3,3,1) u16 (
+conv2d #(8,8,1,16,768,148,12,5,3,3,1) u16 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_16),
@@ -495,7 +495,7 @@ weight_rom_16 rom16 (
 );
 
 // conv2d #(TDATA,OCHAN,NSTRIPE,ICHAN,SDEPTH,WDEPTH,IWIDTH,IHEIGHT,KWIDTH,KHEIGHT,STRIDE)
-conv2d #(8,8,1,8,400,580,10,3,3,3,2) u17 (
+conv2d #(8,8,1,8,400,76,10,3,3,3,2) u17 (
 .clk(clk),
 .reset(reset),
 .weight_rd(weight_rd_17),
