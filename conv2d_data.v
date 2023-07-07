@@ -1,5 +1,5 @@
 // conv2d.v data path
-module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024) (
+module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024, REGA=8,REGB=8) (
     input clk, reset,
     input clr_acc,
     input [2:0] alu_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
@@ -72,9 +72,12 @@ endgenerate
 // NSTRIDE*OCHAN DSP instances
 reg signed [31:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
-reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [DTYPE-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
+//reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
+//reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
+//reg signed [DTYPE-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [REGA+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
+reg signed [REGA-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin

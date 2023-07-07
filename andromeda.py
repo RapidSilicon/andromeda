@@ -11,6 +11,8 @@ parser.add_argument('--model', help='flatbuffer model name',default='mnist_model
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
 parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--rega', help='rega width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--regb', help='regb width (int8, bfloat16)',default=8, type=int)
 parser.add_argument('--analyze', help='run TFLite analyzer',default=False, action='store_true')
 parser.add_argument('--debug', help='verbose output',default=False, action='store_true')
 args = parser.parse_args()
@@ -142,9 +144,9 @@ for j,l in enumerate(layers):
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,j)
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,REGA,REGB\n'
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,args.rega,args.regb,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
@@ -228,7 +230,7 @@ for j,l in enumerate(layers):
     w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
     w+='\n'
     for i in range(l.oshape[-1]):
-        w+='assign data[{}:{}] = \'d{};\n'.format(i*32+31,i*32,l.bias[i])
+        w+='assign data[{}:{}] = \'d{};\n'.format(i*32+31,i*32,l.bias[i].astype(np.uint32))
     w+='endmodule\n'
     w+='\n'
 

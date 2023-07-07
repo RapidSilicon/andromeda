@@ -47,7 +47,7 @@ reg start_dot, start_alu;
 
 // write incoming features into the stripe buffers
 always @(posedge clk) begin
-    if (reset) begin
+    if (reset||s_axis_tlast) begin
         row <= 'd0;
         col <= 'd0;
         stripe <= 'd0;

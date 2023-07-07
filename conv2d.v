@@ -16,7 +16,9 @@ module conv2d #(
     parameter PREV_SWIDTH=1,
     parameter NROW=1,
     parameter NCOL=1,
-    parameter OVERLAP=1
+    parameter OVERLAP=1,
+    parameter REGA=8,       // width of A register in bits
+    parameter REGB=8       // width of B register in bits
 ) (
     input wire clk,
     input wire reset,
@@ -42,7 +44,7 @@ wire [$clog2(SDEPTH)-1:0] stripe_ra;
 wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
 wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 
-conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH) u0 (
+conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGA,REGB) u0 (
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),
