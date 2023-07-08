@@ -66,7 +66,9 @@ always @(posedge clk) begin
         icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
 
         if (col==IWIDTH-1) begin
-            start_dot <= 1'b1;
+            if (row >= KHEIGHT-1)
+                if ((STRIDE==1) || ((STRIDE==2)&&((row%2)==0)))
+                    start_dot <= 1'b1;
             col <= 'd0;
             if (row==IHEIGHT-1) begin
                 m_axis_tlast <= 1'b1;
@@ -101,7 +103,7 @@ generate
         always @ (posedge clk) begin
             stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL+srow*NCOL;
             if ((icol >= i*NCOL) && (icol < i*NCOL+NCOL+OVERLAP))
-                stripe_wen[i] <= 1'b1;
+                stripe_wen[i] <= s_axis_tvalid;
             else
                 stripe_wen[i] <= 1'b0;
         end

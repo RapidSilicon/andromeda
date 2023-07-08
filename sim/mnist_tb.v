@@ -17,17 +17,17 @@ wire m_axis_tready;
 initial begin
     clk = 1'b0;
     forever begin
-        #5 clk = ~clk;
+        #2.500 clk = ~clk;
     end
 end
 
 reg [8:0] test_data [0:783];
 integer i;
 initial begin
-    $dumpfile("mnist.vcd");
-    $dumpvars(0, mnist_tb);
-    $display("Loading test_data.mem");
+    //$dumpfile("mnist.vcd");
+    //$dumpvars(0, mnist_tb.u0);
     $readmemb("test_data.mem", test_data);
+    $display("Loaded test_data.mem");
 
     reset = 1'b1;
     s_axis_tvalid = 1'b0;
@@ -35,14 +35,19 @@ initial begin
     #500
     reset = 1'b0;
     #500
-    for (i=0; i<784; i=i+1) begin
-        @(posedge clk);
-        s_axis_data <= test_data[i];
-        s_axis_tvalid <= 1'b1;
-        @(posedge clk);
-        s_axis_data <= 'bx;
-        s_axis_tvalid <= 1'b0;
-        repeat (10) @(posedge clk);
+    for (i=0; i<28*28; i=i+1) begin
+        if ((i%28)==0)
+            $display("i",i);
+
+        @(posedge clk) #1;
+        s_axis_data = test_data[i];
+        s_axis_tvalid = 1'b1;
+
+        @(posedge clk) #1;
+        s_axis_data = 'bx;
+        s_axis_tvalid = 1'b0;
+        
+        repeat (8500) @(posedge clk); // 28x28 @30fps, 200MHz clk
     end
     $finish();
 end
