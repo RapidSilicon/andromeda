@@ -22,7 +22,7 @@ module conv2d #(
 ) (
     input wire clk,
     input wire reset,
-    input wire [OCHAN*DTYPE-1:0] weight_rd,
+    input wire [OCHAN*REGB-1:0] weight_rd,
     output [$clog2(WDEPTH)-1:0] weight_ra,
     input wire [OCHAN*32-1:0] bias_rd,
     input wire [OCHAN*32-1:0] scale_rd,

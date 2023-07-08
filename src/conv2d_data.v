@@ -6,7 +6,7 @@ module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [$clog2(SDEPTH)-1:0] stripe_ra,
-    input wire [OCHAN*DTYPE-1:0] weight_rd, // data from ROM
+    input wire [OCHAN*REGB-1:0] weight_rd, // data from ROM
     input wire [OCHAN*32-1:0] bias_rd, // int32 from ROM
     input wire [OCHAN*32-1:0] scale_rd, // int32 from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
@@ -63,7 +63,7 @@ wire [32-1:0] bias [OCHAN-1:0];
 wire [32-1:0] scale [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
     begin
-        assign weight[i] = weight_rd[i*DTYPE +: DTYPE];
+        assign weight[i] = weight_rd[i*REGB +: REGB];
         assign bias[i] = bias_rd[i*32 +: 32];
         assign scale[i] = scale_rd[i*32 +: 32];
     end
@@ -116,7 +116,8 @@ generate
         always @(posedge clk) begin
             tdata_o[j*DTYPE +: DTYPE] = 0;
             for (m=0;m<NSTRIPE;m=m+1) begin
-                tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j][31:32-DTYPE] & stripe_sel[m];
+                //tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j][31:32-DTYPE] & stripe_sel[m];
+                tdata_o[j*DTYPE +: DTYPE] = tdata_o[j*DTYPE +: DTYPE] | (reg_z[m][j][31:32-DTYPE] & stripe_sel[m]);
             end
         end
     end
