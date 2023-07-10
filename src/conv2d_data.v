@@ -23,11 +23,16 @@ reg [ICHAN*DTYPE-1:0] stripe_rd [NSTRIPE-1:0];
 reg [ICHAN*DTYPE-1:0] stripe_rq [NSTRIPE-1:0];
 
 // padded stripes WRITE PORT
+reg [ICHAN*DTYPE-1:0] tdata_q, tdata_qq;
+always @(posedge clk) begin
+    tdata_q <= tdata_i;
+    tdata_qq <= tdata_q;
+end
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
             if(stripe_wen[i])
-                stripe[i][stripe_wa[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]] <= tdata_i;
+                stripe[i][stripe_wa[i*$clog2(SDEPTH) +: $clog2(SDEPTH)]] <= tdata_qq;
         end
     end
 endgenerate

@@ -49,6 +49,7 @@ initial begin
         
         repeat (8500) @(posedge clk); // 28x28 @30fps, 200MHz clk
     end
+    #500000
     $finish();
 end
 mnist u0 (
