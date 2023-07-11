@@ -66,6 +66,8 @@ for j in range(graph.OperatorsLength()):
         # DONE: infer nstripe using performance calculation for args.fps, args.clk
         # DONE: infer sdepth, compute stripe buffer size
         l.stride = int(np.round(l.ishape[-2]/l.oshape[-2]))
+        if l.oshape[-2]<l.wshape[-2]:
+            l.stride=1; # HACK
         #if (l.oshape[-2]==((l.ishape[-2]-2)/2)) and (l.oshape[-3]==((l.ishape[-3]-2)/2)):
         #    l.stride = 2
         #else:

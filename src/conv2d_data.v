@@ -63,12 +63,13 @@ generate
 endgenerate
 
 // weight ROM per OCHAN
-wire [DTYPE-1:0] weight [OCHAN-1:0];
+reg [DTYPE-1:0] weight [OCHAN-1:0];
 wire [32-1:0] bias [OCHAN-1:0];
 wire [32-1:0] scale [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
     begin
-        assign weight[i] = weight_rd[i*REGB +: REGB];
+        always @(posedge clk)
+             weight[i] <= weight_rd[i*REGB +: REGB];
         assign bias[i] = bias_rd[i*32 +: 32];
         assign scale[i] = scale_rd[i*32 +: 32];
     end
@@ -77,9 +78,6 @@ endgenerate
 // NSTRIDE*OCHAN DSP instances
 reg signed [31:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
-//reg signed [DTYPE*2-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
-//reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
-//reg signed [DTYPE-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGA+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
 reg signed [REGA-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];

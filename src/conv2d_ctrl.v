@@ -37,20 +37,27 @@ module conv2d_ctrl #(
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
-reg [$clog2(IHEIGHT)-1:0] row;
-reg [$clog2(IWIDTH)-1:0] col;
+reg [$clog2(IHEIGHT):0] row;
+//reg [$clog2(IWIDTH):0] col;
 reg [$clog2(PREV_NSTRIPE):0] stripe;
-reg [$clog2(NROW)-1:0] irow;
-reg [$clog2(NCOL)-1:0] scol;
-reg [$clog2(IWIDTH)-1:0] icol;
+reg [$clog2(NROW):0] irow, irow_q;
+reg [$clog2(NCOL):0] scol;
+reg [$clog2(IWIDTH):0] icol;
 reg start_dot, start_alu;
 
 // write incoming features into the stripe buffers
 always @(posedge clk) begin
+    icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
+end
+always @(posedge clk) begin
+    irow_q <= irow;
+end
+always @(posedge clk) begin
     start_dot = 1'b0;
-    if (reset||s_axis_tlast) begin
+    //if (reset||s_axis_tlast) begin
+    if (reset) begin
         row <= 'd0;
-        col <= 'd0;
+        //col <= 'd0;
         stripe <= 'd0;
         scol <= 'd0;
         irow <= 'd0;
@@ -63,34 +70,29 @@ always @(posedge clk) begin
         else begin
             stripe <= stripe + 'd1;
         end
-        icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
+        //icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
 
-        if (col==IWIDTH-1) begin
-            if (row >= KHEIGHT-1)
-                if ((STRIDE==1) || ((STRIDE==2)&&((row%2)==0)))
+        if (icol==IWIDTH-1) begin
+            if ((STRIDE==1) && (row >= KHEIGHT-1))
                     start_dot = 1'b1;
-            col <= 'd0;
+            if ((STRIDE==2) && ((row >= KHEIGHT-1) && ((row%2)!=(KHEIGHT%2))))
+                    start_dot = 1'b1;
             if (row==IHEIGHT-1) begin
                 m_axis_tlast <= 1'b1;
                 row <= 'd0;
-                col <= 'd0;
+                irow <= 'd0;
                 stripe <= 'd0;
                 scol <= 'd0;
-                irow <= 'd0;
             end
             else begin
                 row <= row+'d1;
+                if (irow==NROW-1)
+                    irow <= 'd0;
+                else
+                    irow <= irow+'d1;
                 m_axis_tlast <= 1'b0;
             end
-
             scol <= 'd0;
-            if (irow==NROW-1)
-                irow <= 'd0;
-            else
-                irow <= irow+'d1;
-        end
-        else begin
-            col <= col+'d1;
         end
     end
 end
@@ -104,7 +106,7 @@ genvar i;
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         always @ (posedge clk) begin
-            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL+irow*NCOL;
+            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL+irow_q*NCOL;
             if ((icol >= i*NCOL) && (icol < i*NCOL+NCOL+OVERLAP))
                 stripe_wen[i] <= s_axis_tvalid_q;
             else
@@ -114,6 +116,23 @@ generate
 endgenerate
 
 // dot product FSM
+reg clr_acc0,clr_acc1,clr_acc2,clr_acc3,clr_acc4;
+always @(posedge clk) begin
+    clr_acc1 <= clr_acc0;
+    clr_acc2 <= clr_acc1;
+    clr_acc3 <= clr_acc2;
+    clr_acc4 <= clr_acc3;
+    clr_acc <= clr_acc4;
+end
+
+reg start_alu0,start_alu1,start_alu2,start_alu3;
+always @(posedge clk) begin
+    start_alu1 <= start_alu0;
+    start_alu2 <= start_alu1;
+    start_alu3 <= start_alu2;
+    start_alu <= start_alu3;
+end
+
 reg [2:0] state;
 reg [$clog2(KHEIGHT):0] ky;
 reg [$clog2(KWIDTH):0] kx;
@@ -125,8 +144,8 @@ localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
 localparam DP_FINISH = 'd3;
 always @(posedge clk) begin
-    start_alu = 1'b0;
-    clr_acc = 1'b0;
+    start_alu0 = 1'b0;
+    clr_acc0 = 1'b0;
     if (reset) begin
         state <= 'd0;
         ky <= 'd0;
@@ -146,7 +165,7 @@ always @(posedge clk) begin
             end
         end
         DP_INIT: begin
-            clr_acc = 1'b1;
+            clr_acc0 = 1'b1;
             state <= DP_RUN;
         end
         DP_RUN: begin
@@ -157,6 +176,7 @@ always @(posedge clk) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
                         if (ocol==OWIDTH-1) begin
+                            start_alu0 = 1'b1;
                             ocol <= 'd0;
                             state <= DP_FINISH;
                         end
@@ -165,8 +185,8 @@ always @(posedge clk) begin
                             ky <= 'd0;
                             kx <= 'd0;
                             ic <= 'd0;
-                            start_alu = 1'b1;
-                            clr_acc = 1'b1;
+                            start_alu0 = 1'b1;
+                            clr_acc0 = 1'b1;
                         end
                     end
                     else begin
