@@ -63,9 +63,9 @@ generate
 endgenerate
 
 // weight ROM per OCHAN
-reg [DTYPE-1:0] weight [OCHAN-1:0];
-wire [32-1:0] bias [OCHAN-1:0];
-wire [32-1:0] scale [OCHAN-1:0];
+reg signed [DTYPE-1:0] weight [OCHAN-1:0];
+wire signed [32-1:0] bias [OCHAN-1:0];
+wire signed [32-1:0] scale [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
     begin
         always @(posedge clk)
@@ -78,6 +78,7 @@ endgenerate
 // NSTRIDE*OCHAN DSP instances
 reg signed [31:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [31:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
+wire signed [63:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGA+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
 reg signed [REGA-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
@@ -98,14 +99,24 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
+            assign scale_mult[i][j] = reg_z[i][j]*scale[j];
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
                 case (alu_op)
                     'd0 : reg_z[i][j] <= acc[i][j];
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j]; // int32 + int32
-                    'd2 : reg_z[i][j] <= (reg_z[i][j]*scale[j])>>32; // int32*uint32, high half
-                    'd3 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
+                    'd2 : reg_z[i][j] <= scale_mult[i][j][63:32]; // 
+                    //'d3 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
+                    'd3 : begin
+//$display("before reg_z",reg_z[i][j]);
+                        if (reg_z[i][j] < 0)
+                            reg_z[i][j] <= 'd0;
+                        else if (reg_z[i][j] > 15'h7fff)
+                            reg_z[i][j] <= 'h7fff;
+//$display("after reg_z",reg_z[i][j]);
+                    end
+                    'd4 : reg_z[i][j] <= reg_z[i][j];
                     default : reg_z[i][j] <= 'bx;
                 endcase
             end
@@ -114,16 +125,19 @@ generate
 endgenerate
 
 // for each NSTRIPE, generate a OCHAN:1 mux which is DTYPE bits wide, using stripe_sel to select
+reg [OCHAN*DTYPE-1:0] tdata_w;
 generate
     for (j=0;j<OCHAN;j=j+1) begin
-        always @(posedge clk) begin
-            tdata_o[j*DTYPE +: DTYPE] = 0;
+        always @(tdata_o or reg_z or stripe_sel) begin
+            tdata_w[j*DTYPE +: DTYPE] = 0;
             for (m=0;m<NSTRIPE;m=m+1) begin
                 //tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j][31:32-DTYPE] & stripe_sel[m];
-                tdata_o[j*DTYPE +: DTYPE] = tdata_o[j*DTYPE +: DTYPE] | (reg_z[m][j][31:32-DTYPE] & stripe_sel[m]);
+                tdata_w[j*DTYPE +: DTYPE] = tdata_w[j*DTYPE +: DTYPE] | ((reg_z[m][j][15 -: DTYPE] & {DTYPE{stripe_sel[m]}}));
             end
         end
     end
 endgenerate
+always @(posedge clk)
+    tdata_o <= tdata_w;
 
 endmodule

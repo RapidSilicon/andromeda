@@ -237,7 +237,7 @@ always @(posedge clk) begin
         ALU_1: begin
             m_axis_tvalid <= 1'b0;
             stripe_sel <= 1'b1 << os;
-            alu_op <= 'd0;
+            alu_op <= 'd4;
             alu_state <= ALU_2;
         end
         ALU_2: begin

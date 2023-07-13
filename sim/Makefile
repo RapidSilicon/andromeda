@@ -11,3 +11,5 @@ iverilog:
 	../../iverilog/build/bin/iverilog mnist_tb.v mnist.v mnist_rom.v ../src/conv2d_data.v ../src/conv2d_ctrl.v ../src/conv2d.v
 	./a.out
 
+gendata:
+	python3 gendata.py

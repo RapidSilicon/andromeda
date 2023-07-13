@@ -59,8 +59,17 @@ for j in range(graph.OperatorsLength()):
         #print('j',j,'bias',l.bias,len(l.bias))
 #        print('weight',l.weight.shape,l.weight.dtype,l.weight)
 #        print('bias',l.bias.shape,l.bias.dtype,l.bias)
-        l.scale = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().ScaleAsNumpy()
+        #print("scale 0",graph.Tensors(graph.Operators(j).Inputs(0)).Quantization().ScaleAsNumpy())
+        #print("scale 1",graph.Tensors(graph.Operators(j).Inputs(1)).Quantization().ScaleAsNumpy())
+        #print("scale 2",graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().ScaleAsNumpy())
+        #print("scale 0",graph.Tensors(graph.Operators(j).Inputs(0)).Quantization().Scale(0))
+        #print("scale 1",graph.Tensors(graph.Operators(j).Inputs(1)).Quantization().Scale(0))
+        #print("scale 2",graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(0))
+
+        #l.scale = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().ScaleAsNumpy()
+        l.scale = graph.Tensors(graph.Operators(j).Inputs(1)).Quantization().ScaleAsNumpy()
 #        print('scale',l.scale.shape,l.scale.dtype,l.scale)
+
         # DONE: infer stride from oshape/ishape
         # DONE: infer waddr, log2(len(l.weight)+len(l.bias))
         # DONE: infer nstripe using performance calculation for args.fps, args.clk
@@ -68,6 +77,8 @@ for j in range(graph.OperatorsLength()):
         l.stride = int(np.round(l.ishape[-2]/l.oshape[-2]))
         if l.oshape[-2]<l.wshape[-2]:
             l.stride=1; # HACK
+        if l.oshape[-2]==(l.ishape[-2]-l.wshape[-2]+1):
+            l.stride=1;
         #if (l.oshape[-2]==((l.ishape[-2]-2)/2)) and (l.oshape[-3]==((l.ishape[-3]-2)/2)):
         #    l.stride = 2
         #else:
@@ -238,7 +249,7 @@ for j,l in enumerate(layers):
     w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
     w+='\n'
     for i in range(l.oshape[-1]):
-        w+='assign data[{}:{}] = \'d{};\n'.format(i*32+31,i*32,int(l.scale[i]*pow(2,32)))
+        w+='assign data[{}:{}] = \'h{};\n'.format(i*32+31,i*32,hex(int(l.scale[i]*pow(2,32)))[2:])
     w+='endmodule\n'
     w+='\n'
 

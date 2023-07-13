@@ -23,6 +23,7 @@ end
 
 reg [8:0] test_data [0:783];
 integer i;
+// stimulus
 initial begin
     //$dumpfile("mnist.vcd");
     //$dumpvars(0, mnist_tb.u0);
@@ -39,19 +40,32 @@ initial begin
         if ((i%28)==0)
             $display("i",i);
 
-        @(posedge clk) #1;
-        s_axis_data = test_data[i];
-        s_axis_tvalid = 1'b1;
+        @(posedge clk) begin
+            s_axis_data <= test_data[i];
+            s_axis_tvalid <= 1'b1;
+        end
 
-        @(posedge clk) #1;
-        s_axis_data = 'bx;
-        s_axis_tvalid = 1'b0;
+        @(posedge clk) begin
+            s_axis_data <= 'bx;
+            s_axis_tvalid <= 1'b0;
+        end
         
         repeat (8500) @(posedge clk); // 28x28 @30fps, 200MHz clk
     end
     #500000
     $finish();
 end
+
+// checker
+integer j;
+always @(posedge clk) begin
+    if (m_axis_tvalid) begin
+        for (j=0; j<10; j=j+1)
+            $display("PREDICTION",j,m_axis_data[j*9 +: 9]);
+    end
+end
+
+//dut
 mnist u0 (
     .clk(clk),
     .reset(reset),
