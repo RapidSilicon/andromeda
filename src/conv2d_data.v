@@ -109,14 +109,20 @@ generate
                     'd2 : reg_z[i][j] <= scale_mult[i][j][63:32]; // 
                     //'d3 : reg_z[i][j] <= reg_z[i][j][31] ? 'd0 : reg_z[i][j]; // RELU
                     'd3 : begin
-//$display("before reg_z",reg_z[i][j]);
                         if (reg_z[i][j] < 0)
                             reg_z[i][j] <= 'd0;
-                        else if (reg_z[i][j] > 15'h7fff)
-                            reg_z[i][j] <= 'h7fff;
-//$display("after reg_z",reg_z[i][j]);
+                        else if (reg_z[i][j] > 'd255)
+                            reg_z[i][j] <= 'd255;
                     end
                     'd4 : reg_z[i][j] <= reg_z[i][j];
+                    'd5 : begin
+                        if ((reg_z[i][j][31:9]=={23{1'b0}}) || (reg_z[i][j][31:9]=={23{1'b1}}))
+                            reg_z[i][j] <= reg_z[i][j];
+                        else if (reg_z[i][j][31]==1'b0)
+                            reg_z[i][j] <= 'd255;
+                        else
+                            reg_z[i][j] <= -1*'d255;
+                    end
                     default : reg_z[i][j] <= 'bx;
                 endcase
             end

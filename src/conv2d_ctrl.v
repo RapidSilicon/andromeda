@@ -18,6 +18,7 @@ module conv2d_ctrl #(
     parameter NROW=1,
     parameter NCOL=1,
     parameter OVERLAP=1,
+    parameter RELU=1,
     parameter SADDR=$clog2(SDEPTH)
 ) (
     input clk, reset,
@@ -252,7 +253,10 @@ always @(posedge clk) begin
         end
         ALU_ITER: begin
             m_axis_tvalid <= 1'b1;
-            alu_op <= 'd3;
+            if (RELU)
+                alu_op <= 'd3;
+            else
+                alu_op <= 'd5;
             if (os==NSTRIPE-1)
                 alu_state <= ALU_IDLE;
             else begin

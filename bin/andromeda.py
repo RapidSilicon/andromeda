@@ -45,6 +45,7 @@ for j in range(graph.OperatorsLength()):
 #        print('output',graph.Tensors(graph.Operators(j).Outputs(i)).Quantization().ScaleAsNumpy())
 #        print('output',graph.Tensors(graph.Operators(j).Outputs(i)).Quantization().ZeroPointAsNumpy())
         l=Layer()
+        l.relu=1
         l.ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
         l.wshape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
         l.bshape = graph.Tensors(graph.Operators(j).Inputs(2)).ShapeAsNumpy()
@@ -121,6 +122,9 @@ for j in range(graph.OperatorsLength()):
         print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:8.2f} shape i {} o {} w {} b {} s {}'.format(
             j,l.nstripe,l.stride,l.rate,l.nmac,l.ishape,l.oshape,l.wshape,l.bshape,l.stripe.shape))
         #print('layer',j,'ishape',l.ishape,'oshape',l.oshape,'wshape',l.wshape,'bshape',l.bshape,'nstripe',l.nstripe,'sdepth',l.sdepth,'wdepth',l.wdepth)
+
+layers[-1].relu=0 # don't apply activation on last layer (HACK)
+
 #print('\ntotal stripe RAM bits {:12d}'.format(sum([l.sdepth*l.nstripe*l.ishape[-1]*args.dtype for l in layers])))
 print('\ntotal stripe RAM bits {:12d}'.format(sum([np.prod(l.stripe.shape)*args.dtype for l in layers])))
 print('total weight RAM bits {:12d}'.format(sum([l.wdepth*l.oshape[-1]*args.regb for l in layers])))
@@ -158,9 +162,9 @@ for j,l in enumerate(layers):
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,REGA,REGB\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,args.rega,args.regb,j)
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,REGA,REGB,RELU\n'
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,args.rega,args.regb,l.relu,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)

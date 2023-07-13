@@ -18,7 +18,8 @@ module conv2d #(
     parameter NCOL=1,
     parameter OVERLAP=1,
     parameter REGA=8,       // width of A register in bits
-    parameter REGB=8       // width of B register in bits
+    parameter REGB=8,       // width of B register in bits
+    parameter RELU=1
 ) (
     input wire clk,
     input wire reset,
@@ -61,7 +62,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGA,REGB) u0 (
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP) u1 (
+conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,RELU) u1 (
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),

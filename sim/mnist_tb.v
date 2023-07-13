@@ -5,11 +5,11 @@ module mnist_tb();
 
 reg clk;
 reg reset;
-reg [1*9-1:0] s_axis_data;
+reg signed [1*9-1:0] s_axis_data;
 reg s_axis_tvalid;
 wire s_axis_tlast;
 wire s_axis_tready;
-wire [10*9-1:0] m_axis_data;
+wire signed [10*9-1:0] m_axis_data;
 wire m_axis_tvalid;
 wire m_axis_tlast;
 wire m_axis_tready;
@@ -21,7 +21,7 @@ initial begin
     end
 end
 
-reg [8:0] test_data [0:783];
+reg signed [8:0] test_data [0:783];
 integer i;
 // stimulus
 initial begin
@@ -58,10 +58,13 @@ end
 
 // checker
 integer j;
+reg signed [8:0] dout;
 always @(posedge clk) begin
     if (m_axis_tvalid) begin
-        for (j=0; j<10; j=j+1)
-            $display("PREDICTION",j,m_axis_data[j*9 +: 9]);
+        for (j=0; j<10; j=j+1) begin
+            dout = m_axis_data[j*9 +: 9];
+            $display("PREDICTION %d VALUE %b %d %h",j,dout,dout,dout);
+        end
     end
 end
 
