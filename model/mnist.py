@@ -5,15 +5,12 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 import pathlib
-#print(tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8)
 
 # Load MNIST dataset
 mnist = keras.datasets.mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-
-# Normalize the input image so that each pixel value is between 0 to 1.
-train_images = train_images / 255.0
-test_images = test_images / 255.0
+train_images = train_images.astype(np.float32) / 255.0
+test_images = test_images.astype(np.float32) / 255.0
 
 # Define the model architecture
 model = keras.Sequential([
@@ -45,20 +42,18 @@ model.compile(optimizer='adam',
 model.fit(
   train_images,
   train_labels,
-  epochs=1,
+  epochs=3,
   validation_data=(test_images, test_labels)
 )
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
-#converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8]
-#converter.inference_input_type = tf.int16
-#converter.inference_output_type = tf.int16
-converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-converter.inference_input_type = tf.int8
-converter.inference_output_type = tf.int8
-# Ensure that if any ops can't be quantized, the converter throws an error
-# Set the input and output tensors to uint8 (APIs added in r2.3)
+converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8]
+converter.inference_input_type = tf.int16
+converter.inference_output_type = tf.int16
+#converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+#converter.inference_input_type = tf.int8
+#converter.inference_output_type = tf.int8
 
 def representative_data_gen():
   for input_value in tf.data.Dataset.from_tensor_slices(np.expand_dims(tf.cast(train_images, tf.float32), axis=-1)).batch(1).take(100):

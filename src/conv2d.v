@@ -17,7 +17,7 @@ module conv2d #(
     parameter NROW=1,
     parameter NCOL=1,
     parameter OVERLAP=1,
-    parameter REGA=8,       // width of A register in bits
+    parameter REGZ=32,       // width of Z register in bits
     parameter REGB=8,       // width of B register in bits
     parameter RELU=1
 ) (
@@ -25,16 +25,17 @@ module conv2d #(
     input wire reset,
     input wire [OCHAN*REGB-1:0] weight_rd,
     output [$clog2(WDEPTH)-1:0] weight_ra,
-    input wire [OCHAN*32-1:0] bias_rd,
+    //input wire [OCHAN*32-1:0] bias_rd,
+    input wire [OCHAN*64-1:0] bias_rd,
     input wire [OCHAN*32-1:0] scale_rd,
     input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
-    input wire s_axis_tlast,
-    output wire s_axis_tready,
+    //input wire s_axis_tlast,
+    //output wire s_axis_tready,
     output wire [OCHAN*DTYPE-1:0] m_axis_data,
-    output wire m_axis_tvalid,
-    output wire m_axis_tlast,
-    input wire m_axis_tready
+    output wire m_axis_tvalid
+    //output wire m_axis_tlast,
+    //input wire m_axis_tready
 );
 
 wire clr_acc;
@@ -45,7 +46,7 @@ wire [$clog2(SDEPTH)-1:0] stripe_ra;
 wire [ICHAN-1:0] ichan_sel; // 1-hot channel select
 wire [NSTRIPE-1:0] stripe_sel; // 1-hot select for tdata_o
 
-conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGA,REGB) u0 (
+conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),
@@ -74,11 +75,10 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
     .s_axis_tvalid(s_axis_tvalid),
-    .s_axis_tlast(s_axis_tlast),
-    .s_axis_tready(s_axis_tready),
-    .m_axis_tvalid(m_axis_tvalid),
-    .m_axis_tlast(m_axis_tlast),
-    .m_axis_tready(m_axis_tready)
+    //.s_axis_tlast(s_axis_tlast),
+    //.s_axis_tready(s_axis_tready),
+    .m_axis_tvalid(m_axis_tvalid)
+    //.m_axis_tlast(m_axis_tlast),
+    //.m_axis_tready(m_axis_tready)
 );
-
 endmodule

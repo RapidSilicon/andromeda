@@ -30,11 +30,11 @@ module conv2d_ctrl #(
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
-    input s_axis_tlast, // unused (?)
-    output reg s_axis_tready, // not required
+    //input s_axis_tlast, // unused (?)
+    //output reg s_axis_tready, // not required
     output reg m_axis_tvalid,
-    output reg m_axis_tlast,
-    input m_axis_tready, // not required
+    //output reg m_axis_tlast,
+    //input m_axis_tready, // not required
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
@@ -79,7 +79,7 @@ always @(posedge clk) begin
             if ((STRIDE==2) && ((row >= KHEIGHT-1) && ((row%2)!=(KHEIGHT%2))))
                     start_dot = 1'b1;
             if (row==IHEIGHT-1) begin
-                m_axis_tlast <= 1'b1;
+                //m_axis_tlast <= 1'b1;
                 row <= 'd0;
                 irow <= 'd0;
                 stripe <= 'd0;
@@ -91,7 +91,7 @@ always @(posedge clk) begin
                     irow <= 'd0;
                 else
                     irow <= irow+'d1;
-                m_axis_tlast <= 1'b0;
+                //m_axis_tlast <= 1'b0;
             end
             scol <= 'd0;
         end
@@ -140,6 +140,7 @@ reg [$clog2(KWIDTH):0] kx;
 reg [$clog2(ICHAN):0] ic;
 reg [$clog2(NROW):0] srow;
 reg [$clog2(OWIDTH):0] ocol;
+reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 localparam DP_IDLE = 'd0;
 localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
@@ -170,9 +171,10 @@ always @(posedge clk) begin
             state <= DP_RUN;
         end
         DP_RUN: begin
-            weight_ra <= ky*KWIDTH+kx;
+            //weight_ra <= ky*KWIDTH+kx;
+            weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
             stripe_ra <= ((ky+srow)%NROW)*NCOL + kx + ocol*STRIDE;
-            ichan_sel <= 'b1 << ic;
+            ichan_sel0 <= 'b1 << ic;
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
@@ -214,14 +216,26 @@ always @(posedge clk) begin
     end
 end
 
+always @(posedge clk) begin
+    ichan_sel1 <= ichan_sel0;
+    ichan_sel <= ichan_sel1;
+end
+
 // alu FSM
 reg [2:0] alu_state;
 reg [$clog2(NSTRIPE):0] os; // process output stripes sequentially
+reg m_axis_tvalid0, m_axis_tvalid1;
 localparam ALU_IDLE = 'd0;
 localparam ALU_1 = 'd1;
 localparam ALU_2 = 'd2;
 localparam ALU_3 = 'd3;
 localparam ALU_ITER = 'd4;
+
+always @(posedge clk) begin
+    m_axis_tvalid1 <= m_axis_tvalid0;
+    m_axis_tvalid <= m_axis_tvalid1;
+end
+
 always @(posedge clk) begin
     if (reset) begin
         alu_state <= 'd0;
@@ -229,32 +243,32 @@ always @(posedge clk) begin
     else begin
         case (alu_state)
         ALU_IDLE: begin
-            m_axis_tvalid <= 1'b0;
+            m_axis_tvalid0 <= 1'b0;
             os <= 'd0;
             alu_op <= 'd0;
             if (start_alu)
                 alu_state <= ALU_1;
         end
         ALU_1: begin
-            m_axis_tvalid <= 1'b0;
+            m_axis_tvalid0 <= 1'b0;
             stripe_sel <= 1'b1 << os;
-            alu_op <= 'd4;
+            alu_op <= 'd1;
             alu_state <= ALU_2;
         end
         ALU_2: begin
-            m_axis_tvalid <= 1'b0;
-            alu_op <= 'd1;
+            m_axis_tvalid0 <= 1'b0;
+            alu_op <= 'd2;
             alu_state <= ALU_3;
         end
         ALU_3: begin
-            m_axis_tvalid <= 1'b0;
-            alu_op <= 'd2;
+            m_axis_tvalid0 <= 1'b0;
+            alu_op <= 'd3;
             alu_state <= ALU_ITER;
         end
         ALU_ITER: begin
-            m_axis_tvalid <= 1'b1;
+            m_axis_tvalid0 <= 1'b1;
             if (RELU)
-                alu_op <= 'd3;
+                alu_op <= 'd4;
             else
                 alu_op <= 'd5;
             if (os==NSTRIPE-1)
