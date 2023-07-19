@@ -11,7 +11,7 @@ parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../
 parser.add_argument('--top', help='top level module name',default='mnist')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
 parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
-parser.add_argument('--dtype', help='dtype width (int8, bfloat16)',default=8, type=int)
+parser.add_argument('--dtype', help='dtype width (int8, int16)',default=8, type=int)
 parser.add_argument('--regz', help='regz width e.g. 32,48,64',default=32, type=int)
 parser.add_argument('--regb', help='regb width (weight) (int8, int16)',default=8, type=int)
 parser.add_argument('--analyze', help='run TFLite analyzer',default=False, action='store_true')
@@ -281,10 +281,7 @@ for j,l in enumerate(layers):
     w+='endmodule\n'
     w+='\n'
 
-    if args.dtype==8:
-        bias_width=32
-    if args.dtype==16:
-        bias_width=64
+    bias_width = args.regz
     w+='module bias_rom_{} (data);\n'.format(j)
     w+='output signed [{}*{}-1:0] data;\n'.format(l.oshape[-1], bias_width)
     w+='\n'

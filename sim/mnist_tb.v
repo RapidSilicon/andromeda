@@ -1,15 +1,17 @@
 // testbench for mnist
 //
 `timescale 1ns / 1ps
-module mnist_tb();
+module mnist_tb #(
+    parameter DTYPE=9      // width of activations
+) ();
 
 reg clk;
 reg reset;
-reg signed [15:0] s_axis_data;
+reg signed [DTYPE-1:0] s_axis_data;
 reg s_axis_tvalid;
 //wire s_axis_tlast;
 //wire s_axis_tready;
-wire signed [10*16-1:0] m_axis_data;
+wire signed [10*DTYPE-1:0] m_axis_data;
 wire m_axis_tvalid;
 //wire m_axis_tlast;
 //wire m_axis_tready;
@@ -21,7 +23,7 @@ initial begin
     end
 end
 
-reg signed [15:0] test_data [0:783];
+reg signed [DTYPE-1:0] test_data [0:783];
 integer i;
 // stimulus
 initial begin
@@ -60,11 +62,11 @@ end
 
 // checker
 integer j;
-reg signed [15:0] dout;
+reg signed [DTYPE-1:0] dout;
 always @(negedge clk) begin
     if (m_axis_tvalid) begin
         for (j=0; j<10; j=j+1) begin
-            dout = m_axis_data[j*16 +: 16];
+            dout = m_axis_data[j*DTYPE +: DTYPE];
             $display("PREDICTION %d VALUE %b %d %h",j,dout,dout,dout);
         end
     end
@@ -84,6 +86,7 @@ always @(negedge clk) begin
 end
 */
 
+/*
 integer k,g;
 wire [16*32-1:0] tap_data [0:12];
 wire tap_valid [0:12];
@@ -114,6 +117,7 @@ assign tap_data[9] = mnist_tb.u0.u4.m_axis_data;
 assign tap_data[10] = mnist_tb.u0.u4.m_axis_data;
 assign tap_data[11] = mnist_tb.u0.u4.m_axis_data;
 assign tap_data[12] = mnist_tb.u0.u4.m_axis_data;
+*/
 
 /*
 always @(negedge clk) begin

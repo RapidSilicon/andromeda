@@ -7,8 +7,7 @@ module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64
     input [NSTRIPE-1:0] stripe_wen,
     input [$clog2(SDEPTH)-1:0] stripe_ra,
     input wire [OCHAN*REGB-1:0] weight_rd, // data from ROM
-    //input wire [OCHAN*32-1:0] bias_rd, // int32 from ROM
-    input wire [OCHAN*64-1:0] bias_rd, // int32 from ROM
+    input wire [OCHAN*REGZ-1:0] bias_rd, // int32 from ROM
     input wire [OCHAN*32-1:0] scale_rd, // int32 from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
@@ -115,9 +114,10 @@ generate
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j];
                     'd2 : reg_z[i][j] <= scale_mult_result[i][j];
                     'd3 : begin
-                            if (reg_z[i][j] > $signed('d32767)) begin
-                                $display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(64'd32767));
-                                reg_z[i][j] <= 'd32767;
+                            //if (reg_z[i][j] > $signed('d32767)) begin
+                            if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
+                                $display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
+                                reg_z[i][j] <= 2**(DTYPE-1)-1;
                             end
                         end
 
