@@ -29,16 +29,12 @@ module conv2d #(
     input wire [OCHAN*32-1:0] scale_rd,
     input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
-    //input wire s_axis_tlast,
-    //output wire s_axis_tready,
     output wire [OCHAN*DTYPE-1:0] m_axis_data,
     output wire m_axis_tvalid
-    //output wire m_axis_tlast,
-    //input wire m_axis_tready
 );
 
 wire clr_acc;
-wire [2:0] alu_op; // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
+wire [2:0] alu_op;
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
 wire [$clog2(SDEPTH)-1:0] stripe_ra;
@@ -74,10 +70,6 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
     .s_axis_tvalid(s_axis_tvalid),
-    //.s_axis_tlast(s_axis_tlast),
-    //.s_axis_tready(s_axis_tready),
     .m_axis_tvalid(m_axis_tvalid)
-    //.m_axis_tlast(m_axis_tlast),
-    //.m_axis_tready(m_axis_tready)
 );
 endmodule

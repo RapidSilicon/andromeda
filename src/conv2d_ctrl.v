@@ -23,23 +23,18 @@ module conv2d_ctrl #(
 ) (
     input clk, reset,
     output reg clr_acc,
-    output reg [2:0] alu_op, // 0=NOP, 
+    output reg [2:0] alu_op,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
     output reg [$clog2(SDEPTH)-1:0] stripe_ra,
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
-    //input s_axis_tlast, // unused (?)
-    //output reg s_axis_tready, // not required
     output reg m_axis_tvalid,
-    //output reg m_axis_tlast,
-    //input m_axis_tready, // not required
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
 reg [$clog2(IHEIGHT):0] row;
-//reg [$clog2(IWIDTH):0] col;
 reg [$clog2(PREV_NSTRIPE):0] stripe;
 reg [$clog2(NROW):0] irow, irow_q;
 reg [$clog2(NCOL):0] scol;
@@ -55,10 +50,8 @@ always @(posedge clk) begin
 end
 always @(posedge clk) begin
     start_dot = 1'b0;
-    //if (reset||s_axis_tlast) begin
     if (reset) begin
         row <= 'd0;
-        //col <= 'd0;
         stripe <= 'd0;
         scol <= 'd0;
         irow <= 'd0;
@@ -71,7 +64,6 @@ always @(posedge clk) begin
         else begin
             stripe <= stripe + 'd1;
         end
-        //icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
 
         if (icol==IWIDTH-1) begin
             if ((STRIDE==1) && (row >= KHEIGHT-1))
@@ -79,7 +71,6 @@ always @(posedge clk) begin
             if ((STRIDE==2) && ((row >= KHEIGHT-1) && ((row%2)!=(KHEIGHT%2))))
                     start_dot = 1'b1;
             if (row==IHEIGHT-1) begin
-                //m_axis_tlast <= 1'b1;
                 row <= 'd0;
                 irow <= 'd0;
                 stripe <= 'd0;
@@ -91,7 +82,6 @@ always @(posedge clk) begin
                     irow <= 'd0;
                 else
                     irow <= irow+'d1;
-                //m_axis_tlast <= 1'b0;
             end
             scol <= 'd0;
         end
@@ -171,7 +161,6 @@ always @(posedge clk) begin
             state <= DP_RUN;
         end
         DP_RUN: begin
-            //weight_ra <= ky*KWIDTH+kx;
             weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
             stripe_ra <= ((ky+srow)%NROW)*NCOL + kx + ocol*STRIDE;
             ichan_sel0 <= 'b1 << ic;

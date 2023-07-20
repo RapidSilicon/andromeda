@@ -2,13 +2,13 @@
 module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024, REGZ=32,REGB=8) (
     input clk, reset,
     input clr_acc,
-    input [2:0] alu_op, // 0=NOP, 1=CLEAR, 2=MAC, 3=RELU, 4=MULT, 5=RSHIFT, 6=EMIT
+    input [2:0] alu_op,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [$clog2(SDEPTH)-1:0] stripe_ra,
-    input wire [OCHAN*REGB-1:0] weight_rd, // data from ROM
-    input wire [OCHAN*REGZ-1:0] bias_rd, // int32 from ROM
-    input wire [OCHAN*32-1:0] scale_rd, // int32 from ROM
+    input wire [OCHAN*REGB-1:0] weight_rd, // from ROM
+    input wire [OCHAN*REGZ-1:0] bias_rd, // from ROM
+    input wire [OCHAN*32-1:0] scale_rd, // uint32 from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input [ICHAN*DTYPE-1:0] tdata_i,
@@ -64,17 +64,13 @@ endgenerate
 
 // weight ROM per OCHAN
 reg signed [REGB-1:0] weight [OCHAN-1:0];
-//wire signed [32-1:0] bias [OCHAN-1:0];
 wire signed [REGZ-1:0] bias [OCHAN-1:0];
 wire signed [33-1:0] scale [OCHAN-1:0]; // +1 bit for sign?
 generate for (i=0;i<OCHAN;i=i+1)
     begin
         always @(posedge clk)
              weight[i] <= weight_rd[i*REGB +: REGB];
-        //assign bias[i] = bias_rd[i*32 +: 32];
         assign bias[i] = bias_rd[i*REGZ +: REGZ];
-        //assign scale[i] = {1'b0,scale_rd[i*32+31 -: 31]};
-        //assign scale[i] = {1'b0,scale_rd[i*32+31:i*32+1]};
         assign scale[i] = {1'b0,scale_rd[i*32 +: 32]};
     end
 endgenerate
@@ -84,7 +80,7 @@ reg signed [REGZ-1:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGZ-1:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
 wire signed [33+REGZ-1:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0]; 
 wire signed [REGZ:0] scale_mult_result [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x8 multiplier may be implemented using LUTs
+reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
 reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 generate
@@ -114,7 +110,6 @@ generate
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j];
                     'd2 : reg_z[i][j] <= scale_mult_result[i][j];
                     'd3 : begin
-                            //if (reg_z[i][j] > $signed('d32767)) begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
                                 $display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
                                 reg_z[i][j] <= 2**(DTYPE-1)-1;
@@ -127,8 +122,6 @@ generate
                         end
                     'd5 : begin
                             reg_z[i][j] <= reg_z[i][j];
-//                            if (reg_z[i][j] < -'d32768)
-//                                reg_z[i][j] <= -'d32768;
                         end
 
                     default : reg_z[i][j] <= 'bx;
