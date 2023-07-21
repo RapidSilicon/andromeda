@@ -2,7 +2,7 @@
 module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024, REGZ=32,REGB=8) (
     input clk, reset,
     input clr_acc,
-    input [2:0] alu_op,
+    input [3:0] alu_op,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [$clog2(SDEPTH)-1:0] stripe_ra,
@@ -65,24 +65,29 @@ endgenerate
 // weight ROM per OCHAN
 reg signed [REGB-1:0] weight [OCHAN-1:0];
 wire signed [REGZ-1:0] bias [OCHAN-1:0];
-wire signed [33-1:0] scale [OCHAN-1:0]; // +1 bit for sign?
+wire signed [31:0] scale [OCHAN-1:0]; // s.31
 generate for (i=0;i<OCHAN;i=i+1)
     begin
         always @(posedge clk)
              weight[i] <= weight_rd[i*REGB +: REGB];
         assign bias[i] = bias_rd[i*REGZ +: REGZ];
-        assign scale[i] = {1'b0,scale_rd[i*32 +: 32]};
+        assign scale[i] = scale_rd[i*32 +: 32];
     end
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
-reg signed [REGZ-1:0] acc [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [REGZ-1:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
-wire signed [33+REGZ-1:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0]; 
-wire signed [REGZ:0] scale_mult_result [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
 reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
+reg signed [REGZ-1:0] acc [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [REGZ-1:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
+//wire signed [REGZ:0] scale_mult_result [NSTRIPE-1:0][OCHAN-1:0];
+reg signed [32+REGZ-1:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0]; 
+reg sign [NSTRIPE-1:0][OCHAN-1:0];
+
+reg [15:0] mult_a [NSTRIPE-1:0][OCHAN-1:0];
+reg [15:0] mult_b [NSTRIPE-1:0][OCHAN-1:0];
+reg [31:0] prod_ab [NSTRIPE-1:0][OCHAN-1:0];
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
@@ -100,27 +105,62 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
-            assign scale_mult[i][j] = reg_z[i][j] * scale[j];
-            assign scale_mult_result[i][j] = {scale_mult[i][j]>>32}[REGZ-1:0];
+            //assign scale_mult[i][j] = reg_z[i][j] * scale[j];
+            //assign scale_mult_result[i][j] = {scale_mult[i][j]>>31}[REGZ-1:0];
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
+                prod_ab[i][j] <= mult_a[i][j] * mult_b[i][j]; // 16x16 unsigned multiplier
                 case (alu_op)
                     'd0 : reg_z[i][j] <= acc[i][j];
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j];
-                    'd2 : reg_z[i][j] <= scale_mult_result[i][j];
+                    'd2 : begin
+                          sign[i][j] = reg_z[i][j][31];
+                          reg_z[i][j] <= reg_z[i][j][31] ? -reg_z[i][j] : reg_z[i][j]; // abs()
+                          end
                     'd3 : begin
+                            mult_a[i][j] <= reg_z[i][j][15:0];
+                            mult_b[i][j] <= scale[j][15:0];
+                          end
+                    'd4 : begin
+                            mult_a[i][j] <= reg_z[i][j][15:0];
+                            mult_b[i][j] <= scale[j][31:16];
+                            scale_mult[i][j] <= 'd0;
+                          end
+                    'd5 : begin
+                            mult_a[i][j] <= reg_z[i][j][31:16];
+                            mult_b[i][j] <= scale[j][15:0];
+                            scale_mult[i][j] <= scale_mult[i][j] + {32'b0,prod_ab[i][j]};
+                          end
+                    'd6 : begin
+                            mult_a[i][j] <= reg_z[i][j][31:16];
+                            mult_b[i][j] <= scale[j][31:16];
+                            scale_mult[i][j] <= scale_mult[i][j] + {16'b0,prod_ab[i][j],16'b0};
+                          end
+                    'd7 : begin
+                            scale_mult[i][j] <= scale_mult[i][j] + {16'b0,prod_ab[i][j],16'b0};
+                          end
+                    'd8 : begin
+                            scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0};
+                          end
+                    'd9 : begin
+                            if (sign[i][j])
+                                reg_z[i][j] <= -{scale_mult[i][j]>>31}[31:0];
+                            else
+                                reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
+                          end
+                    'd10 : begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
                                 $display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
                                 reg_z[i][j] <= 2**(DTYPE-1)-1;
                             end
                         end
 
-                    'd4 : begin
+                    'd11 : begin
                             if (reg_z[i][j] < $signed('d0)) // RELU
                                 reg_z[i][j] <= {REGZ{1'b0}};
                         end
-                    'd5 : begin
+                    'd12 : begin
                             reg_z[i][j] <= reg_z[i][j];
                         end
 

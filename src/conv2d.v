@@ -34,7 +34,7 @@ module conv2d #(
 );
 
 wire clr_acc;
-wire [2:0] alu_op;
+wire [3:0] alu_op;
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
 wire [$clog2(SDEPTH)-1:0] stripe_ra;

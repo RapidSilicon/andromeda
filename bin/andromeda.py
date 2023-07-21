@@ -207,7 +207,7 @@ for j,l in enumerate(layers):
     w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
     w+='\n'
     for i in range(l.oshape[-1]):
-        w+='assign data[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(l.scale[i]*0xffffffff))[2:])
+        w+='assign data[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(l.scale[i]*0x7fffffff))[2:])
     w+='endmodule\n'
     w+='\n'
 

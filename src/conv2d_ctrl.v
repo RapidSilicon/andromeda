@@ -23,7 +23,7 @@ module conv2d_ctrl #(
 ) (
     input clk, reset,
     output reg clr_acc,
-    output reg [2:0] alu_op,
+    output reg [3:0] alu_op,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
     output reg [$clog2(SDEPTH)-1:0] stripe_ra,
@@ -131,6 +131,7 @@ reg [$clog2(ICHAN):0] ic;
 reg [$clog2(NROW):0] srow;
 reg [$clog2(OWIDTH):0] ocol;
 reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
+reg [4:0] wait_state;
 localparam DP_IDLE = 'd0;
 localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
@@ -145,6 +146,7 @@ always @(posedge clk) begin
         ic <= 'd0;
         srow <= 'd0;
         ocol <= 'd0;
+        wait_state <= 'd0;
     end
     else begin
         case (state)
@@ -159,26 +161,30 @@ always @(posedge clk) begin
         DP_INIT: begin
             clr_acc0 = 1'b1;
             state <= DP_RUN;
+            wait_state <= 'd0;
         end
         DP_RUN: begin
+            wait_state <= wait_state + 'd1;
             weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
             stripe_ra <= ((ky+srow)%NROW)*NCOL + kx + ocol*STRIDE;
             ichan_sel0 <= 'b1 << ic;
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
-                        if (ocol==OWIDTH-1) begin
+                        if (wait_state > 'd13) begin
+                            wait_state <= 'd0;
                             start_alu0 = 1'b1;
-                            ocol <= 'd0;
-                            state <= DP_FINISH;
-                        end
-                        else begin
-                            ocol <= ocol+'d1;
-                            ky <= 'd0;
-                            kx <= 'd0;
-                            ic <= 'd0;
-                            start_alu0 = 1'b1;
-                            clr_acc0 = 1'b1;
+                            if (ocol==OWIDTH-1) begin
+                                ocol <= 'd0;
+                                state <= DP_FINISH;
+                            end
+                            else begin
+                                ocol <= ocol+'d1;
+                                ky <= 'd0;
+                                kx <= 'd0;
+                                ic <= 'd0;
+                                clr_acc0 = 1'b1;
+                            end
                         end
                     end
                     else begin
@@ -211,14 +217,21 @@ always @(posedge clk) begin
 end
 
 // alu FSM
-reg [2:0] alu_state;
+reg [3:0] alu_state;
 reg [$clog2(NSTRIPE):0] os; // process output stripes sequentially
 reg m_axis_tvalid0, m_axis_tvalid1;
 localparam ALU_IDLE = 'd0;
 localparam ALU_1 = 'd1;
 localparam ALU_2 = 'd2;
 localparam ALU_3 = 'd3;
-localparam ALU_ITER = 'd4;
+localparam ALU_4 = 'd4;
+localparam ALU_5 = 'd5;
+localparam ALU_6 = 'd6;
+localparam ALU_7 = 'd7;
+localparam ALU_8 = 'd8;
+localparam ALU_9 = 'd9;
+localparam ALU_10 = 'd10;
+localparam ALU_ITER = 'd11;
 
 always @(posedge clk) begin
     m_axis_tvalid1 <= m_axis_tvalid0;
@@ -245,21 +258,48 @@ always @(posedge clk) begin
             alu_state <= ALU_2;
         end
         ALU_2: begin
-            m_axis_tvalid0 <= 1'b0;
             alu_op <= 'd2;
             alu_state <= ALU_3;
         end
         ALU_3: begin
-            m_axis_tvalid0 <= 1'b0;
             alu_op <= 'd3;
+            alu_state <= ALU_4;
+        end
+        ALU_4: begin
+            alu_op <= 'd4;
+            alu_state <= ALU_5;
+        end
+        ALU_5: begin
+            alu_op <= 'd5;
+            alu_state <= ALU_6;
+        end
+        ALU_6: begin
+            alu_op <= 'd6;
+            alu_state <= ALU_7;
+        end
+        ALU_7: begin
+            alu_op <= 'd7;
+            alu_state <= ALU_8;
+        end
+        ALU_8: begin
+            alu_op <= 'd8;
+            alu_state <= ALU_9;
+        end
+        ALU_9: begin
+            alu_op <= 'd9;
+            alu_state <= ALU_10;
+        end
+        ALU_10: begin
+            m_axis_tvalid0 <= 1'b0;
+            alu_op <= 'd10;
             alu_state <= ALU_ITER;
         end
         ALU_ITER: begin
             m_axis_tvalid0 <= 1'b1;
             if (RELU)
-                alu_op <= 'd4;
+                alu_op <= 'd11;
             else
-                alu_op <= 'd5;
+                alu_op <= 'd12;
             if (os==NSTRIPE-1)
                 alu_state <= ALU_IDLE;
             else begin
