@@ -19,11 +19,12 @@ module conv2d_ctrl #(
     parameter NCOL=1,
     parameter OVERLAP=1,
     parameter RELU=1,
+    parameter REGZ=32,
     parameter SADDR=$clog2(SDEPTH)
 ) (
     input clk, reset,
     output reg clr_acc,
-    output reg [3:0] alu_op,
+    output reg [4:0] alu_op,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
     output reg [$clog2(SDEPTH)-1:0] stripe_ra,
@@ -171,7 +172,7 @@ always @(posedge clk) begin
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
-                        if (wait_state > 'd13) begin
+                        if (wait_state > 'd20) begin // if dot product is faster than alu ops, wait
                             wait_state <= 'd0;
                             start_alu0 = 1'b1;
                             if (ocol==OWIDTH-1) begin
@@ -231,7 +232,11 @@ localparam ALU_7 = 'd7;
 localparam ALU_8 = 'd8;
 localparam ALU_9 = 'd9;
 localparam ALU_10 = 'd10;
-localparam ALU_ITER = 'd11;
+localparam ALU_11 = 'd11;
+localparam ALU_12 = 'd12;
+localparam ALU_13 = 'd13;
+localparam ALU_14 = 'd14;
+localparam ALU_ITER = 'd15;
 
 always @(posedge clk) begin
     m_axis_tvalid1 <= m_axis_tvalid0;
@@ -283,23 +288,42 @@ always @(posedge clk) begin
         end
         ALU_8: begin
             alu_op <= 'd8;
-            alu_state <= ALU_9;
+            if (REGZ==32)
+                alu_state <= ALU_13;
+            if (REGZ==64)
+                alu_state <= ALU_9;
         end
         ALU_9: begin
             alu_op <= 'd9;
             alu_state <= ALU_10;
         end
         ALU_10: begin
-            m_axis_tvalid0 <= 1'b0;
             alu_op <= 'd10;
+            alu_state <= ALU_11;
+        end
+        ALU_11: begin
+            alu_op <= 'd11;
+            alu_state <= ALU_12;
+        end
+        ALU_12: begin
+            alu_op <= 'd12;
+            alu_state <= ALU_13;
+        end
+        ALU_13: begin
+            alu_op <= 'd13;
+            alu_state <= ALU_14;
+        end
+        ALU_14: begin
+            m_axis_tvalid0 <= 1'b0;
+            alu_op <= 'd14;
             alu_state <= ALU_ITER;
         end
         ALU_ITER: begin
             m_axis_tvalid0 <= 1'b1;
             if (RELU)
-                alu_op <= 'd11;
+                alu_op <= 'd15;
             else
-                alu_op <= 'd12;
+                alu_op <= 'd16;
             if (os==NSTRIPE-1)
                 alu_state <= ALU_IDLE;
             else begin

@@ -2,7 +2,7 @@
 module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024, REGZ=32,REGB=8) (
     input clk, reset,
     input clr_acc,
-    input [3:0] alu_op,
+    input [4:0] alu_op,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
     input [$clog2(SDEPTH)-1:0] stripe_ra,
@@ -106,7 +106,8 @@ generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
             //assign scale_mult[i][j] = reg_z[i][j] * scale[j];
-            //assign scale_mult_result[i][j] = {scale_mult[i][j]>>31}[REGZ-1:0];
+            //assign scale_mult_result[i][j] = {scale_mult[i][j]>>32}[REGZ-1:0];
+            //
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
@@ -115,52 +116,74 @@ generate
                     'd0 : reg_z[i][j] <= acc[i][j];
                     'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j];
                     'd2 : begin
-                          sign[i][j] = reg_z[i][j][31];
-                          reg_z[i][j] <= reg_z[i][j][31] ? -reg_z[i][j] : reg_z[i][j]; // abs()
+                            sign[i][j] <= reg_z[i][j][REGZ-1];
+                            reg_z[i][j] <= reg_z[i][j][REGZ-1] ? ~reg_z[i][j]+'d1 : reg_z[i][j]; // abs()
                           end
-                    'd3 : begin
-                            mult_a[i][j] <= reg_z[i][j][15:0];
+                    'd3 : begin // part1 32x32 or 64x32 multiply using 16x16 operations
+                            mult_a[i][j] <= reg_z[i][j][0 +:16];
                             mult_b[i][j] <= scale[j][15:0];
                           end
-                    'd4 : begin
-                            mult_a[i][j] <= reg_z[i][j][15:0];
+                    'd4 : begin // part2
+                            mult_a[i][j] <= reg_z[i][j][0 +:16];
                             mult_b[i][j] <= scale[j][31:16];
                             scale_mult[i][j] <= 'd0;
                           end
-                    'd5 : begin
-                            mult_a[i][j] <= reg_z[i][j][31:16];
+                    'd5 : begin // part3
+                            mult_a[i][j] <= reg_z[i][j][16 +:16];
                             mult_b[i][j] <= scale[j][15:0];
-                            scale_mult[i][j] <= scale_mult[i][j] + {32'b0,prod_ab[i][j]};
+                            scale_mult[i][j] <= scale_mult[i][j] + {{REGZ{1'b0}},prod_ab[i][j]}; // +part1
                           end
-                    'd6 : begin
-                            mult_a[i][j] <= reg_z[i][j][31:16];
+                    'd6 : begin // part4
+                            mult_a[i][j] <= reg_z[i][j][16 +:16];
                             mult_b[i][j] <= scale[j][31:16];
-                            scale_mult[i][j] <= scale_mult[i][j] + {16'b0,prod_ab[i][j],16'b0};
+                            scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-16{1'b0}},prod_ab[i][j],16'b0}; // +part2
                           end
-                    'd7 : begin
-                            scale_mult[i][j] <= scale_mult[i][j] + {16'b0,prod_ab[i][j],16'b0};
+                    'd7 : begin // part5
+                            mult_a[i][j] <= reg_z[i][j][(REGZ==64)?32:0 +:16];
+                            mult_b[i][j] <= scale[j][15:0];
+                            scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-16{1'b0}},prod_ab[i][j],16'b0}; // +part3
                           end
-                    'd8 : begin
-                            scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0};
+                    'd8 : begin // part6
+                            mult_a[i][j] <= reg_z[i][j][(REGZ==64)?32:0 +:16];
+                            mult_b[i][j] <= scale[j][31:16];
+                            scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part4
                           end
-                    'd9 : begin
+                    'd9 : begin // part7
+                                mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
+                                mult_b[i][j] <= scale[j][15:0];
+                                scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part5
+                          end
+                    'd10 : begin // part8
+                            mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
+                            mult_b[i][j] <= scale[j][31:16];
+                            scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part6
+                          end
+                    'd11 : begin // pipeline
+                            scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part7
+                          end
+                    'd12 : begin // pipeline
+                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-64):0{1'b0}},prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
+                            //scale_mult[i][j] <= scale_mult[i][j] + {'b0,prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
+                            scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
+                          end
+                    'd13 : begin // scale is unsigned, so result has the same sign as the original reg_z
                             if (sign[i][j])
-                                reg_z[i][j] <= -{scale_mult[i][j]>>31}[31:0];
+                                reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1;
                             else
                                 reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
                           end
-                    'd10 : begin
+                    'd14 : begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
-                                $display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
+                                //$display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
                                 reg_z[i][j] <= 2**(DTYPE-1)-1;
                             end
                         end
 
-                    'd11 : begin
+                    'd15 : begin
                             if (reg_z[i][j] < $signed('d0)) // RELU
                                 reg_z[i][j] <= {REGZ{1'b0}};
                         end
-                    'd12 : begin
+                    'd16 : begin
                             reg_z[i][j] <= reg_z[i][j];
                         end
 
