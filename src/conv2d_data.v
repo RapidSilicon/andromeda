@@ -1,5 +1,5 @@
 // conv2d.v data path
-module conv2d_data #(parameter DTYPE=8, parameter NSTRIPE=16, parameter ICHAN=64, parameter OCHAN=64, parameter SDEPTH=1024, REGZ=32,REGB=8) (
+module conv2d_data #(parameter DTYPE=8,NSTRIPE=16,ICHAN=64,OCHAN=64,SDEPTH=1024,REGZ=32,REGB=8) (
     input clk, reset,
     input clr_acc,
     input [4:0] alu_op,
@@ -81,13 +81,13 @@ reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
 reg signed [REGZ-1:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGZ-1:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
-//wire signed [REGZ:0] scale_mult_result [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [32+REGZ-1:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0]; 
 reg sign [NSTRIPE-1:0][OCHAN-1:0];
-
 reg [15:0] mult_a [NSTRIPE-1:0][OCHAN-1:0];
 reg [15:0] mult_b [NSTRIPE-1:0][OCHAN-1:0];
 reg [31:0] prod_ab [NSTRIPE-1:0][OCHAN-1:0];
+
+// dot product MAC
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
@@ -102,12 +102,10 @@ generate
     end
 endgenerate
 
+// scale/saturate/relu ALU
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
-            //assign scale_mult[i][j] = reg_z[i][j] * scale[j];
-            //assign scale_mult_result[i][j] = {scale_mult[i][j]>>32}[REGZ-1:0];
-            //
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
@@ -119,7 +117,7 @@ generate
                             sign[i][j] <= reg_z[i][j][REGZ-1];
                             reg_z[i][j] <= reg_z[i][j][REGZ-1] ? ~reg_z[i][j]+'d1 : reg_z[i][j]; // abs()
                           end
-                    'd3 : begin // part1 32x32 or 64x32 multiply using 16x16 operations
+                    'd3 : begin // part1 (32x32 or 64x32 multiply using 16x16 operations)
                             mult_a[i][j] <= reg_z[i][j][0 +:16];
                             mult_b[i][j] <= scale[j][15:0];
                           end
@@ -162,13 +160,11 @@ generate
                             scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part7
                           end
                     'd12 : begin // pipeline
-                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-64):0{1'b0}},prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
-                            //scale_mult[i][j] <= scale_mult[i][j] + {'b0,prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
                             scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
                           end
                     'd13 : begin // scale is unsigned, so result has the same sign as the original reg_z
                             if (sign[i][j])
-                                reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1;
+                                reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1; // twos complement negation
                             else
                                 reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
                           end
@@ -184,7 +180,7 @@ generate
                                 reg_z[i][j] <= {REGZ{1'b0}};
                         end
                     'd16 : begin
-                            reg_z[i][j] <= reg_z[i][j];
+                            reg_z[i][j] <= reg_z[i][j]; // no activation on final layer
                         end
 
                     default : reg_z[i][j] <= 'bx;
@@ -201,7 +197,6 @@ generate
         always @(tdata_w or reg_z or stripe_sel) begin
             tdata_w[j*DTYPE +: DTYPE] = 0;
             for (m=0;m<NSTRIPE;m=m+1) begin
-                //tdata_o[j*DTYPE +: DTYPE] |= reg_z[m][j][31:32-DTYPE] & stripe_sel[m];
                 tdata_w[j*DTYPE +: DTYPE] = tdata_w[j*DTYPE +: DTYPE] | ((reg_z[m][j][DTYPE-1:0] & {DTYPE{stripe_sel[m]}}));
             end
         end

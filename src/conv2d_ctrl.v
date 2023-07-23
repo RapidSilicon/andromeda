@@ -172,7 +172,7 @@ always @(posedge clk) begin
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
-                        if (wait_state > 'd20) begin // if dot product is faster than alu ops, wait
+                        if (wait_state > 'd20) begin // if dot product is faster than alu ops, wait for it
                             wait_state <= 'd0;
                             start_alu0 = 1'b1;
                             if (ocol==OWIDTH-1) begin
@@ -336,5 +336,4 @@ always @(posedge clk) begin
         endcase
     end
 end
-
 endmodule
