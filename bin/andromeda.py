@@ -63,11 +63,17 @@ for j in range(graph.OperatorsLength()):
         l.nmac = l.rate/args.clk
         l.nstripe = int(np.ceil(l.nmac/l.oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
         l.nrow = l.wshape[-3]+l.stride
-        if l.stride==1:
-            l.ncol = int(np.ceil(l.oshape[-2]/l.nstripe))+2
-        elif l.stride==2:
-            l.ncol = int(np.ceil(l.oshape[-2]/l.nstripe))*2+1
-        l.stripe = np.zeros([l.nstripe,l.nrow,l.ncol+2,l.ishape[-1]])
+
+#        if l.stride==1:
+#            l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
+#        elif l.stride==2:
+#            l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))*2
+
+        #l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
+        #l.ocol = int(np.ceil(l.oshape[-2]/l.nstripe))
+        l.ncol = l.ishape[-2]//l.nstripe
+        l.ocol = (l.ishape[-2]//l.nstripe)//l.stride
+
         if l.stride==1:
             l.overlap=2
         elif l.stride==2:
@@ -77,11 +83,16 @@ for j in range(graph.OperatorsLength()):
         if l.nstripe==1:
             l.overlap=0
 
+        l.stripe = np.zeros([l.nstripe,l.nrow,l.ncol+l.overlap,l.ishape[-1]])
+        #l.stripe = np.zeros([l.nstripe,l.nrow,l.ncol,l.ishape[-1]])
+
         if j==0:
             l.prev_ncol = l.ncol
             l.prev_nstripe = l.nstripe
         else:
-            l.prev_ncol = layers[-1].ncol
+            #l.prev_ncol = layers[-1].ncol
+            #l.prev_ncol = int(np.ceil(layers[-1].oshape[-2]/layers[-1].nstripe))
+            l.prev_ncol = int(np.ceil(layers[-1].ishape[-2]/layers[-1].nstripe))
             l.prev_nstripe = layers[-1].nstripe
 
         layers.append(l)
@@ -101,8 +112,12 @@ s+='module {} (\n'.format(args.top)
 s+='    input wire clk,\n'
 s+='    input wire reset,\n'
 s+='    input wire [{}*{}-1:0] s_axis_data,\n'.format(layers[0].ishape[-1], args.dtype)
+s+='    input wire [{}-1:0] s_col,\n'.format(int(np.ceil(np.log2(layers[0].ishape[-2]))))
+s+='    input wire [{}-1:0] s_row,\n'.format(int(np.ceil(np.log2(layers[0].ishape[-3]))))
 s+='    input wire s_axis_tvalid,\n'
 s+='    output wire [{}*{}-1:0] m_axis_data,\n'.format(layers[-1].oshape[-1], args.dtype)
+s+='    output wire [{}-1:0] m_col,\n'.format(int(np.ceil(np.log2(layers[-1].oshape[-2]))))
+s+='    output wire [{}-1:0] m_row,\n'.format(int(np.ceil(np.log2(layers[-1].oshape[-3]))))
 s+='    output wire m_axis_tvalid\n'
 s+=');\n\n'
 
@@ -113,6 +128,10 @@ for j,l in enumerate(layers):
     s+='wire axis_tvalid_{};\n'.format(j)
     
 for j,l in enumerate(layers):
+    s+='wire [{}-1:0] col_{};\n'.format(int(np.ceil(np.log2(l.oshape[-2]))),j+1)
+    s+='wire [{}-1:0] row_{};\n'.format(int(np.ceil(np.log2(l.oshape[-3]))),j+1)
+    
+for j,l in enumerate(layers):
     s+='wire [{}*{}-1:0] weight_rd_{};\n'.format(l.oshape[-1], args.regb,j)
     s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(1, l.waddr,j)
     s+='wire [{}*{}-1:0] bias_rd_{};\n'.format(l.oshape[-1], args.regz,j)
@@ -120,9 +139,9 @@ for j,l in enumerate(layers):
  
 s+='\n'
 for j,l in enumerate(layers):
-    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,REGZ,REGB,RELU\n'
-    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
-        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.overlap,args.regz,args.regb,l.relu,j)
+    s+='// conv2d #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_NCOL,NROW,NCOL,OCOL,OVERLAP,REGZ,REGB,RELU\n'
+    s+='conv2d #({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}) u{} (\n'.format(
+        args.dtype,l.nstripe,l.stripe.shape[1]*l.stripe.shape[2],l.wdepth,l.ishape[-3],l.ishape[-2],l.ishape[-1],l.oshape[-3],l.oshape[-2],l.oshape[-1],l.wshape[-3],l.wshape[-2],l.stride,l.prev_nstripe,l.prev_ncol,l.nrow,l.ncol,l.ocol,l.overlap,args.regz,args.regb,l.relu,j)
     s+='.clk(clk),\n'
     s+='.reset(reset),\n'
     s+='.weight_rd(weight_rd_{}),\n'.format(j)
@@ -131,16 +150,24 @@ for j,l in enumerate(layers):
     s+='.scale_rd(scale_rd_{}),\n'.format(j)
     if j==0:
         s+='.s_axis_data(s_axis_data),\n'
+        s+='.s_col(s_col),\n'
+        s+='.s_row(s_row),\n'
         s+='.s_axis_tvalid(s_axis_tvalid),\n'
     else:
         s+='.s_axis_data(axis_data_{}),\n'.format(j)
+        s+='.s_col(col_{}),\n'.format(j)
+        s+='.s_row(row_{}),\n'.format(j)
         s+='.s_axis_tvalid(axis_tvalid_{}),\n'.format(j)
 
     if j==len(layers)-1:
         s+='.m_axis_data(m_axis_data),\n'
+        s+='.m_col(m_col),\n'
+        s+='.m_row(m_row),\n'
         s+='.m_axis_tvalid(m_axis_tvalid)\n'
     else:
         s+='.m_axis_data(axis_data_{}),\n'.format(j+1)
+        s+='.m_col(col_{}),\n'.format(j+1)
+        s+='.m_row(row_{}),\n'.format(j+1)
         s+='.m_axis_tvalid(axis_tvalid_{})\n'.format(j+1)
     s+=');\n'
 

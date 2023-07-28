@@ -14,9 +14,10 @@ module conv2d_ctrl #(
     parameter KWIDTH=3,     // filter kernel width
     parameter STRIDE=1,     // x and y stride
     parameter PREV_NSTRIPE=1,
-    parameter PREV_SWIDTH=1,
+    parameter PREV_NCOL=1,
     parameter NROW=1,
     parameter NCOL=1,
+    parameter OCOL=1,
     parameter OVERLAP=1,
     parameter RELU=1,
     parameter REGZ=32,
@@ -31,23 +32,33 @@ module conv2d_ctrl #(
     output reg [ICHAN-1:0] ichan_sel, // 1-hot channel select
     output reg [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input s_axis_tvalid,
+    input [$clog2(IWIDTH)-1:0] s_col,
+    input [$clog2(IHEIGHT)-1:0] s_row,
+    output reg [$clog2(OWIDTH)-1:0] m_col,
+    output reg [$clog2(OHEIGHT)-1:0] m_row,
     output reg m_axis_tvalid,
     output reg [$clog2(WDEPTH)-1:0] weight_ra
 );
 
-reg [$clog2(IHEIGHT):0] row;
-reg [$clog2(PREV_NSTRIPE):0] stripe;
-reg [$clog2(NROW):0] irow, irow_q;
-reg [$clog2(NCOL):0] scol;
-reg [$clog2(IWIDTH):0] icol;
-reg start_dot, start_alu;
+//reg [$clog2(IHEIGHT):0] row;
+//reg [$clog2(PREV_NSTRIPE):0] stripe;
+//reg [$clog2(NROW):0] irow, irow_q;
+//reg [$clog2(NCOL):0] scol;
+//reg [$clog2(IWIDTH):0] icol;
+//reg [$clog2(IWIDTH):0] icount;
+//reg start_dot, start_alu;
+//reg s_axis_tvalid_q;
 
 // write incoming features into the stripe buffers
+/*
 always @(posedge clk) begin
-    icol <= stripe*PREV_SWIDTH+scol; // "unstriped" input column
+    //icol <= stripe*PREV_NCOL+scol; // "unstriped" input column
+    icol <= stripe*$rtoi($ceil(IWIDTH/$itor(PREV_NSTRIPE)))+scol; // "unstriped" input column
 end
+
 always @(posedge clk) begin
     irow_q <= irow;
+    s_axis_tvalid_q <= s_axis_tvalid;
 end
 always @(posedge clk) begin
     start_dot = 1'b0;
@@ -56,6 +67,7 @@ always @(posedge clk) begin
         stripe <= 'd0;
         scol <= 'd0;
         irow <= 'd0;
+        icount <= 'd0;
     end
     else if (s_axis_tvalid) begin
         if (stripe==PREV_NSTRIPE-1) begin
@@ -65,8 +77,11 @@ always @(posedge clk) begin
         else begin
             stripe <= stripe + 'd1;
         end
-
-        if (icol==IWIDTH-1) begin
+//    end
+//    else if (s_axis_tvalid_q) begin
+        icount <= icount+'d1;
+        //if (icol==IWIDTH-1) begin
+        if (icount==IWIDTH-1) begin
             if ((STRIDE==1) && (row >= KHEIGHT-1))
                     start_dot = 1'b1;
             if ((STRIDE==2) && ((row >= KHEIGHT-1) && ((row%2)!=(KHEIGHT%2))))
@@ -85,27 +100,63 @@ always @(posedge clk) begin
                     irow <= irow+'d1;
             end
             scol <= 'd0;
+            icount <= 'd0;
         end
     end
 end
+*/
 
-reg s_axis_tvalid_q;
+reg s_valid_q;
+reg [$clog2(IWIDTH)-1:0] s_col_q;
+reg [$clog2(IHEIGHT)-1:0] s_row_q;
 always @(posedge clk) begin
-    s_axis_tvalid_q <= s_axis_tvalid;
+    s_valid_q <= s_axis_tvalid;
+    s_col_q <= s_col;
+    s_row_q <= s_row;
 end
 
 genvar i;
+wire [SADDR-1:0] stripe_waddr[NSTRIPE-1:0];
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
+        assign stripe_waddr[i] = stripe_wa[i*SADDR +: SADDR];
         always @ (posedge clk) begin
-            stripe_wa[i*SADDR+SADDR-1:i*SADDR] = icol-i*NCOL+irow_q*NCOL;
-            if ((icol >= i*NCOL) && (icol < i*NCOL+NCOL+OVERLAP))
-                stripe_wen[i] <= s_axis_tvalid_q;
+            stripe_wa[i*SADDR+SADDR-1:i*SADDR] <= (s_row_q%NROW)*(NCOL+OVERLAP)+(s_col_q-i*NCOL);
+            //if ((s_col_q >= i*(NCOL-1)) && (s_col_q <= i*(NCOL-1)+NCOL+OVERLAP))
+            if ((s_col_q >= i*NCOL) && (s_col_q < i*NCOL+NCOL+OVERLAP))
+                stripe_wen[i] <= s_valid_q;
             else
                 stripe_wen[i] <= 1'b0;
         end
     end
 endgenerate
+
+reg [$clog2(IWIDTH)-1:0] icount;
+reg start_row;
+always @ (posedge clk) begin
+    if (reset) begin
+        icount <= 'd0;
+        start_row <= 'd0;
+    end
+    else if (s_valid_q) begin
+        if (icount==IWIDTH-1) begin
+            icount <= 'd0;
+            if ((STRIDE==1) && (s_row_q>=KHEIGHT-1))
+                start_row <= 1'b1;
+            else if ((STRIDE==2) && ((s_row_q>=KHEIGHT-1) && ((s_row_q%2)!=(KHEIGHT%2))))
+                start_row <= 1'b1;
+            else
+                start_row <= 1'b0;
+        end
+        else begin
+            icount <= icount+'d1;
+            start_row <= 1'b0;
+        end
+    end
+    else begin
+        start_row <= 1'b0;
+    end
+end
 
 // dot product FSM
 reg clr_acc0,clr_acc1,clr_acc2,clr_acc3,clr_acc4;
@@ -117,7 +168,7 @@ always @(posedge clk) begin
     clr_acc <= clr_acc4;
 end
 
-reg start_alu0,start_alu1,start_alu2,start_alu3;
+reg start_alu,start_alu0,start_alu1,start_alu2,start_alu3;
 always @(posedge clk) begin
     start_alu1 <= start_alu0;
     start_alu2 <= start_alu1;
@@ -129,8 +180,10 @@ reg [2:0] state;
 reg [$clog2(KHEIGHT):0] ky;
 reg [$clog2(KWIDTH):0] kx;
 reg [$clog2(ICHAN):0] ic;
-reg [$clog2(NROW):0] srow;
-reg [$clog2(OWIDTH):0] ocol;
+//reg [$clog2(NROW):0] srow;
+reg [$clog2(OWIDTH):0] ocol,ocol_pipe;
+reg [$clog2(OHEIGHT):0] orow,orow_pipe;
+//reg [$clog2(NSTRIPE):0] emit;
 reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 reg [4:0] wait_state;
 localparam DP_IDLE = 'd0;
@@ -138,16 +191,18 @@ localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
 localparam DP_FINISH = 'd3;
 always @(posedge clk) begin
-    start_alu0 = 1'b0;
+    //start_alu0 = 1'b0;
     clr_acc0 = 1'b0;
     if (reset) begin
         state <= 'd0;
         ky <= 'd0;
         kx <= 'd0;
         ic <= 'd0;
-        srow <= 'd0;
+        //srow <= 'd0;
         ocol <= 'd0;
+        orow <= 'd0;
         wait_state <= 'd0;
+        start_alu0 <= 1'b0;
     end
     else begin
         case (state)
@@ -155,38 +210,90 @@ always @(posedge clk) begin
             ky <= 'd0;
             kx <= 'd0;
             ic <= 'd0;
-            if (start_dot) begin
+            if (start_row) begin
                 state <= DP_INIT;
             end
         end
         DP_INIT: begin
             clr_acc0 = 1'b1;
-            state <= DP_RUN;
             wait_state <= 'd0;
+            state <= DP_RUN;
         end
         DP_RUN: begin
-            wait_state <= wait_state + 'd1;
             weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
-            stripe_ra <= ((ky+srow)%NROW)*NCOL + kx + ocol*STRIDE;
+            //stripe_ra <= ((ky+srow)%NROW)*(NCOL+OVERLAP) + kx + ocol*STRIDE;
+            stripe_ra <= ((ky+(orow*STRIDE))%NROW)*(NCOL+OVERLAP) + kx + ocol*STRIDE;
             ichan_sel0 <= 'b1 << ic;
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
                         if (wait_state > 'd20) begin // if dot product is faster than alu ops, wait for it
                             wait_state <= 'd0;
-                            start_alu0 = 1'b1;
-                            if (ocol==OWIDTH-1) begin
+                            clr_acc0 = 1'b1;
+                            //if ((NSTRIPE>1) && (ocol<(OWIDTH/NSTRIPE)-1)) begin // penultimate
+                            //if ((ocol<(OWIDTH/NSTRIPE)-1)) begin // penultimate
+                            //if ((ocol<$ceil(OWIDTH/$itor(NSTRIPE)))) begin // penultimate
+                            //if ((ocol<$ceil(OWIDTH/$itor(NSTRIPE)))) begin //
+                            if (ocol==(OCOL-1)) begin
+                                ocol <= 'd0;
+                                orow <= orow+'d1;
+                                state <= DP_FINISH;
+                            end
+                            else
+                                ocol <= ocol+'d1;
+
+                            ky <= 'd0;
+                            kx <= 'd0;
+                            ic <= 'd0;
+                            start_alu0 <= 1'b1;
+                            ocol_pipe <= ocol;
+                            orow_pipe <= orow;
+
+                                //emit <= (ocol==$ceil(OWIDTH/$itor(NSTRIPE))-1) ? OWIDTH%NSTRIPE : NSTRIPE;
+//
+//                            else begin
+//                                ocol <= 'd0;
+//                                state <= DP_FINISH;
+//                                if ((OWIDTH%NSTRIPE)>0) begin
+//                                    start_alu0 <= 1'b1;
+//                                   emit <= (OWIDTH%NSTRIPE)-1;
+//                                end
+/*
+                                //start_alu0 <= 1'b1;
+                                if ((OWIDTH%NSTRIPE)==0)
+                                    emit <= NSTRIPE-1;
+                                else
+                                    emit <= (OWIDTH%NSTRIPE)-1;
+*/
+//                            end
+                            //start_alu0 <= 1'b1;
+
+                            //if (ocol==OWIDTH-1) begin
+                            //if (ocol>=OWIDTH-NSTRIPE) begin
+                            //start_alu0 <= 1'b1;
+                            //if (ocol>=$ceil(OWIDTH/NSTRIPE)-1) begin
+/*
+                            if (ocol>=(OWIDTH/NSTRIPE)-1) begin
                                 ocol <= 'd0;
                                 state <= DP_FINISH;
+                                start_alu0 <= 1'b1;
+                                if ((OWIDTH%NSTRIPE)==0)
+                                    emit <= NSTRIPE-1;
+                                else
+                                    emit <= (OWIDTH%NSTRIPE)-1;
                             end
                             else begin
                                 ocol <= ocol+'d1;
                                 ky <= 'd0;
                                 kx <= 'd0;
                                 ic <= 'd0;
-                                clr_acc0 = 1'b1;
+                                start_alu0 <= 1'b1;
+                                emit <= NSTRIPE-1;
                             end
+*/
                         end
+                        else
+                            wait_state <= wait_state + 'd1;
                     end
                     else begin
                         ky <= ky+'d1;
@@ -197,13 +304,19 @@ always @(posedge clk) begin
                 else begin
                     kx <= kx+'d1;
                     ic <= 'd0;
+                    start_alu0 <= 1'b0;
+                    wait_state <= wait_state + 'd1;
                 end
             end
-            else
+            else begin
                 ic <= ic+'d1;
+                start_alu0 <= 1'b0;
+                wait_state <= wait_state + 'd1;
+            end
         end
         DP_FINISH: begin
-            srow <= (srow+STRIDE)%NROW;
+            start_alu0 <= 1'b0;
+            //srow <= (srow+STRIDE)%NROW;
             state <= DP_IDLE;
         end
         default:
@@ -218,9 +331,12 @@ always @(posedge clk) begin
 end
 
 // alu FSM
-reg [3:0] alu_state;
-reg [$clog2(NSTRIPE):0] os; // process output stripes sequentially
-reg m_axis_tvalid0, m_axis_tvalid1;
+reg [4:0] alu_state;
+reg [$clog2(NSTRIPE):0] osel; // output stripes sequentially (interleaved)
+//reg m_axis_tvalid0, m_axis_tvalid1;
+reg m_axis_tvalid0;
+reg [$clog2(OWIDTH)-1:0] m_col0;
+reg [$clog2(OHEIGHT)-1:0] m_row0;
 localparam ALU_IDLE = 'd0;
 localparam ALU_1 = 'd1;
 localparam ALU_2 = 'd2;
@@ -236,14 +352,18 @@ localparam ALU_11 = 'd11;
 localparam ALU_12 = 'd12;
 localparam ALU_13 = 'd13;
 localparam ALU_14 = 'd14;
-localparam ALU_ITER = 'd15;
+localparam ALU_15 = 'd15;
+localparam ALU_EMIT = 'd16;
 
 always @(posedge clk) begin
-    m_axis_tvalid1 <= m_axis_tvalid0;
-    m_axis_tvalid <= m_axis_tvalid1;
+    //m_axis_tvalid1 <= m_axis_tvalid0;
+    m_axis_tvalid <= m_axis_tvalid0;
+    m_col <= m_col0;
+    m_row <= m_row0;
 end
 
 always @(posedge clk) begin
+    stripe_sel <= 1'b1 << osel;
     if (reset) begin
         alu_state <= 'd0;
     end
@@ -251,14 +371,14 @@ always @(posedge clk) begin
         case (alu_state)
         ALU_IDLE: begin
             m_axis_tvalid0 <= 1'b0;
-            os <= 'd0;
+            //os <= 'd0;
             alu_op <= 'd0;
             if (start_alu)
                 alu_state <= ALU_1;
         end
         ALU_1: begin
-            m_axis_tvalid0 <= 1'b0;
-            stripe_sel <= 1'b1 << os;
+            //m_axis_tvalid0 <= 1'b0;
+            //stripe_sel <= 1'b1 << os;
             alu_op <= 'd1;
             alu_state <= ALU_2;
         end
@@ -314,21 +434,36 @@ always @(posedge clk) begin
             alu_state <= ALU_14;
         end
         ALU_14: begin
-            m_axis_tvalid0 <= 1'b0;
+            //m_axis_tvalid0 <= 1'b0;
             alu_op <= 'd14;
-            alu_state <= ALU_ITER;
+            alu_state <= ALU_15;
         end
-        ALU_ITER: begin
-            m_axis_tvalid0 <= 1'b1;
+        ALU_15: begin
+            alu_state <= ALU_EMIT;
+            osel <= 'd0;
+            //m_axis_tvalid0 <= 1'b1; // always at least 1 m_valid
             if (RELU)
                 alu_op <= 'd15;
             else
                 alu_op <= 'd16;
-            if (os==NSTRIPE-1)
-                alu_state <= ALU_IDLE;
+        end
+        ALU_EMIT: begin
+            alu_op <= 'd16; // z <= z
+            if (osel<NSTRIPE) begin
+                osel <= osel+'d1;
+                if (osel*OCOL+ocol_pipe < OWIDTH) begin // truncate if < nstripes remainder
+                    m_axis_tvalid0 <= 1'b1;
+                    m_col0 <= osel*OCOL+ocol_pipe;
+                    m_row0 <= orow_pipe;
+                end
+                else
+                    m_axis_tvalid0 <= 1'b0;
+            end
             else begin
-                os <= os+'d1;
-                alu_state <= ALU_1;
+                m_axis_tvalid0 <= 1'b0;
+                alu_op <= 'd16; // z <= z
+                osel <= 'd0;
+                alu_state <= ALU_IDLE;
             end
         end
         default:

@@ -16,6 +16,8 @@ wire m_axis_tvalid;
 //wire m_axis_tlast;
 //wire m_axis_tready;
 
+reg [4:0] s_col, s_row;
+
 initial begin
     clk = 1'b0;
     forever begin
@@ -42,15 +44,19 @@ initial begin
         //if (i==224) $finish();
 
         if ((i%28)==0)
-            $display("i",i);
+            $display(" i ",i," realtime ",$realtime);
 
         @(posedge clk) begin
             s_axis_data <= test_data[i];
             s_axis_tvalid <= 1'b1;
+            s_col <= i%28;
+            s_row <= i/28;
         end
 
         @(posedge clk) begin
             s_axis_data <= 'bx;
+            s_col <= 'bx;
+            s_row <= 'bx;
             s_axis_tvalid <= 1'b0;
         end
         
@@ -60,6 +66,9 @@ initial begin
     $finish();
 end
 
+// debug
+//initial #5000000 $finish();
+
 // checker
 integer j;
 reg signed [DTYPE-1:0] dout;
@@ -68,6 +77,7 @@ always @(negedge clk) begin
         for (j=0; j<10; j=j+1) begin
             dout = m_axis_data[j*DTYPE +: DTYPE];
             $display("PREDICTION %d VALUE %b %d %h",j,dout,dout,dout);
+            //$finish();
         end
     end
 end
@@ -138,10 +148,14 @@ mnist u0 (
     .clk(clk),
     .reset(reset),
     .s_axis_data(s_axis_data),
+    .s_col(s_col),
+    .s_row(s_row),
     .s_axis_tvalid(s_axis_tvalid),
     //.s_axis_tlast(s_axis_tlast),
     //.s_axis_tready(s_axis_tready),
     .m_axis_data(m_axis_data),
+    .m_col(),
+    .m_row(),
     .m_axis_tvalid(m_axis_tvalid)
     //.m_axis_tlast(m_axis_tlast),
     //.m_axis_tready(m_axis_tready)

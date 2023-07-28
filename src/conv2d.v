@@ -13,9 +13,10 @@ module conv2d #(
     parameter KWIDTH=3,     // filter kernel width
     parameter STRIDE=1,     // x and y stride
     parameter PREV_NSTRIPE=1,
-    parameter PREV_SWIDTH=1,
+    parameter PREV_NCOL=1,
     parameter NROW=1,
     parameter NCOL=1,
+    parameter OCOL=1,
     parameter OVERLAP=1,
     parameter REGZ=32,       // width of Z register in bits
     parameter REGB=8,       // width of B register in bits
@@ -30,7 +31,11 @@ module conv2d #(
     input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
     output wire [OCHAN*DTYPE-1:0] m_axis_data,
-    output wire m_axis_tvalid
+    output wire m_axis_tvalid,
+    input [$clog2(IWIDTH)-1:0] s_col,
+    input [$clog2(IHEIGHT)-1:0] s_row,
+    output [$clog2(OWIDTH)-1:0] m_col,
+    output [$clog2(OHEIGHT)-1:0] m_row
 );
 
 wire clr_acc;
@@ -58,7 +63,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .tdata_o(m_axis_data)
 );
 
-conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_SWIDTH,NROW,NCOL,OVERLAP,RELU,REGZ) u1 (
+conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_NCOL,NROW,NCOL,OCOL,OVERLAP,RELU,REGZ) u1 (
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),
@@ -70,6 +75,10 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
     .s_axis_tvalid(s_axis_tvalid),
-    .m_axis_tvalid(m_axis_tvalid)
+    .m_axis_tvalid(m_axis_tvalid),
+    .s_col(s_col),
+    .s_row(s_row),
+    .m_col(m_col),
+    .m_row(m_row)
 );
 endmodule
