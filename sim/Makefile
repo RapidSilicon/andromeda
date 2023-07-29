@@ -1,6 +1,6 @@
 N=0 # sample number from MNIST test data
-CLK=100e6
-#CLK=200e4
+#CLK=100e6
+CLK=150e4
 DUMP=
 #DUMP=+vcs+fsdbon+all
 
