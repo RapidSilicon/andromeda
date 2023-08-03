@@ -6,8 +6,8 @@ read_verilog -sv ../src/conv2d_ctrl.v
 read_verilog -sv ../src/conv2d.v
 read_xdc build.xdc
 #synth_design -top ${argv} -part "xc7vx485tffg1761-2"
-synth_design -top ${argv} -part "xc7vx1140tflg1926-1"
-#synth_design -top ${argv} -part "XC7A100TCSG324-1"
+#synth_design -top ${argv} -part "xc7vx1140tflg1926-1"
+synth_design -top ${argv} -part "XC7A100TCSG324-1"
 report_utilization
 opt_design -directive Explore
 place_design -directive ExtraTimingOpt
