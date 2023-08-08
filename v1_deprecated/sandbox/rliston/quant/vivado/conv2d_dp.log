@@ -1,0 +1,41 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+# IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+# Start of session at: Thu Jun 15 20:05:51 2023
+# Process ID: 222436
+# Current directory: /nfs_home/rliston/andromeda/sandbox/rliston/quant/vivado
+# Command line: vivado -log conv2d_dp.log -mode tcl -source conv2d_dp.tcl
+# Log file: /nfs_home/rliston/andromeda/sandbox/rliston/quant/vivado/conv2d_dp.log
+# Journal file: /nfs_home/rliston/andromeda/sandbox/rliston/quant/vivado/vivado.jou
+#-----------------------------------------------------------
+source conv2d_dp.tcl
+# read_verilog -sv ../conv2d_dp.v
+# read_xdc conv2d_dp.xdc
+# synth_design -top conv2d_dp
+Command: synth_design -top conv2d_dp
+Starting synth_design
+Using part: xc7vx485tffg1157-1
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7vx485t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7vx485t'
+INFO: [Common 17-1540] The version limit for your license is '2023.01' and has expired for new software. A version limit expiration means that, although you may be able to continue to use the current version of tools or IP with this license, you will not be eligible for any updates or new releases.
+INFO: [Device 21-403] Loading part xc7vx485tffg1157-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 222490
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 2631.254 ; gain = 0.000 ; free physical = 8528 ; free virtual = 28959
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'conv2d_dp' [/nfs_home/rliston/andromeda/sandbox/rliston/quant/conv2d_dp.v:2]
+ERROR: [Synth 8-439] module 'weight_rom' not found [/nfs_home/rliston/andromeda/sandbox/rliston/quant/conv2d_dp.v:57]
+ERROR: [Synth 8-6156] failed synthesizing module 'conv2d_dp' [/nfs_home/rliston/andromeda/sandbox/rliston/quant/conv2d_dp.v:2]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 2633.238 ; gain = 1.984 ; free physical = 8278 ; free virtual = 28709
+---------------------------------------------------------------------------------
+RTL Elaboration failed
+INFO: [Common 17-83] Releasing license: Synthesis
+8 Infos, 0 Warnings, 0 Critical Warnings and 3 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Synthesis failed - please see the console or run log file for details
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Jun 15 20:14:57 2023...
