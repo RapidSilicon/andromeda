@@ -7,205 +7,82 @@
 
 #include <irq.h>
 #include <libbase/uart.h>
-#include <libbase/console.h>
-#include <generated/csr.h>
+#define I2C_FREQ_HZ  4000000 // busy wait resolution is 1us so max i2c bit rate is limited to 250KHz
+#include <libbase/i2c.h>
+#include <libliteeth/udp.h>
 
-/*-----------------------------------------------------------------------*/
-/* Uart                                                                  */
-/*-----------------------------------------------------------------------*/
-
-static char *readstr(void)
-{
-	char c[2];
-	static char s[64];
-	static int ptr = 0;
-
-	if(readchar_nonblock()) {
-		c[0] = getchar();
-		c[1] = 0;
-		switch(c[0]) {
-			case 0x7f:
-			case 0x08:
-				if(ptr > 0) {
-					ptr--;
-					fputs("\x08 \x08", stdout);
-				}
-				break;
-			case 0x07:
-				break;
-			case '\r':
-			case '\n':
-				s[ptr] = 0x00;
-				fputs("\n", stdout);
-				ptr = 0;
-				return s;
-			default:
-				if(ptr >= (sizeof(s) - 1))
-					break;
-				fputs(c, stdout);
-				s[ptr] = c[0];
-				ptr++;
-				break;
-		}
-	}
-
-	return NULL;
-}
-
-static char *get_token(char **str)
-{
-	char *c, *d;
-
-	c = (char *)strchr(*str, ' ');
-	if(c == NULL) {
-		d = *str;
-		*str = *str+strlen(*str);
-		return d;
-	}
-	*c = 0;
-	d = *str;
-	*str = c+1;
-	return d;
-}
-
-static void prompt(void)
-{
-	printf("\e[92;1mlitex-demo-app\e[0m> ");
-}
-
-/*-----------------------------------------------------------------------*/
-/* Help                                                                  */
-/*-----------------------------------------------------------------------*/
-
-static void help(void)
-{
-	puts("\nLiteX minimal demo app built "__DATE__" "__TIME__"\n");
-	puts("Hello Rob !!!");
-	puts("Available commands:");
-	puts("help               - Show this command");
-	puts("reboot             - Reboot CPU");
-#ifdef CSR_LEDS_BASE
-	puts("led                - Led demo");
-#endif
-	puts("donut              - Spinning Donut demo");
-	puts("helloc             - Hello C");
-#ifdef WITH_CXX
-	puts("hellocpp           - Hello C++");
-#endif
-}
-
-/*-----------------------------------------------------------------------*/
-/* Commands                                                              */
-/*-----------------------------------------------------------------------*/
-
-static void reboot_cmd(void)
-{
-	ctrl_reset_write(1);
-}
-
-#ifdef CSR_LEDS_BASE
-static void led_cmd(void)
-{
-	int i;
-	printf("Led demo...\n");
-
-	printf("Counter mode...\n");
-	for(i=0; i<32; i++) {
-		leds_out_write(i);
-		busy_wait(100);
-	}
-
-	printf("Shift mode...\n");
-	for(i=0; i<4; i++) {
-		leds_out_write(1<<i);
-		busy_wait(200);
-	}
-	for(i=0; i<4; i++) {
-		leds_out_write(1<<(3-i));
-		busy_wait(200);
-	}
-
-	printf("Dance mode...\n");
-	for(i=0; i<4; i++) {
-		leds_out_write(0x55);
-		busy_wait(200);
-		leds_out_write(0xaa);
-		busy_wait(200);
-	}
-}
-#endif
-
-extern void donut(void);
-
-static void donut_cmd(void)
-{
-	printf("Donut demo...\n");
-	donut();
-}
-
-extern void helloc(void);
-
-static void helloc_cmd(void)
-{
-	printf("Hello C demo...\n");
-	helloc();
-}
-
-#ifdef WITH_CXX
-extern void hellocpp(void);
-
-static void hellocpp_cmd(void)
-{
-	printf("Hello C++ demo...\n");
-	hellocpp();
-}
-#endif
-
-/*-----------------------------------------------------------------------*/
-/* Console service / Main                                                */
-/*-----------------------------------------------------------------------*/
-
-static void console_service(void)
-{
-	char *str;
-	char *token;
-
-	str = readstr();
-	if(str == NULL) return;
-	token = get_token(&str);
-	if(strcmp(token, "help") == 0)
-		help();
-	else if(strcmp(token, "reboot") == 0)
-		reboot_cmd();
-#ifdef CSR_LEDS_BASE
-	else if(strcmp(token, "led") == 0)
-		led_cmd();
-#endif
-	else if(strcmp(token, "donut") == 0)
-		donut_cmd();
-	else if(strcmp(token, "helloc") == 0)
-		helloc_cmd();
-#ifdef WITH_CXX
-	else if(strcmp(token, "hellocpp") == 0)
-		hellocpp_cmd();
-#endif
-	prompt();
-}
-
+#define UDP_PORT 5005
 int main(void)
 {
-#ifdef CONFIG_CPU_HAS_INTERRUPT
 	irq_setmask(0);
 	irq_setie(1);
-#endif
 	uart_init();
+    fputs("HELLO UART FROM BARE METAL!\n", stdout);
 
-	help();
-	prompt();
+    static unsigned char data[2];
+    uint8_t *payload;
 
-	while(1) {
-		console_service();
-	}
+    unsigned int ip = IPTOINT(REMOTEIP1, REMOTEIP2, REMOTEIP3, REMOTEIP4);
+    static unsigned char macadr[6] = {0x10, 0xe2, 0xd5, 0x00, 0x00, 0x00};
+    udp_start(macadr, IPTOINT(192,168,1,50));
+    udp_arp_resolve(ip);
 
-	return 0;
+#if 1
+    unsigned int refresh = 0x2; // subpage refresh rate
+    // bool i2c_write(unsigned char slave_addr, unsigned int addr, const unsigned char *data, unsigned int len, unsigned int addr_size);
+    data[0] = 0x18 | (refresh>>1) ; // msbyte
+    data[1] = ((refresh&0x01)<<7) | 0x01; // lsbyte
+    i2c_write(0x33, 0x800d, data, 2, 2); // set refresh  rate
+#endif
+    i2c_read(0x33, 0x800d, data, 2, 0, 2); // read config
+    printf("mlx config %02x %02x\n", data[0], data[1]);
+
+    while (1) {
+#if 1
+        //data[0] = 0x1b; // msbyte
+        //data[1] = 0x89; // lsbyte
+        //i2c_write(0x33, 0x800d, data, 2, 2); // set subpage 0
+
+        payload = udp_get_tx_buffer();
+        i2c_read(0x33, 0x8000, payload, 2, 0, 2); // read status
+        i2c_read(0x33, 0x0400, payload+2, 32*24, 0, 2); // read checkboard pattern from mlx90640
+        udp_send(UDP_PORT, 30000, 32*24+2);
+
+        payload = udp_get_tx_buffer();
+        i2c_read(0x33, 0x0400+(32*24)/2, payload, 32*24, 0, 2); // read checkboard pattern from mlx90640
+        udp_send(UDP_PORT, 30000, 32*24);
+
+        //data[0] = 0x1b; // msbyte
+        //data[1] = 0x99; // lsbyte
+        //i2c_write(0x33, 0x800d, data, 2, 2); // set subpage 1
+
+        //payload = udp_get_tx_buffer();
+        //i2c_read(0x33, 0x0400, payload, 32*24, 0, 2); // read checkboard pattern from mlx90640
+        //udp_send(UDP_PORT, 30000, 32*24);
+        //payload = udp_get_tx_buffer();
+        //i2c_read(0x33, 0x0400+32*24, payload, 32*24, 0, 2); // read checkboard pattern from mlx90640
+        //udp_send(UDP_PORT, 30000, 32*24);
+#endif
+
+#if 1
+        // clear status register
+        data[1] = 0x00;
+        data[0] = 0x00;
+        i2c_write(0x33, 0x8000, data, 2, 2);
+#endif
+        // wait per MLX90640 spec
+        //busy_wait_us(1);
+
+#if 1
+        // wait for new subframe
+        while (1) {
+            i2c_read(0x33, 0x8000, data, 2, 0, 2); // read status
+            if ((data[1] & 0x08)!=0) { // wait for subpage ready
+                break;
+            } else {
+                busy_wait_us(1);
+            }
+        }
+#endif
+    }
 }
