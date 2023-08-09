@@ -28,7 +28,7 @@ int main(void)
     udp_arp_resolve(ip);
 
 #if 1
-    unsigned int refresh = 0x2; // subpage refresh rate
+    unsigned int refresh = 0x7; // subpage refresh rate
     // bool i2c_write(unsigned char slave_addr, unsigned int addr, const unsigned char *data, unsigned int len, unsigned int addr_size);
     data[0] = 0x18 | (refresh>>1) ; // msbyte
     data[1] = ((refresh&0x01)<<7) | 0x01; // lsbyte
