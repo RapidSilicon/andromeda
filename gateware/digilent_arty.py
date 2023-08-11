@@ -13,7 +13,7 @@
 
 from migen import *
 
-from litex_boards.platforms import digilent_arty as arty
+from litex_boards.platforms import arty
 from litex.build.xilinx.vivado import vivado_build_args, vivado_build_argdict
 
 from litex.soc.cores.clock import *
@@ -22,16 +22,16 @@ from litex.soc.integration.soc_core import *
 from litex.soc.integration.builder import *
 from litex.soc.cores.led import LedChaser
 from litex.soc.cores.gpio import GPIOTristate
-from litex.soc.interconnect.csr import *
+from litex.soc.cores.bitbang import I2CMaster
 
 from litedram.modules import MT41K128M16
 from litedram.phy import s7ddrphy
 
 from liteeth.phy.mii import LiteEthPHYMII
-
 from litex.soc.interconnect import wishbone
 
 # CRG ----------------------------------------------------------------------------------------------
+
 class _CRG(Module):
     def __init__(self, platform, sys_clk_freq, with_dram=True, with_rst=True):
         self.rst = Signal()
@@ -72,7 +72,7 @@ class BaseSoC(SoCCore):
     def __init__(self, variant="a7-35", toolchain="vivado", sys_clk_freq=int(100e6),
                  with_ethernet=False, with_etherbone=False, eth_ip="192.168.1.50",
                  eth_dynamic_ip=False, with_led_chaser=True, with_jtagbone=True,
-                 with_spi_flash=False, with_pmod_gpio=False, with_i2c=False, **kwargs):
+                 with_spi_flash=False, with_pmod_gpio=False, **kwargs):
         platform = arty.Platform(variant=variant, toolchain=toolchain)
 
         # SoCCore ----------------------------------------------------------------------------------
@@ -83,35 +83,18 @@ class BaseSoC(SoCCore):
         # CRG --------------------------------------------------------------------------------------
         self.submodules.crg = _CRG(platform, sys_clk_freq, with_dram=not self.integrated_main_ram_size)
 
+        # I2C --------------------------------------------------------------------------------------
+        i2c_io = platform.request("i2c")
+        self.submodules.i2c = I2CMaster(i2c_io)
+        self.submodules.sda_pup = GPIOTristate(i2c_io.sda_pup)
+        self.submodules.scl_pup = GPIOTristate(i2c_io.scl_pup)
+        
         # Andromeda --------------------------------------------------------------------------------------
-        self.add_constant("REMOTEIP1", 192)
-        self.add_constant("REMOTEIP2", 168)
-        self.add_constant("REMOTEIP3", 1)
-        self.add_constant("REMOTEIP4", 51)
-        
-        from litex.build.generic_platform import Subsignal,Pins,IOStandard
-        _i2c_io = [
-            ("i2c_io", 0,
-          		Subsignal("I2C_SDA",  Pins("D4")),
-                Subsignal("I2C_SCL",  Pins("D3")),
-                IOStandard("LVCMOS33")
-           ),
-        ]
-        platform.add_extension(_i2c_io)
-        i2c_io = platform.request("i2c_io")
-        
-        
         self.wb = wb = wishbone.Interface(data_width=32)
         andromeda_region = SoCRegion(origin=self.mem_map.get("andromeda", None), size=256*1024*1024, cached=False)
         self.bus.add_slave(name="andromeda", slave=wb, region=andromeda_region)
 
-
         platform.add_source("./gateware/andromeda.v")
-        platform.add_source("./gateware/soc_if.v")
-        platform.add_source("./gateware/rtl_ibuf/ibuf_defines.v")
-        platform.add_source("./gateware/rtl_ibuf/ibuf.v")
-        platform.add_source("./gateware/rtl_ibuf/i2c_master.v")
-        platform.add_source("./gateware/rtl_ibuf/sdp_bram.v")
         self.specials += Instance("andromeda",
             i_clk    = ClockSignal("sys"),
             i_reset = ResetSignal("sys"),
@@ -123,12 +106,8 @@ class BaseSoC(SoCCore):
             i_wb_ADR      = wb.adr,
             o_wb_DAT_MISO = wb.dat_r,
             i_wb_DAT_MOSI = wb.dat_w,
-            i_wb_SEL      = wb.sel,
-            # i2c
-            o_I2C_SCL    = i2c_io.I2C_SCL,
-            io_I2C_SDA   = i2c_io.I2C_SDA 
+            i_wb_SEL      = wb.sel
             )
-        # print('DEBUG: bus',self.bus)
 
         # DDR3 SDRAM -------------------------------------------------------------------------------
         if not self.integrated_main_ram_size:
@@ -143,6 +122,10 @@ class BaseSoC(SoCCore):
             )
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
+        self.add_constant("REMOTEIP1", 192)
+        self.add_constant("REMOTEIP2", 168)
+        self.add_constant("REMOTEIP3", 1)
+        self.add_constant("REMOTEIP4", 51)
         if with_ethernet or with_etherbone:
             self.submodules.ethphy = LiteEthPHYMII(
                 clock_pads = self.platform.request("eth_clocks"),
@@ -172,7 +155,6 @@ class BaseSoC(SoCCore):
         if with_pmod_gpio:
             platform.add_extension(arty.raw_pmod_io("pmoda"))
             self.submodules.gpio = GPIOTristate(platform.request("pmoda"))
-
 
 # Build --------------------------------------------------------------------------------------------
 
