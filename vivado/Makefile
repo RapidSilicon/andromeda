@@ -10,3 +10,7 @@ naneye:
 mira220:
 	python3 ../bin/andromeda.py --tflite ../model/mira220.tflite --top mira220 --clk 200e6 --fps 60 --regz 32 --regb 8 --dtype 9
 	vivado -log mira220.log -mode tcl -source build.tcl -tclargs mira220
+
+overhead:
+	python3 ../bin/andromeda.py --tflite ../model/overhead.tflite --top overhead --clk 100e6 --fps 16 --regz 32 --regb 8 --dtype 9
+	#vivado -log overhead.log -mode tcl -source build.tcl -tclargs overhead
