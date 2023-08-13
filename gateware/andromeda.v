@@ -9,40 +9,53 @@ module andromeda (
     input  wire [31:0] wb_DAT_MOSI,
     input  wire [ 3:0] wb_SEL,
     output reg        wb_ACK,
-    output wire [31:0] wb_DAT_MISO,
-    inout  wire I2C_SDA,
-    output wire I2C_SCL,
-    output wire SDA_PUP,
-    output wire SCL_PUP
+    output wire [31:0] wb_DAT_MISO
 );
 
-reg sda, scl, sda_pup, scl_pup;
-assign wb_DAT_MISO = {16'hfade,12'b0,scl_pup,sda_pup,I2C_SDA,scl};
-assign I2C_SDA = sda ? 1'bz : 1'b0;
-assign I2C_SCL = scl;
-assign SDA_PUP = sda_pup ? 1'b1 : 1'bz;
-assign SCL_PUP = scl_pup ? 1'b1 : 1'bz;
+reg [4:0] s_col, s_row;
 
 always @(posedge clk) begin
     if (reset) begin
-        scl <= 1'b1;
-        sda <= 1'b1;
-        sda_pup <= 1'b1;
-        scl_pup <= 1'b1;
         wb_ACK <= 1'b0;
+        s_row <= 'd0;
+        s_col <= 'd0;
     end
     else if (wb_STB && wb_WE && (wb_ADR[29:22]=='h80)) begin // 0x80000000
-        scl <= wb_DAT_MOSI[0];
-        sda <= wb_DAT_MOSI[1];
-        sda_pup <= wb_DAT_MOSI[2];
-        scl_pup <= wb_DAT_MOSI[3];
         wb_ACK <= 1'b1;
     end
     else if (wb_STB && (wb_ADR[29:22]=='h80)) begin // 0x80000000
         wb_ACK <= 1'b1;
     end
-    else
+    else begin
         wb_ACK <= 1'b0;
+        s_row <= s_row+1;
+        s_col <= s_col+1;
+    end
 end
+
+thermal u0 (
+    .clk(clk),
+    .reset(reset),
+    .s_axis_data({9{wb_DAT_MOSI}}),
+    .s_col(s_col),
+    .s_row(s_row),
+    .s_axis_tvalid(s_row[0]),
+    .m_axis_data(wb_DAT_MISO)
+);
+
+/*
+module thermal (
+    input wire clk,
+    input wire reset,
+    input wire [32*9-1:0] s_axis_data,
+    input wire [5-1:0] s_col,
+    input wire [5-1:0] s_row,
+    input wire s_axis_tvalid,
+    output wire [5*9-1:0] m_axis_data,
+    output wire [0-1:0] m_col,
+    output wire [0-1:0] m_row,
+    output wire m_axis_tvalid
+);
+*/
 
 endmodule

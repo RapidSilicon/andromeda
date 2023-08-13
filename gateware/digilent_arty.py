@@ -95,6 +95,11 @@ class BaseSoC(SoCCore):
         self.bus.add_slave(name="andromeda", slave=wb, region=andromeda_region)
 
         platform.add_source("./gateware/andromeda.v")
+        platform.add_source("./gateware/thermal.v")
+        platform.add_source("./gateware/thermal_rom.v")
+        platform.add_source("./src/conv2d.v")
+        platform.add_source("./src/conv2d_data.v")
+        platform.add_source("./src/conv2d_ctrl.v")
         self.specials += Instance("andromeda",
             i_clk    = ClockSignal("sys"),
             i_reset = ResetSignal("sys"),
