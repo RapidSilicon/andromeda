@@ -144,29 +144,46 @@ generate
                     'd8 : begin // part6
                             mult_a[i][j] <= reg_z[i][j][(REGZ==64)?32:0 +:16];
                             mult_b[i][j] <= scale[j][31:16];
-                            scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part4
+                            //scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part4
+                            if (REGZ==32)
+                                scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0}; // +part4
+                            else
+                                scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part4
                           end
                     'd9 : begin // part7
-                                mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
-                                mult_b[i][j] <= scale[j][15:0];
+                            mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
+                            mult_b[i][j] <= scale[j][15:0];
+                            //scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part5
+                            if (REGZ==32)
+                                scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0}; // +part5
+                            else
                                 scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part5
                           end
                     'd10 : begin // part8
                             mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
                             mult_b[i][j] <= scale[j][31:16];
-                            scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part6
+                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part6
+                            if (REGZ==64)
+                                scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-48{1'b0}},prod_ab[i][j],48'b0}; // +part6
+                
                           end
                     'd11 : begin // pipeline
-                            scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part7
+                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part7
+                            if (REGZ==64)
+                                scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ-48){1'b0}},prod_ab[i][j],48'b0}; // +part7
                           end
                     'd12 : begin // pipeline
-                            scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
+                            //scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],(REGZ==64)?64:0'b0}; // +part8
+                            if (REGZ==64)
+                                scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],64'b0}; // +part8
                           end
                     'd13 : begin // scale is unsigned, so result has the same sign as the original reg_z
                             if (sign[i][j])
-                                reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1; // twos complement negation
+                                //reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1; // twos complement negation
+                                reg_z[i][j] <= ~{scale_mult[i][j]>>31}+'d1; // twos complement negation
                             else
-                                reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
+                                //reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
+                                reg_z[i][j] <= {scale_mult[i][j]>>31};
                           end
                     'd14 : begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
@@ -194,7 +211,8 @@ endgenerate
 reg [OCHAN*DTYPE-1:0] tdata_w;
 generate
     for (j=0;j<OCHAN;j=j+1) begin
-        always @(tdata_w or reg_z or stripe_sel) begin
+        //always @(tdata_w or reg_z or stripe_sel) begin
+        always @(*) begin
             tdata_w[j*DTYPE +: DTYPE] = 0;
             for (m=0;m<NSTRIPE;m=m+1) begin
                 tdata_w[j*DTYPE +: DTYPE] = tdata_w[j*DTYPE +: DTYPE] | ((reg_z[m][j][DTYPE-1:0] & {DTYPE{stripe_sel[m]}}));
@@ -202,6 +220,7 @@ generate
         end
     end
 endgenerate
+
 always @(posedge clk)
     tdata_o <= tdata_w;
 

@@ -21,7 +21,7 @@ reg [4:0] s_col, s_row;
 initial begin
     clk = 1'b0;
     forever begin
-        #2.500 clk = ~clk;
+        #5.000 clk = ~clk; // 100MHz
     end
 end
 
@@ -43,8 +43,9 @@ initial begin
     for (i=0; i<28*28; i=i+1) begin
         //if (i==224) $finish();
 
-        if ((i%28)==0)
-            $display(" i ",i," realtime ",$realtime);
+        $display(" i ",i," realtime ",$realtime);
+//        if ((i%28)==0)
+//            $display(" i ",i," realtime ",$realtime);
 
         @(posedge clk) begin
             s_axis_data <= test_data[i];
@@ -60,7 +61,7 @@ initial begin
             s_axis_tvalid <= 1'b0;
         end
         
-        repeat (8500) @(posedge clk); // 28x28 @30fps, 200MHz clk
+        repeat (4250) @(posedge clk); // 28x28 @30fps, 100MHz clk
     end
     #500000
     $finish();

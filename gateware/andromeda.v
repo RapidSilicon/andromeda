@@ -59,24 +59,26 @@ generate
     end
 endgenerate
 
+wire [5*DTYPE-1:0] m_axis_data;
+reg [5*DTYPE-1:0] m_axis_data_q;
+wire m_axis_tvalid;
+reg [5:0] pseq; // prediction sequence number, increment on m_tvalid
+reg [3:0] csr, csr_q, csr_p;
+
 // generate barrel shifter mux selects
 always @(posedge clk) begin
     if (csr[2]) begin // reset
         for (k=0; k<NFB; k=k+1) begin
             fb_sel[k] <= 16'h0001 << k;
         end
+    end
     else if (csr_p[3]) begin // shift
         for (k=0; k<NFB; k=k+1) begin
-            fb_sel[k] <= {fb_sel[k][NFB-2:0], fb_sel[k][NFB-1]} // rotate
+            fb_sel[k] <= {fb_sel[k][NFB-2:0], fb_sel[k][NFB-1]}; // rotate
         end
     end
 end
 
-wire [5*DTYPE-1:0] m_axis_data,
-reg [5*DTYPE-1:0] m_axis_data_q,
-wire m_axis_tvalid
-reg [5:0] pseq; // prediction sequence number, increment on m_tvalid
-reg [4:0] csr, csr_q, csr_p;
 reg [3:0] state_s;
 localparam S_IDLE = 'd0;
 localparam S_ACK = 'd1;
@@ -84,30 +86,32 @@ always @(posedge clk) begin
     if (reset) begin
         wb_ACK <= 1'b0;
         state_s <= S_IDLE;
+        csr <= 4'h7;
     end
     else begin
         case (state_s)
         S_IDLE: begin
             wb_ACK <= 1'b0;
-            if (wb_STB && (wb_ADR[29:14]=='16h8001)) begin // 0x8001xxxx write only
+            if (wb_STB && (wb_ADR[29:14]==16'h8001)) begin // 0x8001xxxx write only
                 for (k=0; k<NFB; k=k+1)
                      fb_wena[k] <= (wb_ADR[13:10]==k);
                 fb_addra <= wb_ADR[9:0];
                 fb_wda <= wb_DAT_MOSI[DTYPE-1:0];
                 state_s <= S_ACK;
             end
-            else if (wb_STB && (wb_ADR[29:14]=='16h8000)) begin // 0x8000xxxx write only
-                csr <= wb_DAT_MOSI[4:0];
+            else if (wb_STB && (wb_ADR[29:14]==16'h8000)) begin // 0x8000xxxx write only
+                csr <= wb_DAT_MOSI[3:0];
                 state_s <= S_ACK;
             end
-            else if (wb_STB && (wb_ADR[29:14]=='16h8002)) begin // 0x8002xxxx read only
+            else if (wb_STB && (wb_ADR[29:14]==16'h8002)) begin // 0x8002xxxx read only
                 case (wb_ADR[2:0])
-                    'd0: wb_DAT_MISO <= {'b0, pseq, m_axis_data_q[0*DTYPE +:DTYPE];
-                    'd1: wb_DAT_MISO <= {'b0, pseq, m_axis_data_q[1*DTYPE +:DTYPE];
-                    'd2: wb_DAT_MISO <= {'b0, pseq, m_axis_data_q[2*DTYPE +:DTYPE];
-                    'd3: wb_DAT_MISO <= {'b0, pseq, m_axis_data_q[3*DTYPE +:DTYPE];
-                    'd4: wb_DAT_MISO <= {'b0, pseq, m_axis_data_q[4*DTYPE +:DTYPE];
+                    3'd0: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[0*DTYPE +: DTYPE]};
+                    3'd1: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[1*DTYPE +: DTYPE]};
+                    3'd2: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[2*DTYPE +: DTYPE]};
+                    3'd3: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[3*DTYPE +: DTYPE]};
+                    3'd4: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[4*DTYPE +: DTYPE]};
                     default: wb_DAT_MISO <= 32'hdeadbeef;
+                endcase
                 state_s <= S_ACK;
             end
         end
@@ -144,6 +148,7 @@ reg [20:0] delay;
 localparam M_DELAY = 'd0;
 localparam M_EMIT = 'd1;
 localparam M_NEXT = 'd2;
+localparam M_DONE = 'd3;
 localparam DLY = 'd8100; // 1/(768*16Hz)
 always @(posedge clk) begin
     if (csr[1]) begin // cnn reset
@@ -170,7 +175,7 @@ always @(posedge clk) begin
         end
         M_NEXT: begin
             s_axis_tvalid <= 1'b0;
-            fb_addrb <= fb_addr+'d1;
+            fb_addrb <= fb_addrb+'d1;
             if (s_col=='d31) begin
                 s_col  <= 'd0;
                 if (s_row=='d23)
