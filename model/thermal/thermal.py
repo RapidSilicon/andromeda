@@ -12,6 +12,7 @@ import cv2
 import random
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--dumpc', help='when --test is true, dump test data as c code',default=False, action='store_true')
 parser.add_argument('--window', help='window size in frames, input layer channels',default=16, type=int)
 parser.add_argument('--alt', help='model version',default='alt1')
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='thermal.tflite')
@@ -59,8 +60,25 @@ if args.alt=='alt1':
     keras.layers.Flatten(),
     ])
 
-'''
 if args.alt=='alt2':
+    model = keras.Sequential([
+    keras.layers.InputLayer(input_shape=(24, 32, args.window)),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=5, kernel_size=(4, 12), strides=(1,1), activation=None, padding='valid'),
+    keras.layers.Flatten(),
+    ])
+
+'''
+if args.alt=='alt3':
     model = keras.Sequential([
     keras.layers.InputLayer(input_shape=(28, 28, 1)),
     keras.layers.Conv2D(filters=16, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
@@ -135,7 +153,8 @@ if args.test:
                 x = raw_test[a][c][w:w+args.window]
                 #print('x',x.shape)
                 x = np.swapaxes(x,0,3)
-                #print('x',x.shape)
+                if args.dumpc:
+                    print('x',x.shape,x)
                 p = model.predict([x], batch_size=1, verbose=0)
                 p = tf.nn.softmax(p[0])
                 print('ntot',ntot,'a',a,'c',c,'y',actionmap[a],'pred',np.argmax(p), '{:8.6f} {:8.6f} {:8.6f} {:8.6f} {:8.6f}'.format(p[0],p[1],p[2],p[3],p[4]))

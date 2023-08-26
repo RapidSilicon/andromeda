@@ -14,7 +14,7 @@ module conv2d_data #(parameter DTYPE=8,NSTRIPE=16,ICHAN=64,OCHAN=64,SDEPTH=1024,
     input [ICHAN*DTYPE-1:0] tdata_i,
     output reg [OCHAN*DTYPE-1:0] tdata_o
 );
-genvar i,j;
+genvar i,j,n;
 integer k,m;
 
 // padded stripes TDP BRAM state
@@ -208,15 +208,21 @@ generate
 endgenerate
 
 // for each NSTRIPE, generate a OCHAN:1 mux which is DTYPE bits wide, using stripe_sel to select
-reg [OCHAN*DTYPE-1:0] tdata_w;
+wire [OCHAN*DTYPE-1:0] tdata_w;
+wire [NSTRIPE-1:0] reg_z_mux [OCHAN-1:0][DTYPE-1:0];
 generate
-    for (j=0;j<OCHAN;j=j+1) begin
-        //always @(tdata_w or reg_z or stripe_sel) begin
-        always @(*) begin
-            tdata_w[j*DTYPE +: DTYPE] = 0;
-            for (m=0;m<NSTRIPE;m=m+1) begin
-                tdata_w[j*DTYPE +: DTYPE] = tdata_w[j*DTYPE +: DTYPE] | ((reg_z[m][j][DTYPE-1:0] & {DTYPE{stripe_sel[m]}}));
+    for (i=0;i<NSTRIPE;i=i+1) begin
+        for (j=0;j<OCHAN;j=j+1) begin
+            for (n=0;n<DTYPE;n=n+1) begin
+                assign reg_z_mux[j][n][i] = reg_z[i][j][n] & stripe_sel[i];
             end
+        end
+    end
+endgenerate
+generate
+    for (i=0;i<OCHAN;i=i+1) begin
+        for (j=0;j<DTYPE;j=j+1) begin
+            assign tdata_w[i*DTYPE+j] = |reg_z_mux[i][j];
         end
     end
 endgenerate

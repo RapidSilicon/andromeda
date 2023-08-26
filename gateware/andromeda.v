@@ -19,9 +19,11 @@ integer k,m;
 reg [DTYPE-1:0] fb [NFB-1:0][767:0]; // 16 frame buffers, each 768x9b
 reg [DTYPE-1:0] fb_rdb [NFB-1:0];
 reg [DTYPE-1:0] fb_rqb [NFB-1:0];
-reg [DTYPE-1:0] fb_wda;
+wire [DTYPE-1:0] fb_wda;
+reg [DTYPE-1:0] fb_rda [NFB-1:0];
 reg [NFB-1:0] fb_wena;
-reg [9:0] fb_addra, fb_addrb; // 768 pixel locations
+reg [9:0] fb_addrb; // 768 pixel locations
+wire [9:0] fb_addra; // 768 pixel locations
 
 // frame buffer PORT A (WISHBONE WRITE)
 generate
@@ -29,6 +31,8 @@ generate
         always @ (posedge clk) begin
             if(fb_wena[i])
                 fb[i][fb_addra] <= fb_wda;
+            else
+                fb_rda[i] <= fb[i][fb_addra];
         end
     end
 endgenerate
@@ -62,8 +66,8 @@ endgenerate
 wire [5*DTYPE-1:0] m_axis_data;
 reg [5*DTYPE-1:0] m_axis_data_q;
 wire m_axis_tvalid;
-reg [5:0] pseq; // prediction sequence number, increment on m_tvalid
-reg [3:0] csr, csr_q, csr_p;
+reg [15:0] pseq; // prediction sequence number, increment on m_tvalid
+reg [31:0] csr, csr_q, csr_p;
 
 // generate barrel shifter mux selects
 always @(posedge clk) begin
@@ -80,37 +84,62 @@ always @(posedge clk) begin
 end
 
 reg [3:0] state_s;
-localparam S_IDLE = 'd0;
-localparam S_ACK = 'd1;
+localparam S_IDLE = 4'd0;
+localparam S_CYC = 4'd1;
+localparam S_ACK = 4'd2;
+localparam S_HANDSHAKE = 4'd3;
+assign fb_addra = wb_ADR[9:0];
+assign fb_wda = wb_DAT_MOSI[DTYPE-1:0];
 always @(posedge clk) begin
+    //fb_addra <= wb_ADR[9:0];
+    //fb_wda <= wb_DAT_MOSI[DTYPE-1:0];
     if (reset) begin
         wb_ACK <= 1'b0;
         state_s <= S_IDLE;
-        csr <= 4'h7;
+        csr <= 32'h7;
+        fb_wena <= 'b0;
     end
     else begin
         case (state_s)
         S_IDLE: begin
             wb_ACK <= 1'b0;
-            if (wb_STB && (wb_ADR[29:14]==16'h8001)) begin // 0x8001xxxx write only
-                for (k=0; k<NFB; k=k+1)
-                     fb_wena[k] <= (wb_ADR[13:10]==k);
-                fb_addra <= wb_ADR[9:0];
-                fb_wda <= wb_DAT_MOSI[DTYPE-1:0];
+            if (wb_CYC && wb_STB && (wb_ADR[29:22]==8'h80)) begin // ANDROMEDA
+                state_s <= S_CYC;
+            end
+        end
+        S_CYC: begin
+            if (wb_CYC && wb_STB && (wb_ADR[29:14]==16'h8000)) begin // 0x80000000 CSR R/W
+                if (wb_WE)
+                    csr <= wb_DAT_MOSI;
+                else
+                    wb_DAT_MISO <= csr;
                 state_s <= S_ACK;
             end
-            else if (wb_STB && (wb_ADR[29:14]==16'h8000)) begin // 0x8000xxxx write only
-                csr <= wb_DAT_MOSI[3:0];
+            else if (wb_CYC && wb_STB && (wb_ADR[29:14]==16'h8001)) begin // 0x8001xxxx frame buffer R/W
+                if (wb_WE) begin
+                    for (k=0; k<NFB; k=k+1)
+                        fb_wena[k] <= wb_WE & (wb_ADR[13:10]==k);
+                end
+                else
+                    wb_DAT_MISO <= {23'b0,fb_rda[wb_ADR[13:10]]};
                 state_s <= S_ACK;
             end
-            else if (wb_STB && (wb_ADR[29:14]==16'h8002)) begin // 0x8002xxxx read only
+            else if (!wb_WE && wb_CYC && wb_STB && (wb_ADR[29:14]==16'h8002)) begin // 0x8002xxxx predictions RO
                 case (wb_ADR[2:0])
-                    3'd0: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[0*DTYPE +: DTYPE]};
-                    3'd1: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[1*DTYPE +: DTYPE]};
-                    3'd2: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[2*DTYPE +: DTYPE]};
-                    3'd3: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[3*DTYPE +: DTYPE]};
-                    3'd4: wb_DAT_MISO <= {16'b0, pseq, m_axis_data_q[4*DTYPE +: DTYPE]};
+                    3'd0: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[0*DTYPE +: DTYPE]};
+                    3'd1: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[1*DTYPE +: DTYPE]};
+                    3'd2: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[2*DTYPE +: DTYPE]};
+                    3'd3: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[3*DTYPE +: DTYPE]};
+                    3'd4: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[4*DTYPE +: DTYPE]};
                     default: wb_DAT_MISO <= 32'hdeadbeef;
+/*
+                    3'd0: wb_DAT_MISO <= {16'hbabe, 16'haaaa};
+                    3'd1: wb_DAT_MISO <= {16'h1234, 16'h5555};
+                    3'd2: wb_DAT_MISO <= {16'h6789, 16'hbabe};
+                    3'd3: wb_DAT_MISO <= {16'h5555, 16'hf00d};
+                    3'd4: wb_DAT_MISO <= {16'haaaa, 16'hdeaf};
+                    default: wb_DAT_MISO <= 32'hdeadbeef;
+*/
                 endcase
                 state_s <= S_ACK;
             end
@@ -119,7 +148,13 @@ always @(posedge clk) begin
             for (k=0; k<NFB; k=k+1)
                  fb_wena[k] <= 1'b0;
             wb_ACK <= 1'b1;
-            state_s <= S_IDLE;
+            state_s <= S_HANDSHAKE;
+        end
+        S_HANDSHAKE: begin
+            if (!wb_CYC && !wb_STB) begin
+                wb_ACK <= 1'b0;
+                state_s <= S_IDLE;
+            end
         end
         endcase
     end
@@ -139,6 +174,10 @@ always @(posedge clk) begin
         pseq <= pseq+'d1;
         m_axis_data_q <= m_axis_data;
     end 
+    else begin
+        pseq <= pseq;
+        m_axis_data_q <= m_axis_data_q;
+    end 
 end
 
 reg s_axis_tvalid;
@@ -149,7 +188,7 @@ localparam M_DELAY = 'd0;
 localparam M_EMIT = 'd1;
 localparam M_NEXT = 'd2;
 localparam M_DONE = 'd3;
-localparam DLY = 'd8100; // 1/(768*16Hz)
+localparam DLY = 'd8138; // 1/(768*16Hz) @100MHz
 always @(posedge clk) begin
     if (csr[1]) begin // cnn reset
         s_col <= 'd0;
@@ -163,7 +202,6 @@ always @(posedge clk) begin
         case (state_m)
         M_DELAY: begin
             if (delay==DLY) begin
-                delay <= 'd0;
                 state_m <= M_EMIT;
             end
             else
@@ -171,6 +209,7 @@ always @(posedge clk) begin
         end
         M_EMIT: begin
             s_axis_tvalid <= 1'b1;
+            delay <= 'd0;
             state_m <= M_NEXT;
         end
         M_NEXT: begin
@@ -191,6 +230,11 @@ always @(posedge clk) begin
             end
         end
         M_DONE: begin
+            s_col <= 'd0;
+            s_row <= 'd0;
+            fb_addrb <= 'd0;
+            delay <= 'd0;
+            s_axis_tvalid <= 1'b0;
             state_m <= M_DONE;
         end
         endcase
