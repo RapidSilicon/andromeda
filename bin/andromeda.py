@@ -70,9 +70,10 @@ for j in range(graph.OperatorsLength()):
 #            l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))*2
 
         #l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
-        #l.ocol = int(np.ceil(l.oshape[-2]/l.nstripe))
         l.ncol = l.ishape[-2]//l.nstripe
-        l.ocol = (l.ishape[-2]//l.nstripe)//l.stride
+        l.ocol = l.oshape[-2]//l.nstripe
+        #l.ocol = int(np.ceil(l.oshape[-2]/l.nstripe))
+        #l.ocol = (l.ishape[-2]//l.nstripe)//l.stride
 
         if l.stride==1:
             l.overlap=2

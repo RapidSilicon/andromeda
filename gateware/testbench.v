@@ -77,9 +77,8 @@ andromeda u0 (
   endtask
 
   initial begin
-    //#8000000 $dumpfile("test.vcd");
-//    #0 $dumpfile("test.vcd");
-//    $dumpvars(0,testbench);
+    #63319785 $dumpfile("test.vcd");
+    $dumpvars(0,testbench);
     //#2000000 $finish;
 end
 
@@ -98,12 +97,12 @@ end
     wb_DAT_MOSI = 0;
     #200 reset = 0;
 
-    #20 wb_write(32'h80000000, 32'h00000000);
-    #10000000 $finish;
+    //#20 wb_write(32'h80000000, 32'h00000000);
+    //#10000000 $finish;
     
     // test writes to frame buffers
-    //for (pix=0; pix<768; pix=pix+1) begin
-    for (pix=0; pix<16; pix=pix+1) begin
+    //for (pix=0; pix<16; pix=pix+1) begin
+    for (pix=0; pix<768; pix=pix+1) begin
         for (fb=0; fb<16; fb=fb+1) begin
             //#20 wb_read({16'h8001,fb[3:0],pix[9:0],2'b00}, read_data);
             //$display("before wb_read() addr %h data %h",{16'h8001,fb[3:0],pix[9:0],2'b00}, read_data);
@@ -130,7 +129,7 @@ end
 
 
     #20 wb_write(32'h80000000, 0); // deassert resets
-    $finish;
+    //$finish;
         
 /*
     // Your test sequence...
@@ -143,17 +142,26 @@ end
         @(posedge clk);
         if (u0.m_axis_tvalid) begin
             $display($realtime, " m_axis_tvalid data %x",u0.m_axis_data);
-            $finish;
+            #1000000 $finish;
         end
     end
     //#100000 $finish;  // End the simulation after your tests
-  end
+end
 
 // monitor
 always @(posedge clk) begin
-    if (u0.s_axis_tvalid) begin
-        $display($realtime, " u0.s_axis_tvalid s_col %d s_row %d data %h", u0.s_col,u0.s_row,u0.s_axis_data);
-    end
+    //if (u0.s_axis_tvalid) $display($realtime, " u0.s_axis_tvalid s_col %d s_row %d data %h", u0.s_col,u0.s_row,u0.s_axis_data);
+    if (u0.u0.u0.s_axis_tvalid) $display($realtime, " u0.u0.u0.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u0.s_col,u0.u0.u0.s_row,u0.u0.u0.s_axis_data);
+    if (u0.u0.u1.s_axis_tvalid) $display($realtime, " u0.u0.u1.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u1.s_col,u0.u0.u1.s_row,u0.u0.u1.s_axis_data);
+    if (u0.u0.u2.s_axis_tvalid) $display($realtime, " u0.u0.u2.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u2.s_col,u0.u0.u2.s_row,u0.u0.u2.s_axis_data);
+    if (u0.u0.u3.s_axis_tvalid) $display($realtime, " u0.u0.u3.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u3.s_col,u0.u0.u3.s_row,u0.u0.u3.s_axis_data);
+    if (u0.u0.u4.s_axis_tvalid) $display($realtime, " u0.u0.u4.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u4.s_col,u0.u0.u4.s_row,u0.u0.u4.s_axis_data);
+    if (u0.u0.u5.s_axis_tvalid) $display($realtime, " u0.u0.u5.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u5.s_col,u0.u0.u5.s_row,u0.u0.u5.s_axis_data);
+    if (u0.u0.u6.s_axis_tvalid) $display($realtime, " u0.u0.u6.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u6.s_col,u0.u0.u6.s_row,u0.u0.u6.s_axis_data);
+    if (u0.u0.u7.s_axis_tvalid) $display($realtime, " u0.u0.u7.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u7.s_col,u0.u0.u7.s_row,u0.u0.u7.s_axis_data);
+    if (u0.u0.u8.s_axis_tvalid) $display($realtime, " u0.u0.u8.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u8.s_col,u0.u0.u8.s_row,u0.u0.u8.s_axis_data);
+    if (u0.u0.u9.s_axis_tvalid) $display($realtime, " u0.u0.u9.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u9.s_col,u0.u0.u9.s_row,u0.u0.u9.s_axis_data);
+    if (u0.u0.u10.s_axis_tvalid) $display($realtime, " u0.u0.u10.s_axis_tvalid s_col %d s_row %d data %h", u0.u0.u10.s_col,u0.u0.u10.s_row,u0.u0.u10.s_axis_data);
 end
 
 endmodule
