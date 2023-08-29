@@ -12,6 +12,7 @@ import cv2
 import random
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--dataset', help='dataset directory',default='./dataset2')
 parser.add_argument('--dumpc', help='when --test is true, dump test data as c code',default=False, action='store_true')
 parser.add_argument('--window', help='window size in frames, input layer channels',default=16, type=int)
 parser.add_argument('--alt', help='model version',default='alt1')
@@ -97,9 +98,9 @@ print(model.summary())
 # load the raw dataset
 raw_train={}
 raw_test={}
-for d in os.listdir('./dataset'):
+for d in os.listdir(args.dataset):
     action,clip = re.split('_', d)
-    if clip=='006':
+    if clip=='001':
         ds = raw_test
     else:
         ds = raw_train
@@ -108,16 +109,20 @@ for d in os.listdir('./dataset'):
         ds[action]={}
     
     ds[action][clip] = np.zeros([1000,24,32,1])
-    for f in os.listdir('./dataset/{}'.format(d)):
+    for f in os.listdir('{}/{}'.format(args.dataset,d)):
         frame = int(f[-9:-4])
-        img = cv2.imread('./dataset/{}/{}'.format(d,f), cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread('{}/{}/{}'.format(args.dataset,d,f), cv2.IMREAD_GRAYSCALE)
         #print('img',img.shape)
         ds[action][clip][frame,:,:,0] = img/255.
         #print('action',action,'clip',clip,'frame',frame,'shape',img.shape)
  
 # batch generator for 32-frame windows
-actionmap = {'quiet':0, 'loiter':1, 'writhe':2, 'walk':3, 'run':4}
-actionunmap = {0:'quiet', 1:'loiter', 2:'writhe', 3:'walk', 4:'run'}
+#actionmap = {'quiet':0, 'loiter':1, 'writhe':2, 'walk':3, 'run':4}
+#actionunmap = {0:'quiet', 1:'loiter', 2:'writhe', 3:'walk', 4:'run'}
+#actionmap = {'quiet':0, 'fist':1, 'palm':2, 'victory':3, 'index':4}
+#actionunmap = {0:'quiet', 1:'fist', 2:'palm', 3:'victory', 4:'index'}
+actionmap = {'one':0, 'two':1, 'three':2, 'four':3, 'five':4}
+actionunmap = {0:'one', 1:'two', 2:'three', 3:'four', 4:'five'}
 def batch_generator(raw, batch_size=args.batch):
     x = np.zeros([batch_size,24,32,args.window])
     y = np.zeros([batch_size])
@@ -216,10 +221,10 @@ if args.convert:
     
     def representative_dataset():
         for i in range(100):
-            a = random.choice(list(raw_test.keys()))
-            c = random.choice(list(raw_test[a].keys()))
+            a = random.choice(list(raw_train.keys()))
+            c = random.choice(list(raw_train[a].keys()))
             w = np.random.randint(1000-args.window)
-            t = np.moveaxis(raw_test[a][c][w:w+args.window,:,:,0],0,-1)
+            t = np.moveaxis(raw_train[a][c][w:w+args.window,:,:,0],0,-1)
             yield [np.array([t.astype(np.float32)])]
     converter.representative_dataset = representative_dataset
     

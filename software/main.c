@@ -39,6 +39,7 @@ int main(void)
     printf("mlx config %02x %02x\n", data[0], data[1]);
 
     *(unsigned long *)0x80000000L = 0x7; // reset andromeda
+    busy_wait_us(1);
     *(unsigned long *)0x80000000L = 0x2;
     int w=0;
     while (1) {
@@ -111,23 +112,38 @@ int main(void)
         //busy_wait_us(1);
 
 #if 1
-    busy_wait_us(10000);
-    printf("w %6d pseq %6d pred %08lx %08lx %08lx %08lx %08lx\n", w,((*(unsigned long *)(0x80020000L+0*4))>>16)&0xffff,
+    //busy_wait_us(10000);
+    int pred[5];
+    for (int k=0; k<5; k++) {
+        pred[k] = ((*(unsigned long *)(0x80020000L+k*4))&0x1ff);
+        if (pred[k]&0x100)
+            pred[k] |= 0xfffffe00;
+    }
+
+    printf("w %6d pseq %6d pred %6d %6d %6d %6d %6d\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,pred[0],pred[1],pred[2],pred[3],pred[4]);
+
+/*
+    printf("w %6d pseq %6d pred %08lx %08lx %08lx %08lx %08lx\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,
         *(unsigned long *)(0x80020000L+0*4),
         *(unsigned long *)(0x80020000L+1*4),
         *(unsigned long *)(0x80020000L+2*4),
         *(unsigned long *)(0x80020000L+3*4),
         *(unsigned long *)(0x80020000L+4*4)
     );
+*/
 
     // copy fb[] to andromeda fb[][]
+    volatile unsigned long *andromeda_fb = 0x80010000L;
     for (int k=0; k<32*24; k++) 
-        *(unsigned long *)(0x80010000L + (w<<12) + k*4) = fb[k];
+        andromeda_fb[k] = fb[k];
+        //*(unsigned long *)(0x80010000L + (w<<12) + k*4) = fb[k];
 
-    *(unsigned long *)0x80000000L = 0x8 | 0x2; // increment the barrel shifter (w+1)%16 and reset cnn
+    //*(unsigned long *)0x80000000L = 0x8 | 0x2; // increment the barrel shifter (w+1)%16 and reset cnn
+    *(unsigned long *)0x80000000L = 0x2; // reset cnn
+    busy_wait_us(1);
     *(unsigned long *)0x80000000L = 0x0;
 
-    w = (w+1)%16;
+    //w = (w+1)%16;
 
     //printf("0x80000000 csr    %08lx\n", *(unsigned long *)0x80000000L);
     //*(unsigned long *)0x80000000L = 0x0;

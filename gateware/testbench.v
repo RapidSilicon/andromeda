@@ -84,6 +84,7 @@ end
 
   // Simulation control
   initial begin
+    reg signed [8:0] test_data [0:768];
     reg [31:0] read_data;
     //reg [3:0] fb;
     //reg [9:0] pix;
@@ -100,6 +101,14 @@ end
     //#20 wb_write(32'h80000000, 32'h00000000);
     //#10000000 $finish;
     
+    $readmemb("test_data.mem", test_data);
+    $display("Loaded test_data.mem");
+    for (pix=0; pix<768; pix=pix+1) begin
+        #20 wb_write({16'h8001,4'b0000,pix[9:0],2'b00}, test_data[pix]);
+        $display($realtime, " wb_write() addr %h data %h",{16'h8001,4'b0000,pix[9:0],2'b00}, test_data[pix]);
+    end
+
+/*
     // test writes to frame buffers
     //for (pix=0; pix<16; pix=pix+1) begin
     for (pix=0; pix<768; pix=pix+1) begin
@@ -126,7 +135,7 @@ end
                 $display($realtime, " wb_read() PASS     addr %h data expected %h got %h",{16'h8001,fb[3:0],pix[9:0],2'b00}, (pix[9:0]+fb[3:0])%512, read_data);
         end
     end
-
+*/
 
     #20 wb_write(32'h80000000, 0); // deassert resets
     //$finish;

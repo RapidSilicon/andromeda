@@ -1,10 +1,10 @@
-NBATCH=50000
+NBATCH=10000
 
 train:
-	python3 thermal.py --nbatch $(NBATCH) --save thermal.keras --convert --alt alt2
+	python3 thermal.py --nbatch $(NBATCH) --save thermal.keras --convert --alt alt2 --dataset ./dataset2 --window 1
 
 test:
-	python3 thermal.py --load thermal.keras --test
+	python3 thermal.py --load thermal.keras --test --window 1
 
 convert:
 	python3 thermal.py --load thermal.keras --convert

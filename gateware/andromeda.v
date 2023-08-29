@@ -1,5 +1,5 @@
 //
-module andromeda #(parameter NFB=16, DTYPE=9) (
+module andromeda #(parameter NFB=1, DTYPE=9) (
     input  wire        clk,
     input  wire        reset,
     input  wire        wb_CYC,
@@ -48,7 +48,10 @@ generate
 endgenerate
 
 // for each FB, generate a NFB:1 mux which is DTYPE bits wide, using fb_sel to select (barrel shifter)
-reg [NFB*DTYPE-1:0] s_axis_data;
+wire [NFB*DTYPE-1:0] s_axis_data;
+assign s_axis_data = fb_rqb[0];
+
+/*
 reg [NFB-1:0] fb_sel [NFB-1:0];
 reg [NFB-1:0] fb_mux [NFB-1:0][DTYPE-1:0];
 generate
@@ -62,6 +65,7 @@ generate
         end
     end
 endgenerate
+*/
 
 wire [5*DTYPE-1:0] m_axis_data;
 reg [5*DTYPE-1:0] m_axis_data_q;
@@ -69,6 +73,7 @@ wire m_axis_tvalid;
 reg [15:0] pseq; // prediction sequence number, increment on m_tvalid
 reg [31:0] csr, csr_q, csr_p;
 
+/*
 // generate barrel shifter mux selects
 always @(posedge clk) begin
     if (csr[2]) begin // reset
@@ -78,10 +83,11 @@ always @(posedge clk) begin
     end
     else if (csr_p[3]) begin // shift
         for (k=0; k<NFB; k=k+1) begin
-            fb_sel[k] <= {fb_sel[k][NFB-2:0], fb_sel[k][NFB-1]}; // rotate
+            fb_sel[k] <= {fb_sel[k][(NFB-2)%NFB:0], fb_sel[k][NFB-1]}; // rotate
         end
     end
 end
+*/
 
 reg [3:0] state_s;
 localparam S_IDLE = 4'd0;
