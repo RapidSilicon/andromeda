@@ -12,7 +12,9 @@
 #include <libliteeth/udp.h>
 
 #define UDP_PORT 5005
-uint8_t fb[768*2];
+int fb[768];
+
+#include "../gateware/test_data.h"
 
 int main(void)
 {
@@ -38,9 +40,10 @@ int main(void)
     i2c_read(0x33, 0x800d, data, 2, 0, 2); // read config
     printf("mlx config %02x %02x\n", data[0], data[1]);
 
-    *(unsigned long *)0x80000000L = 0x7; // reset andromeda
-    busy_wait_us(1);
-    *(unsigned long *)0x80000000L = 0x2;
+    //busy_wait_us(1);
+    //volatile *(unsigned long *)0x80000000L = 0x7; // reset andromeda
+    //busy_wait_us(1);
+    *(volatile unsigned long *)0x80000000L = 0x0; // deassert resets
     int w=0;
     while (1) {
 #if 0
@@ -68,7 +71,10 @@ int main(void)
 
         // copy from udp payload to andromeda fb, scale raw pixels values to [0,255]
         for (int k=0; k<32*12; k++) {
-            int x = (unsigned short *)(payload+4)[k];
+            //int x = (int)(((unsigned short *)(payload+4))[k]);
+            int x=0;
+            x |= ((payload+4)[k*2])<<8;
+            x |= ((payload+4)[k*2+1])<<0;
             x = x<32768 ? x : x-65536;
             x = x<-128 ? -128 : x;
             x = x+128;
@@ -81,7 +87,10 @@ int main(void)
         i2c_read(0x33, 0x0400+(32*24)/2, payload, 32*24, 0, 2); // read checkboard pattern from mlx90640
         // copy from udp payload to andromeda fb, scale raw pixels values to [0,255]
         for (int k=0; k<32*12; k++) {
-            int x = (unsigned short *)(payload)[k];
+            //int x = ((unsigned short *)(payload))[k];
+            int x=0;
+            x |= ((payload)[k*2])<<8;
+            x |= ((payload)[k*2+1])<<0;
             x = x<32768 ? x : x-65536;
             x = x<-128 ? -128 : x;
             x = x+128;
@@ -112,36 +121,64 @@ int main(void)
         //busy_wait_us(1);
 
 #if 1
-    //busy_wait_us(10000);
+    // wait until CNN produces a prediction
+    while (1) {
+        busy_wait_us(1);
+        //if ((((*((volatile unsigned long *)(0x80020000L+0*4)))>>16)&0xffff)>0)
+        if ((*((volatile unsigned long *)(0x80030000L)))>0)
+            break;
+    }
+    //busy_wait_us(500000);
+
     int pred[5];
     for (int k=0; k<5; k++) {
-        pred[k] = ((*(unsigned long *)(0x80020000L+k*4))&0x1ff);
+        busy_wait_us(1);
+        pred[k] = *((volatile unsigned long *)(0x80020000L+k*4));
+/*
+        pred[k] = ((*(volatile unsigned long *)(0x80020000L+k*4))&0xffff);
+        if (pred[k]&0x8000)
+            pred[k] |= 0xffff0000;
+*/
+/*
+        pred[k] = ((*(volatile unsigned long *)(0x80020000L+k*4))&0x1ff);
         if (pred[k]&0x100)
             pred[k] |= 0xfffffe00;
+*/
     }
 
-    printf("w %6d pseq %6d pred %6d %6d %6d %6d %6d\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,pred[0],pred[1],pred[2],pred[3],pred[4]);
-
+    busy_wait_us(1);
+    printf("w %6d pseq %6ld pred %6d %6d %6d %6d %6d\n", w,((*((volatile unsigned long *)(0x80030000L)))),pred[0],pred[1],pred[2],pred[3],pred[4]);
 /*
-    printf("w %6d pseq %6d pred %08lx %08lx %08lx %08lx %08lx\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,
-        *(unsigned long *)(0x80020000L+0*4),
-        *(unsigned long *)(0x80020000L+1*4),
-        *(unsigned long *)(0x80020000L+2*4),
-        *(unsigned long *)(0x80020000L+3*4),
-        *(unsigned long *)(0x80020000L+4*4)
+    printf("w %6d pseq %6ld pred %08lx %08lx %08lx %08lx %08lx\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,
+        (*(unsigned long *)(0x80020000L+0*4))&0x1ff,
+        (*(unsigned long *)(0x80020000L+1*4))&0x1ff,
+        (*(unsigned long *)(0x80020000L+2*4))&0x1ff,
+        (*(unsigned long *)(0x80020000L+3*4))&0x1ff,
+        (*(unsigned long *)(0x80020000L+4*4)&0x1ff)
     );
 */
-
     // copy fb[] to andromeda fb[][]
-    volatile unsigned long *andromeda_fb = 0x80010000L;
-    for (int k=0; k<32*24; k++) 
-        andromeda_fb[k] = fb[k];
+    volatile long *andromeda_fb = (long *)0x80010000L;
+    for (int k=0; k<32*24; k++) {
+        busy_wait_us(1);
+        //andromeda_fb[k] = 0;
+        //andromeda_fb[k] = test_data[k];
+        //andromeda_fb[k] = fb[k]*128;
+        andromeda_fb[k] = (fb[k]*257)/2;
+        //busy_wait_us(1);
+        //printf("k %4d andromeda_fb %08x\n",k,andromeda_fb[k]);
+    }
         //*(unsigned long *)(0x80010000L + (w<<12) + k*4) = fb[k];
 
     //*(unsigned long *)0x80000000L = 0x8 | 0x2; // increment the barrel shifter (w+1)%16 and reset cnn
-    *(unsigned long *)0x80000000L = 0x2; // reset cnn
     busy_wait_us(1);
-    *(unsigned long *)0x80000000L = 0x0;
+    *((volatile unsigned long *)0x80000000L) = 0x3; // reset cnn
+    busy_wait_us(1);
+    //printf("csr %08lx\n", *((volatile unsigned long *)0x80000000L));
+    busy_wait_us(1);
+    *((volatile unsigned long *)0x80000000L) = 0x0;
+    busy_wait_us(1);
+    //printf("csr %08lx\n", *((volatile unsigned long *)0x80000000L));
 
     //w = (w+1)%16;
 

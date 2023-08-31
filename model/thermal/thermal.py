@@ -217,7 +217,6 @@ if args.convert:
             data = np.random.rand(1, 24, 32, 32)
             yield [data.astype(np.float32)]
     converter.representative_dataset = representative_dataset
-    '''
     
     def representative_dataset():
         for i in range(100):
@@ -227,7 +226,14 @@ if args.convert:
             t = np.moveaxis(raw_train[a][c][w:w+args.window,:,:,0],0,-1)
             yield [np.array([t.astype(np.float32)])]
     converter.representative_dataset = representative_dataset
+    '''
     
+    def representative_dataset():
+        for _ in range(100):
+            data = np.random.rand(1, 24, 32, 1)
+            yield [data.astype(np.float32)]
+    converter.representative_dataset = representative_dataset
+
     tflite_model = converter.convert()
     tf.lite.experimental.Analyzer.analyze(model_content=tflite_model)
     

@@ -1,5 +1,5 @@
 //
-module andromeda #(parameter NFB=1, DTYPE=9) (
+module andromeda #(parameter NFB=1, DTYPE=16) (
     input  wire        clk,
     input  wire        reset,
     input  wire        wb_CYC,
@@ -16,7 +16,7 @@ genvar i,j;
 integer k,m;
 
 // circular frame buffers
-reg [DTYPE-1:0] fb [NFB-1:0][767:0]; // 16 frame buffers, each 768x9b
+reg [DTYPE-1:0] fb [NFB-1:0][0:767]; // 16 frame buffers, each 768x9b
 reg [DTYPE-1:0] fb_rdb [NFB-1:0];
 reg [DTYPE-1:0] fb_rqb [NFB-1:0];
 wire [DTYPE-1:0] fb_wda;
@@ -132,12 +132,20 @@ always @(posedge clk) begin
             end
             else if (!wb_WE && wb_CYC && wb_STB && (wb_ADR[29:14]==16'h8002)) begin // 0x8002xxxx predictions RO
                 case (wb_ADR[2:0])
+                    3'd0: wb_DAT_MISO <= {{16{m_axis_data_q[0*DTYPE+DTYPE-1]}}, m_axis_data_q[0*DTYPE+DTYPE-1:0*DTYPE]};
+                    3'd1: wb_DAT_MISO <= {{16{m_axis_data_q[1*DTYPE+DTYPE-1]}}, m_axis_data_q[1*DTYPE+DTYPE-1:1*DTYPE]};
+                    3'd2: wb_DAT_MISO <= {{16{m_axis_data_q[2*DTYPE+DTYPE-1]}}, m_axis_data_q[2*DTYPE+DTYPE-1:2*DTYPE]};
+                    3'd3: wb_DAT_MISO <= {{16{m_axis_data_q[3*DTYPE+DTYPE-1]}}, m_axis_data_q[3*DTYPE+DTYPE-1:3*DTYPE]};
+                    3'd4: wb_DAT_MISO <= {{16{m_axis_data_q[4*DTYPE+DTYPE-1]}}, m_axis_data_q[4*DTYPE+DTYPE-1:4*DTYPE]};
+                    default: wb_DAT_MISO <= 32'hdeadbeef;
+/*
                     3'd0: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[0*DTYPE +: DTYPE]};
                     3'd1: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[1*DTYPE +: DTYPE]};
                     3'd2: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[2*DTYPE +: DTYPE]};
                     3'd3: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[3*DTYPE +: DTYPE]};
                     3'd4: wb_DAT_MISO <= {pseq, 7'b0,  m_axis_data_q[4*DTYPE +: DTYPE]};
                     default: wb_DAT_MISO <= 32'hdeadbeef;
+*/
 /*
                     3'd0: wb_DAT_MISO <= {16'hbabe, 16'haaaa};
                     3'd1: wb_DAT_MISO <= {16'h1234, 16'h5555};
@@ -147,6 +155,10 @@ always @(posedge clk) begin
                     default: wb_DAT_MISO <= 32'hdeadbeef;
 */
                 endcase
+                state_s <= S_ACK;
+            end
+            else if (!wb_WE && wb_CYC && wb_STB && (wb_ADR[29:14]==16'h8003)) begin // 0x80030000 prediction sequence counter RO
+                wb_DAT_MISO <= {16'h0000,pseq};
                 state_s <= S_ACK;
             end
         end

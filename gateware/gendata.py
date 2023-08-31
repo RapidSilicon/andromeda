@@ -25,8 +25,8 @@ input_details = interpreter.get_input_details()[0]  # Model has single input.
 output_details = interpreter.get_output_details()[0]  # Model has single output.
 input_scale, input_zero_point = input_details["quantization"]
 print('input_scale',input_scale,'input_zero_point',input_zero_point)
-print('input_details', input_details)
-print('output_details', output_details)
+#print('input_details', input_details)
+#print('output_details', output_details)
 
 '''
 # Load MNIST dataset
@@ -59,3 +59,20 @@ for r in range(24):
 
 f = open('test_data.mem','w')
 print(s,file=f)
+
+
+# const int z[5] = {10, 11, 12, 13, 14}; 
+s='const int test_data[768] = {\n'
+for r in range(24):
+    for c in range(32):
+        s+='0b'
+        for b in range(args.dtype,0,-1):
+            if (input_data[r,c]>>(b-1))&1:
+                s+='1'
+            else:
+                s+='0'
+        s+=',\n'
+s+='};'
+f = open('test_data.h','w')
+print(s,file=f)
+
