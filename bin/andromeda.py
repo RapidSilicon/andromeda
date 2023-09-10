@@ -3,6 +3,7 @@ import argparse
 import random
 import tflite
 import array
+import struct
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
@@ -42,15 +43,25 @@ for j in range(graph.OperatorsLength()):
         l.oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
         l.weight = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(1)).Buffer()).DataAsNumpy().reshape(l.wshape).astype(np.int8)
         l.bias = model.Buffers(graph.Tensors(graph.Operators(j).Inputs(2)).Buffer()).DataAsNumpy().tobytes()
-        if args.regz==32:
-            l.bias = array.array('i', l.bias)
+        if args.dtype==8:
+            #l.bias = array.array('i', l.bias)
+            l.bias = struct.unpack('<'+str(len(l.bias)//4)+'i',l.bias)
             l.bias = np.array(l.bias, dtype=np.int32)
-        if args.regz==64:
-            l.bias = array.array('q', l.bias)
+        if args.dtype==16:
+            #l.bias = array.array('q', l.bias)
+            l.bias = struct.unpack('<'+str(len(l.bias)//8)+'q',l.bias)
             l.bias = np.array(l.bias, dtype=np.int64)
 
-        l.scale = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().ScaleAsNumpy()
-        l.scale = l.scale / graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
+        l.scale=[]
+        for i in range(l.oshape[-1]):
+            s1 = graph.Tensors(graph.Operators(j).Inputs(0)).Quantization().Scale(0)
+            s2 = graph.Tensors(graph.Operators(j).Inputs(1)).Quantization().Scale(i)
+            sbias = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) # == s1*s2
+            s3 = graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
+            l.scale.append((s1*s2)/s3)
+            #print('i',i,'s1',s1,'s2',s2,'s1*s2',s1*s2,'sbias',sbias,'s3',s3)
+#        l.scale=[graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) / graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
+#            for i in range(l.oshape[-1])]
 
         l.stride = int(np.round(l.ishape[-2]/l.oshape[-2]))
         if l.oshape[-2]<l.wshape[-2]:
@@ -137,6 +148,7 @@ for j,l in enumerate(layers):
     s+='wire [{}*{}-1:0] weight_ra_{};\n'.format(1, l.waddr,j)
     s+='wire [{}*{}-1:0] bias_rd_{};\n'.format(l.oshape[-1], args.regz,j)
     s+='wire [{}*{}-1:0] scale_rd_{};\n'.format(l.oshape[-1], 32,j)
+    s+='wire [{}*{}-1:0] shift_rd_{};\n'.format(l.oshape[-1], 6,j)
  
 s+='\n'
 for j,l in enumerate(layers):
@@ -149,6 +161,7 @@ for j,l in enumerate(layers):
     s+='.weight_ra(weight_ra_{}),\n'.format(j)
     s+='.bias_rd(bias_rd_{}),\n'.format(j)
     s+='.scale_rd(scale_rd_{}),\n'.format(j)
+    s+='.shift_rd(shift_rd_{}),\n'.format(j)
     if j==0:
         s+='.s_axis_data(s_axis_data),\n'
         s+='.s_col(s_col),\n'
@@ -186,7 +199,8 @@ for j,l in enumerate(layers):
 
     s+='// scale_rom\n'
     s+='scale_rom_{} scale{} (\n'.format(j,j)
-    s+='.data(scale_rd_{})\n'.format(j)
+    s+='.scale(scale_rd_{}),\n'.format(j)
+    s+='.shift(shift_rd_{})\n'.format(j)
     s+=');\n\n'
 
 s+='endmodule\n'
@@ -225,17 +239,22 @@ for j,l in enumerate(layers):
     for i in range(l.oshape[-1]):
         b = l.bias[i]
         if b<0:
-            w+='assign data[{} +:{}] = -{}\'d{};\n'.format(i*bias_width,bias_width,bias_width,np.abs(b),bias_width,bias_width)
+            w+='assign data[{} +:{}] = -{}\'d{};\n'.format(i*bias_width,bias_width,bias_width,np.abs(b))
         else:
-            w+='assign data[{} +:{}] = {}\'d{};\n'.format(i*bias_width,bias_width,bias_width,np.abs(b),bias_width,bias_width)
+            w+='assign data[{} +:{}] = {}\'d{};\n'.format(i*bias_width,bias_width,bias_width,np.abs(b))
     w+='endmodule\n'
     w+='\n'
 
-    w+='module scale_rom_{} (data);\n'.format(j)
-    w+='output [{}*{}-1:0] data;\n'.format(l.oshape[-1], 32)
+    w+='module scale_rom_{} (scale,shift);\n'.format(j)
+    w+='output [{}*{}-1:0] scale;\n'.format(l.oshape[-1], 32)
+    w+='output [{}*{}-1:0] shift;\n'.format(l.oshape[-1], 6)
     w+='\n'
     for i in range(l.oshape[-1]):
-        w+='assign data[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(l.scale[i]*0x7fffffff))[2:])
+        shift = int(np.ceil(np.log2(0.5/l.scale[i])))
+        scale = l.scale[i]*np.power(2,shift)
+        #print('j',j,'i',i,'scale',scale,'shift',shift,'l.scale',l.scale[i], scale/np.power(2,shift))
+        w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+31)
+        w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(scale*0x7fffffff))[2:])
     w+='endmodule\n'
     w+='\n'
 
