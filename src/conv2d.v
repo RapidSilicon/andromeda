@@ -28,6 +28,7 @@ module conv2d #(
     output [$clog2(WDEPTH)-1:0] weight_ra,
     input wire [OCHAN*REGZ-1:0] bias_rd,
     input wire [OCHAN*32-1:0] scale_rd,
+    input wire [OCHAN*6-1:0] shift_rd,
     input wire [ICHAN*DTYPE-1:0] s_axis_data,
     input wire s_axis_tvalid,
     output wire [OCHAN*DTYPE-1:0] m_axis_data,
@@ -39,6 +40,7 @@ module conv2d #(
 );
 
 wire clr_acc;
+wire en_acc;
 wire [4:0] alu_op;
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
@@ -50,6 +52,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),
+    .en_acc(en_acc),
     .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),
@@ -57,6 +60,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .weight_rd(weight_rd),
     .bias_rd(bias_rd),
     .scale_rd(scale_rd),
+    .shift_rd(shift_rd),
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
     .tdata_i(s_axis_data),
@@ -67,6 +71,7 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .clk(clk),
     .reset(reset),
     .clr_acc(clr_acc),
+    .en_acc(en_acc),
     .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),

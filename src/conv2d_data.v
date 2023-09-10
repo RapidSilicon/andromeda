@@ -2,6 +2,7 @@
 module conv2d_data #(parameter DTYPE=8,NSTRIPE=16,ICHAN=64,OCHAN=64,SDEPTH=1024,REGZ=32,REGB=8) (
     input clk, reset,
     input clr_acc,
+    input en_acc,
     input [4:0] alu_op,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
@@ -9,6 +10,7 @@ module conv2d_data #(parameter DTYPE=8,NSTRIPE=16,ICHAN=64,OCHAN=64,SDEPTH=1024,
     input wire [OCHAN*REGB-1:0] weight_rd, // from ROM
     input wire [OCHAN*REGZ-1:0] bias_rd, // from ROM
     input wire [OCHAN*32-1:0] scale_rd, // uint32 from ROM
+    input wire [OCHAN*6-1:0] shift_rd, // scale right shift from ROM
     input [ICHAN-1:0] ichan_sel, // 1-hot channel select
     input [NSTRIPE-1:0] stripe_sel, // 1-hot select for tdata_o
     input [ICHAN*DTYPE-1:0] tdata_i,
@@ -66,23 +68,27 @@ endgenerate
 reg signed [REGB-1:0] weight [OCHAN-1:0];
 wire signed [REGZ-1:0] bias [OCHAN-1:0];
 wire signed [31:0] scale [OCHAN-1:0]; // s.31
+wire [5:0] shift [OCHAN-1:0];
 generate for (i=0;i<OCHAN;i=i+1)
     begin
         always @(posedge clk)
              weight[i] <= weight_rd[i*REGB +: REGB];
         assign bias[i] = bias_rd[i*REGZ +: REGZ];
         assign scale[i] = scale_rd[i*32 +: 32];
+        assign shift[i] = shift_rd[i*6 +: 6];
     end
 endgenerate
 
 // NSTRIDE*OCHAN DSP instances
 reg signed [DTYPE-1:0] reg_a [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGB-1:0] reg_b [NSTRIPE-1:0][OCHAN-1:0];
-reg signed [DTYPE+REGB-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
+reg signed [REGZ-1:0] mult [NSTRIPE-1:0][OCHAN-1:0]; // 8x9 multiplier may be implemented using LUTs
 reg signed [REGZ-1:0] acc [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [REGZ-1:0] reg_z [NSTRIPE-1:0][OCHAN-1:0];
 reg signed [32+REGZ-1:0] scale_mult [NSTRIPE-1:0][OCHAN-1:0]; 
+wire signed [32+REGZ-1:0] scale_mult_signed [NSTRIPE-1:0][OCHAN-1:0]; 
 reg sign [NSTRIPE-1:0][OCHAN-1:0];
+wire round [NSTRIPE-1:0][OCHAN-1:0];
 reg [15:0] mult_a [NSTRIPE-1:0][OCHAN-1:0];
 reg [15:0] mult_b [NSTRIPE-1:0][OCHAN-1:0];
 reg [31:0] prod_ab [NSTRIPE-1:0][OCHAN-1:0];
@@ -92,10 +98,12 @@ generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
             always @(posedge clk) begin
-                mult[i][j] <= reg_a[i][j] * reg_b[i][j];
+                // sign extend and multiply
+                mult[i][j] <= $signed({{REGZ-DTYPE{reg_a[i][j][DTYPE-1]}},reg_a[i][j]}) * $signed({{REGZ-REGB{reg_b[i][j][REGB-1]}},reg_b[i][j]});
+                // clr has higher priority than en
                 if (clr_acc)
                     acc[i][j] <= 'd0;
-                else
+                else if (en_acc)
                     acc[i][j] <= mult[i][j] + acc[i][j];
             end
         end
@@ -106,16 +114,23 @@ endgenerate
 generate
     for (i=0;i<NSTRIPE;i=i+1) begin
         for (j=0;j<OCHAN;j=j+1) begin
+            assign round[i][j] = scale_mult[i][j][shift[j]-1];
+            assign scale_mult_signed[i][j] = sign[i][j] ? ~scale_mult[i][j]+$signed('d1) : scale_mult[i][j];
             always @(posedge clk) begin
                 reg_a[i][j] <= patch[i];
                 reg_b[i][j] <= weight[j];
-                prod_ab[i][j] <= mult_a[i][j] * mult_b[i][j]; // 16x16 unsigned multiplier
+                prod_ab[i][j] <= mult_a[i][j]*mult_b[i][j]; // 16x16 unsigned multiplier
                 case (alu_op)
-                    'd0 : reg_z[i][j] <= acc[i][j];
-                    'd1 : reg_z[i][j] <= reg_z[i][j] + bias[j];
+                    'd0 : begin
+                            reg_z[i][j] <= acc[i][j];
+                          end
+                    'd1 : begin
+                            reg_z[i][j] <= reg_z[i][j] + bias[j];
+                          end
                     'd2 : begin
                             sign[i][j] <= reg_z[i][j][REGZ-1];
-                            reg_z[i][j] <= reg_z[i][j][REGZ-1] ? ~reg_z[i][j]+'d1 : reg_z[i][j]; // abs()
+                            //reg_z[i][j] <= reg_z[i][j][REGZ-1] ? ~reg_z[i][j]+$signed({{REGZ-1{1'b0}},1'b1}) : reg_z[i][j]; // abs()
+                            reg_z[i][j] <= reg_z[i][j][REGZ-1] ? ~reg_z[i][j]+$signed('d1) : reg_z[i][j]; // abs()
                           end
                     'd3 : begin // part1 (32x32 or 64x32 multiply using 16x16 operations)
                             mult_a[i][j] <= reg_z[i][j][0 +:16];
@@ -144,7 +159,6 @@ generate
                     'd8 : begin // part6
                             mult_a[i][j] <= reg_z[i][j][(REGZ==64)?32:0 +:16];
                             mult_b[i][j] <= scale[j][31:16];
-                            //scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part4
                             if (REGZ==32)
                                 scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0}; // +part4
                             else
@@ -153,7 +167,6 @@ generate
                     'd9 : begin // part7
                             mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
                             mult_b[i][j] <= scale[j][15:0];
-                            //scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-32{1'b0}},prod_ab[i][j],32'b0}; // +part5
                             if (REGZ==32)
                                 scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],32'b0}; // +part5
                             else
@@ -162,13 +175,11 @@ generate
                     'd10 : begin // part8
                             mult_a[i][j] <= reg_z[i][j][(REGZ==64)?48:0 +:16];
                             mult_b[i][j] <= scale[j][31:16];
-                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part6
                             if (REGZ==64)
                                 scale_mult[i][j] <= scale_mult[i][j] + {{REGZ-48{1'b0}},prod_ab[i][j],48'b0}; // +part6
                 
                           end
                     'd11 : begin // pipeline
-                            //scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ==64)?(REGZ-48):0{1'b0}},prod_ab[i][j],(REGZ==64)?48:0'b0}; // +part7
                             if (REGZ==64)
                                 scale_mult[i][j] <= scale_mult[i][j] + {{(REGZ-48){1'b0}},prod_ab[i][j],48'b0}; // +part7
                           end
@@ -178,23 +189,25 @@ generate
                                 scale_mult[i][j] <= scale_mult[i][j] + {prod_ab[i][j],64'b0}; // +part8
                           end
                     'd13 : begin // scale is unsigned, so result has the same sign as the original reg_z
-                            if (sign[i][j])
-                                //reg_z[i][j] <= ~({scale_mult[i][j]>>31}[31:0])+'d1; // twos complement negation
-                                reg_z[i][j] <= ~{scale_mult[i][j]>>31}+'d1; // twos complement negation
-                            else
-                                //reg_z[i][j] <= {scale_mult[i][j]>>31}[31:0];
-                                reg_z[i][j] <= {scale_mult[i][j]>>31};
+                            // rounding right shift away from zero, see https://arxiv.org/pdf/1712.05877.pdf appendix B
+                            if (sign[i][j] && round[i][j]) // round toward -inf
+                                reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]) - $signed('d1);
+                            else if (!sign[i][j] && round[i][j]) // round toward +inf
+                                reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]) + $signed('d1);
+                            else // no round
+                                reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]);
                           end
                     'd14 : begin
-                            if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin
-                                //$display("CLIP %m ochan %d z %d %d",j,reg_z[i][j],$signed(2**(DTYPE-1)-1));
-                                reg_z[i][j] <= 2**(DTYPE-1)-1;
+                            if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin // CLIP
+                                $display($realtime," CLIP %m ochan %d alu_op %d reg_z %d %h %d",j,alu_op,reg_z[i][j],reg_z[i][j],$signed(2**(DTYPE-1)-1));
+                                reg_z[i][j] <= $signed(2**(DTYPE-1)-1);
                             end
                         end
 
                     'd15 : begin
                             if (reg_z[i][j] < $signed('d0)) // RELU
-                                reg_z[i][j] <= {REGZ{1'b0}};
+                                //reg_z[i][j] <= {REGZ{1'b0}};
+                                reg_z[i][j] <= 'd0;
                         end
                     'd16 : begin
                             reg_z[i][j] <= reg_z[i][j]; // no activation on final layer

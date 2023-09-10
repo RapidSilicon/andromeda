@@ -25,6 +25,7 @@ module conv2d_ctrl #(
 ) (
     input clk, reset,
     output reg clr_acc,
+    output reg en_acc,
     output reg [4:0] alu_op,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
@@ -93,12 +94,18 @@ end
 
 // dot product FSM
 reg clr_acc0,clr_acc1,clr_acc2,clr_acc3,clr_acc4;
+reg en_acc0,en_acc1,en_acc2,en_acc3,en_acc4;
 always @(posedge clk) begin
     clr_acc1 <= clr_acc0;
     clr_acc2 <= clr_acc1;
     clr_acc3 <= clr_acc2;
     clr_acc4 <= clr_acc3;
     clr_acc <= clr_acc4;
+    en_acc1 <= en_acc0;
+    en_acc2 <= en_acc1;
+    en_acc3 <= en_acc2;
+    en_acc4 <= en_acc3;
+    en_acc <= en_acc4;
 end
 
 reg start_alu,start_alu0,start_alu1,start_alu2,start_alu3;
@@ -117,10 +124,18 @@ reg [$clog2(OWIDTH):0] ocol,ocol_pipe;
 reg [$clog2(OHEIGHT):0] orow,orow_pipe;
 reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 reg [4:0] wait_state;
+
+always @(posedge clk)
+    if (reset || clr_acc)
+        wait_state <= 'd0;
+    else if (wait_state<'d20)
+        wait_state <= wait_state+'d1;
+
 localparam DP_IDLE = 'd0;
 localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
 localparam DP_FINISH = 'd3;
+localparam DP_WAIT = 'd4;
 always @(posedge clk) begin
     if (reset) begin
         state <= 'd0;
@@ -129,9 +144,9 @@ always @(posedge clk) begin
         ic <= 'd0;
         ocol <= 'd0;
         orow <= 'd0;
-        wait_state <= 'd0;
         start_alu0 <= 1'b0;
         clr_acc0 <= 1'b0;
+        en_acc0 <= 1'b0;
     end
     else begin
         case (state)
@@ -140,42 +155,44 @@ always @(posedge clk) begin
             kx <= 'd0;
             ic <= 'd0;
             clr_acc0 <= 1'b0;
+            en_acc0 <= 1'b0;
             if (start_row) begin
                 state <= DP_INIT;
             end
         end
         DP_INIT: begin
             clr_acc0 <= 1'b1;
-            wait_state <= 'd0;
+            en_acc0 <= 1'b0;
             state <= DP_RUN;
         end
         DP_RUN: begin
+            en_acc0 <= 1'b1;
             weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
             stripe_ra <= ((ky+(orow*STRIDE))%NROW)*(NCOL+OVERLAP) + kx + ocol*STRIDE;
             ichan_sel0 <= 'b1 << ic;
             if (ic==ICHAN-1) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
-                        if (wait_state > 'd20) begin // if dot product is faster than alu ops, wait for it
-                            wait_state <= 'd0;
+                        if (wait_state=='d20) begin // if dot product is faster than alu ops, wait for it
                             clr_acc0 <= 1'b1;
+                            start_alu0 <= 1'b1;
+                            ocol_pipe <= ocol;
+                            orow_pipe <= orow;
                             if (ocol==(OCOL-1)) begin
                                 ocol <= 'd0;
                                 orow <= orow+'d1;
                                 state <= DP_FINISH;
                             end
-                            else
+                            else begin
                                 ocol <= ocol+'d1;
-
-                            ky <= 'd0;
-                            kx <= 'd0;
-                            ic <= 'd0;
-                            start_alu0 <= 1'b1;
-                            ocol_pipe <= ocol;
-                            orow_pipe <= orow;
+                                ky <= 'd0;
+                                kx <= 'd0;
+                                ic <= 'd0;
+                            end
                         end
-                        else
-                            wait_state <= wait_state + 'd1;
+                        else begin
+                            state <= DP_WAIT;
+                        end
                     end
                     else begin
                         ky <= ky+'d1;
@@ -187,7 +204,6 @@ always @(posedge clk) begin
                     kx <= kx+'d1;
                     ic <= 'd0;
                     start_alu0 <= 1'b0;
-                    wait_state <= wait_state + 'd1;
                     clr_acc0 <= 1'b0;
                 end
             end
@@ -195,12 +211,17 @@ always @(posedge clk) begin
                 ic <= ic+'d1;
                 start_alu0 <= 1'b0;
                 clr_acc0 <= 1'b0;
-                wait_state <= wait_state + 'd1;
             end
         end
         DP_FINISH: begin
             start_alu0 <= 1'b0;
             state <= DP_IDLE;
+        end
+        DP_WAIT: begin // DOT time < ALU time
+            en_acc0 <= 1'b0;
+            if (wait_state=='d20) begin
+                state <= DP_RUN;
+            end
         end
         default:
             state <= 'bx;
