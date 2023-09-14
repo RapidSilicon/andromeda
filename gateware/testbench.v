@@ -151,6 +151,16 @@ end
         @(posedge clk);
         if (u0.m_axis_tvalid) begin
             $display($realtime, " m_axis_tvalid data %x",u0.m_axis_data);
+            #20 wb_read(32'h80020000, read_data);
+            $display("pred_0 %h", read_data);
+            #20 wb_read(32'h80020004, read_data);
+            $display("pred_1 %h", read_data);
+            #20 wb_read(32'h80020008, read_data);
+            $display("pred_2 %h", read_data);
+            #20 wb_read(32'h8002000c, read_data);
+            $display("pred_3 %h", read_data);
+            #20 wb_read(32'h80020010, read_data);
+            $display("pred_4 %h", read_data);
             #1000000 $finish;
         end
     end

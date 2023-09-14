@@ -190,12 +190,21 @@ generate
                           end
                     'd13 : begin // scale is unsigned, so result has the same sign as the original reg_z
                             // rounding right shift away from zero, see https://arxiv.org/pdf/1712.05877.pdf appendix B
+                            //reg_z[i][j] <= scale_mult_signed[i][j] >>> shift[j];
+                            /*
+                            if (sign[i][j])
+                                reg_z[i][j] <= (scale_mult_signed[i][j] - $signed('b1<<(shift[j]-0))) >>> shift[j];
+                            else
+                                reg_z[i][j] <= (scale_mult_signed[i][j] + $signed('b1<<(shift[j]-0))) >>> shift[j];
+                            */
+                            
                             if (sign[i][j] && round[i][j]) // round toward -inf
-                                reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]) - $signed('d1);
-                            else if (!sign[i][j] && round[i][j]) // round toward +inf
-                                reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]) + $signed('d1);
+                                reg_z[i][j] <= $signed(scale_mult_signed[i][j] >>> shift[j]) - $signed('d1); // RELU makes this don't care
+                            else if (~sign[i][j] && round[i][j]) // round toward +inf
+                                reg_z[i][j] <= $signed(scale_mult_signed[i][j] >>> shift[j]) + $signed('d1);
                             else // no round
                                 reg_z[i][j] <= (scale_mult_signed[i][j] >>> shift[j]);
+                            
                           end
                     'd14 : begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin // CLIP

@@ -4,6 +4,7 @@ import random
 import tflite
 import array
 import struct
+#from decimal import *
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
@@ -59,6 +60,7 @@ for j in range(graph.OperatorsLength()):
             sbias = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) # == s1*s2
             s3 = graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
             l.scale.append((s1*s2)/s3)
+            #l.scale.append((Decimal(s1)*Decimal(s2))/Decimal(s3))
             #print('i',i,'s1',s1,'s2',s2,'s1*s2',s1*s2,'sbias',sbias,'s3',s3)
 #        l.scale=[graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) / graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
 #            for i in range(l.oshape[-1])]
@@ -250,11 +252,15 @@ for j,l in enumerate(layers):
     w+='output [{}*{}-1:0] shift;\n'.format(l.oshape[-1], 6)
     w+='\n'
     for i in range(l.oshape[-1]):
+        #shift = int(np.ceil(np.log2(float(Decimal(0.5)/l.scale[i]))))
         shift = int(np.ceil(np.log2(0.5/l.scale[i])))
         scale = l.scale[i]*np.power(2,shift)
-        #print('j',j,'i',i,'scale',scale,'shift',shift,'l.scale',l.scale[i], scale/np.power(2,shift))
+        #print('j',j,'i',i,'scale',scale,hex(int(scale*0x7fffffff))[2:])
+        #shift = int(np.ceil(np.log2((0.5/l.scale[i])*0x80000000)))
+        #scale = l.scale[i]*np.power(2,shift-31)
         w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+31)
         w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(scale*0x7fffffff))[2:])
+        #print('j',j,'i',i,'scale',scale,'shift',shift,'l.scale',l.scale[i])
     w+='endmodule\n'
     w+='\n'
 

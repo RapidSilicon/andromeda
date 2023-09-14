@@ -74,16 +74,22 @@ for d in interpreter.get_tensor_details():
     if '/conv2d/' in d['name']:
         firstlayer=d['index']-1
 
+    u = d['index']-firstlayer
     t = interpreter.get_tensor(d['index'])
-    #print('k',k,'t.shape',t.shape)
+    print('u',u,'t.shape',t.shape)
     t = t.reshape(-1, t.shape[-1])
+
+    # write expected outputs
+    fexp = open('expect_u{}.mem'.format(u),'w')
     for i in range(t.shape[0]):
         s=''
-        for j in range(t.shape[1]):
+        #for j in range(t.shape[1]):
+        for j in range(t.shape[1]-1,-1,-1):
             s+='{:04X}'.format(t[i,j].astype(np.ushort))
-            #s += hex(t[i,j])[2:]
-        #print('index {:4d} name {:60} i {:6d}\nfeature {}'.format(d['index'],d['name'][0:60],i,s))
-        print('index {:4d} u{} i {:6d} feature {}'.format(d['index'],d['index']-firstlayer,i,s))
+        print('index {:4d} u{} i {:6d} feature {}'.format(d['index'],u,i,s))
+        print(s,file=fexp)
+    fexp.close()
+        
 #        if k==43:
 #            print(t)
 # write binary test data for verilog simulation

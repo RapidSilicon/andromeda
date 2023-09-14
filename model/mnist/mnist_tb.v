@@ -67,6 +67,13 @@ end
 
 // debug
 /*
+initial begin
+    #100 $dumpfile("mnist.lxt2");
+    //#9.48548e+06 $dumpfile("mnist.lxt2");
+    $dumpvars(0, mnist_tb.u0);
+end
+*/
+/*
 integer ii;
 initial begin
     //#100 $dumpfile("mnist.lxt2");
@@ -87,7 +94,7 @@ end
 //initial #10000000 $finish();
 */
 
-// checker
+// monitor
 integer j;
 reg signed [DTYPE-1:0] dout;
 always @(negedge clk) begin
@@ -99,19 +106,34 @@ always @(negedge clk) begin
     end
 end
 //
+
+// CHECKER
+//reg signed [u0.u1.IWIDTH*DTYPE-1:0] expect_u1 [0:u0.u1.OWIDTH*DTYPE-1];
+reg signed [32*DTYPE-1:0] expect_u1 [0:26*26-1];
+initial begin
+    $readmemh("expect_u1.mem", expect_u1);
+    $display("Loaded expect_u1.mem");
+end
+always @(posedge clk) begin
+    if (u0.u1.s_axis_tvalid)
+        if (u0.u1.s_axis_data != expect_u1[u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row])
+            $display($realtime, " MISMATCH u1 i %d\nexpected %h\ngot      %h",
+            u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row,expect_u1[u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row],u0.u1.s_axis_data);
+end
+
 // monitor
 always @(posedge clk) begin
-    if (u0.u0.s_axis_tvalid) $display($realtime, " u0 i %d data %h", u0.u0.s_col+u0.u0.IWIDTH*u0.u0.s_row,u0.u0.s_axis_data);
-    if (u0.u1.s_axis_tvalid) $display($realtime, " u1 i %d data %h", u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row,u0.u1.s_axis_data);
-    if (u0.u2.s_axis_tvalid) $display($realtime, " u2 i %d data %h", u0.u2.s_col+u0.u2.IWIDTH*u0.u2.s_row,u0.u2.s_axis_data);
-    if (u0.u3.s_axis_tvalid) $display($realtime, " u3 i %d data %h", u0.u3.s_col+u0.u3.IWIDTH*u0.u3.s_row,u0.u3.s_axis_data);
-    if (u0.u4.s_axis_tvalid) $display($realtime, " u4 i %d data %h", u0.u4.s_col+u0.u4.IWIDTH*u0.u4.s_row,u0.u4.s_axis_data);
-    if (u0.u5.s_axis_tvalid) $display($realtime, " u5 i %d data %h", u0.u5.s_col+u0.u5.IWIDTH*u0.u5.s_row,u0.u5.s_axis_data);
-    if (u0.u6.s_axis_tvalid) $display($realtime, " u6 i %d data %h", u0.u6.s_col+u0.u6.IWIDTH*u0.u6.s_row,u0.u6.s_axis_data);
-    if (u0.u7.s_axis_tvalid) $display($realtime, " u7 i %d data %h", u0.u7.s_col+u0.u7.IWIDTH*u0.u7.s_row,u0.u7.s_axis_data);
-    if (u0.u8.s_axis_tvalid) $display($realtime, " u8 i %d data %h", u0.u8.s_col+u0.u8.IWIDTH*u0.u8.s_row,u0.u8.s_axis_data);
-    if (u0.u9.s_axis_tvalid) $display($realtime, " u9 i %d data %h", u0.u9.s_col+u0.u9.IWIDTH*u0.u9.s_row,u0.u9.s_axis_data);
-    if (u0.u10.s_axis_tvalid) $display($realtime, " u10 i %d data %h", u0.u10.s_col+u0.u10.IWIDTH*u0.u10.s_row,u0.u10.s_axis_data);
+    if (u0.u0.s_axis_tvalid) $display($realtime, "\tu0 i %d data %h", u0.u0.s_col+u0.u0.IWIDTH*u0.u0.s_row,u0.u0.s_axis_data);
+    if (u0.u1.s_axis_tvalid) $display($realtime, "\tu1 i %d data %h", u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row,u0.u1.s_axis_data);
+    if (u0.u2.s_axis_tvalid) $display($realtime, "\tu2 i %d data %h", u0.u2.s_col+u0.u2.IWIDTH*u0.u2.s_row,u0.u2.s_axis_data);
+    if (u0.u3.s_axis_tvalid) $display($realtime, "\tu3 i %d data %h", u0.u3.s_col+u0.u3.IWIDTH*u0.u3.s_row,u0.u3.s_axis_data);
+    if (u0.u4.s_axis_tvalid) $display($realtime, "\tu4 i %d data %h", u0.u4.s_col+u0.u4.IWIDTH*u0.u4.s_row,u0.u4.s_axis_data);
+    if (u0.u5.s_axis_tvalid) $display($realtime, "\tu5 i %d data %h", u0.u5.s_col+u0.u5.IWIDTH*u0.u5.s_row,u0.u5.s_axis_data);
+    if (u0.u6.s_axis_tvalid) $display($realtime, "\tu6 i %d data %h", u0.u6.s_col+u0.u6.IWIDTH*u0.u6.s_row,u0.u6.s_axis_data);
+    if (u0.u7.s_axis_tvalid) $display($realtime, "\tu7 i %d data %h", u0.u7.s_col+u0.u7.IWIDTH*u0.u7.s_row,u0.u7.s_axis_data);
+    if (u0.u8.s_axis_tvalid) $display($realtime, "\tu8 i %d data %h", u0.u8.s_col+u0.u8.IWIDTH*u0.u8.s_row,u0.u8.s_axis_data);
+    if (u0.u9.s_axis_tvalid) $display($realtime, "\tu9 i %d data %h", u0.u9.s_col+u0.u9.IWIDTH*u0.u9.s_row,u0.u9.s_axis_data);
+    if (u0.u10.s_axis_tvalid) $display($realtime, "\tu10 i %d data %h", u0.u10.s_col+u0.u10.IWIDTH*u0.u10.s_row,u0.u10.s_axis_data);
 end
 
 // monitor
