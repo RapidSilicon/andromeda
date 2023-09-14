@@ -114,6 +114,10 @@ class BaseSoC(SoCCore):
             i_wb_SEL      = wb.sel
             )
 
+        # bare metal app in ROM -------------------------------------------------------------------------------
+        self.add_rom("bootrom", 0x20000000, 0x20000, contents=get_mem_data("software/demo.bin", endianness="little"))  # "little" for the default RISCV architectures selected by litex
+        self.add_constant("ROM_BOOT_ADDRESS", 0x20000000)
+
         # DDR3 SDRAM -------------------------------------------------------------------------------
         if not self.integrated_main_ram_size:
             self.submodules.ddrphy = s7ddrphy.A7DDRPHY(platform.request("ddram"),
