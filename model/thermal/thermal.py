@@ -64,16 +64,16 @@ if args.alt=='alt1':
 if args.alt=='alt2':
     model = keras.Sequential([
     keras.layers.InputLayer(input_shape=(24, 32, args.window)),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-    keras.layers.Conv2D(filters=12, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+    keras.layers.Conv2D(filters=16, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
     keras.layers.Conv2D(filters=5, kernel_size=(4, 12), strides=(1,1), activation=None, padding='valid'),
     keras.layers.Flatten(),
     ])
@@ -115,6 +115,7 @@ for d in os.listdir(args.dataset):
         #print('img',img.shape)
         ds[action][clip][frame,:,:,0] = img/255.
         #print('action',action,'clip',clip,'frame',frame,'shape',img.shape)
+    print('dataset',d,len(os.listdir('{}/{}'.format(args.dataset,d))))
  
 # batch generator for 32-frame windows
 #actionmap = {'quiet':0, 'loiter':1, 'writhe':2, 'walk':3, 'run':4}
@@ -134,6 +135,8 @@ def batch_generator(raw, batch_size=args.batch):
             t = raw[a][c][w:w+args.window,:,:,0]
             x[k] = np.moveaxis(t,0,-1)
             y[k] = actionmap[a]
+        #print('x',x.shape,'y',y.shape)
+        #print(x[0])
         yield x,y
 
 train_generator = batch_generator(raw_train)

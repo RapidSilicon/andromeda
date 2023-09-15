@@ -14,14 +14,16 @@
 #define UDP_PORT 5005
 int fb[768];
 
-#include "../gateware/test_data.h"
+//#include "../gateware/test_data.h"
 
 int main(void)
 {
+    int pred[5];
+
 	irq_setmask(0);
 	irq_setie(1);
 	uart_init();
-    fputs("HELLO UART FROM BARE METAL!\n", stdout);
+    fputs("HELLO UART FROM BARE METAL ... ROM BOOT !!!!\n", stdout);
 
     static unsigned char data[2];
     uint8_t *payload;
@@ -30,6 +32,8 @@ int main(void)
     static unsigned char macadr[6] = {0x10, 0xe2, 0xd5, 0x00, 0x00, 0x00};
     udp_start(macadr, IPTOINT(192,168,1,50));
     udp_arp_resolve(ip);
+    fputs("UDP INIT COMPLETE\n", stdout);
+    //exit(0);
 
     // init mlx
     unsigned int refresh = 0x6; // subpage refresh rate
@@ -38,13 +42,13 @@ int main(void)
     data[1] = ((refresh&0x01)<<7) | 0x01; // lsbyte
     i2c_write(0x33, 0x800d, data, 2, 2); // set refresh  rate
     i2c_read(0x33, 0x800d, data, 2, 0, 2); // read config
-    printf("mlx config %02x %02x\n", data[0], data[1]);
+    printf("MLX CONFIG %02x %02x\n", data[0], data[1]);
 
     //busy_wait_us(1);
     //volatile *(unsigned long *)0x80000000L = 0x7; // reset andromeda
     //busy_wait_us(1);
     *(volatile unsigned long *)0x80000000L = 0x0; // deassert resets
-    int w=0;
+    //int w=0;
     while (1) {
 #if 0
         i2c_read(0x33, 0x0400, fb, 32*24*2, 0, 2); // read checkboard pattern from mlx90640
@@ -66,22 +70,33 @@ int main(void)
 
         payload = udp_get_tx_buffer();
         i2c_read(0x33, 0x8000, payload, 2, 0, 2); // read status
-        i2c_read(0x33, 0x2432, payload+2, 2, 0, 2); // read ambient temp
-        i2c_read(0x33, 0x0400, payload+4, 32*24, 0, 2); // read checkboard pattern from mlx90640
+        //i2c_read(0x33, 0x2432, payload+2, 2, 0, 2); // read ambient temp
+        payload[2] = (pred[0]>>8)&0xff;
+        payload[3] = (pred[0]>>0)&0xff;
+        payload[4] = (pred[1]>>8)&0xff;
+        payload[5] = (pred[1]>>0)&0xff;
+        payload[6] = (pred[2]>>8)&0xff;
+        payload[7] = (pred[2]>>0)&0xff;
+        payload[8] = (pred[3]>>8)&0xff;
+        payload[9] = (pred[3]>>0)&0xff;
+        payload[10] = (pred[4]>>8)&0xff;
+        payload[11] = (pred[4]>>0)&0xff;
+
+        i2c_read(0x33, 0x0400, payload+12, 32*24, 0, 2); // read checkboard pattern from mlx90640
 
         // copy from udp payload to andromeda fb, scale raw pixels values to [0,255]
         for (int k=0; k<32*12; k++) {
             //int x = (int)(((unsigned short *)(payload+4))[k]);
             int x=0;
-            x |= ((payload+4)[k*2])<<8;
-            x |= ((payload+4)[k*2+1])<<0;
+            x |= ((payload+12)[k*2])<<8;
+            x |= ((payload+12)[k*2+1])<<0;
             x = x<32768 ? x : x-65536;
             x = x<-128 ? -128 : x;
             x = x+128;
             //*(unsigned long *)(0x80010000L + (w<<12) + k*4) = x;
             fb[k] = x;
         }
-        udp_send(UDP_PORT, 30000, 32*24+4);
+        udp_send(UDP_PORT, 30000, 32*24+12);
 
         payload = udp_get_tx_buffer();
         i2c_read(0x33, 0x0400+(32*24)/2, payload, 32*24, 0, 2); // read checkboard pattern from mlx90640
@@ -130,7 +145,6 @@ int main(void)
     }
     //busy_wait_us(500000);
 
-    int pred[5];
     for (int k=0; k<5; k++) {
         busy_wait_us(1);
         pred[k] = *((volatile unsigned long *)(0x80020000L+k*4));
@@ -147,7 +161,17 @@ int main(void)
     }
 
     busy_wait_us(1);
-    printf("w %6d pseq %6ld pred %6d %6d %6d %6d %6d\n", w,((*((volatile unsigned long *)(0x80030000L)))),pred[0],pred[1],pred[2],pred[3],pred[4]);
+/*
+    int max=0;
+    int max_idx=0;
+    for (int j=0; j<5; j++) {
+        if (pred[j]>max) {
+            max=pred[j];
+            max_idx=j;
+        }
+    }
+    printf("w %6d pseq %6ld pred %6d %6d %6d %6d %6d fingers %d\n", w,((*((volatile unsigned long *)(0x80030000L)))),pred[0],pred[1],pred[2],pred[3],pred[4],max_idx+1);
+*/
 /*
     printf("w %6d pseq %6ld pred %08lx %08lx %08lx %08lx %08lx\n", w,((*((unsigned long *)(0x80020000L+0*4)))>>16)&0xffff,
         (*(unsigned long *)(0x80020000L+0*4))&0x1ff,
