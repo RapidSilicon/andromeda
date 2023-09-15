@@ -129,11 +129,13 @@ always @(posedge clk) begin
     if (u0.u3.s_axis_tvalid) $display($realtime, "\tu3 i %d data %h", u0.u3.s_col+u0.u3.IWIDTH*u0.u3.s_row,u0.u3.s_axis_data);
     if (u0.u4.s_axis_tvalid) $display($realtime, "\tu4 i %d data %h", u0.u4.s_col+u0.u4.IWIDTH*u0.u4.s_row,u0.u4.s_axis_data);
     if (u0.u5.s_axis_tvalid) $display($realtime, "\tu5 i %d data %h", u0.u5.s_col+u0.u5.IWIDTH*u0.u5.s_row,u0.u5.s_axis_data);
+/*
     if (u0.u6.s_axis_tvalid) $display($realtime, "\tu6 i %d data %h", u0.u6.s_col+u0.u6.IWIDTH*u0.u6.s_row,u0.u6.s_axis_data);
     if (u0.u7.s_axis_tvalid) $display($realtime, "\tu7 i %d data %h", u0.u7.s_col+u0.u7.IWIDTH*u0.u7.s_row,u0.u7.s_axis_data);
     if (u0.u8.s_axis_tvalid) $display($realtime, "\tu8 i %d data %h", u0.u8.s_col+u0.u8.IWIDTH*u0.u8.s_row,u0.u8.s_axis_data);
     if (u0.u9.s_axis_tvalid) $display($realtime, "\tu9 i %d data %h", u0.u9.s_col+u0.u9.IWIDTH*u0.u9.s_row,u0.u9.s_axis_data);
     if (u0.u10.s_axis_tvalid) $display($realtime, "\tu10 i %d data %h", u0.u10.s_col+u0.u10.IWIDTH*u0.u10.s_row,u0.u10.s_axis_data);
+*/
 end
 
 // monitor

@@ -82,11 +82,13 @@ for j in range(graph.OperatorsLength()):
 #        elif l.stride==2:
 #            l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))*2
 
-        #l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
         l.ncol = l.ishape[-2]//l.nstripe
-        l.ocol = l.oshape[-2]//l.nstripe
-        #l.ocol = int(np.ceil(l.oshape[-2]/l.nstripe))
-        #l.ocol = (l.ishape[-2]//l.nstripe)//l.stride
+        if l.ncol == (l.ishape[-2]/2.):
+            l.ncol -=1
+        #l.ocol = l.oshape[-2]//l.nstripe
+
+        #l.ncol = int(np.ceil(l.ishape[-2]/l.nstripe))
+        l.ocol = int(np.ceil(l.oshape[-2]/l.nstripe))
 
         if l.stride==1:
             l.overlap=2

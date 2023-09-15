@@ -24,7 +24,8 @@ test_images = test_images.astype(np.float32) / 255.0
 
 # load tflite model
 tf.lite.experimental.Analyzer.analyze(model_path=args.tflite)
-interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True)
+#interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True)
+interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True, experimental_op_resolver_type=tf.lite.experimental.OpResolverType.BUILTIN_REF)
 interpreter.allocate_tensors() # Needed before execution!
 input_details = interpreter.get_input_details()[0]  # Model has single input.
 output_details = interpreter.get_output_details()[0]  # Model has single output.
