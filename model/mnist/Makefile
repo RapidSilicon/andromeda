@@ -1,6 +1,7 @@
-CLK=100e6
-DUMP=
-#DUMP=+vcs+fsdbon+all
+#CLK=100e6
+CLK=2e6
+#DUMP=
+DUMP=+vcs+fsdbon+all
 SIM_COMPILE= vcs -sverilog +vpi -full64 $(DUMP) -pvalue+DTYPE=16
 SIM_RUN= ./simv
 
@@ -19,6 +20,9 @@ quantize:
 
 test:
 	python3 test.py --tflite mnist.tflite --dtype 16 |& tee test.log
+
+andromeda:
+	python3 ../../bin/andromeda.py --tflite mnist.tflite --top mnist --clk $(CLK) --fps 30 --regz 64 --regb 8 --dtype 16 |& tee andromeda.log
 
 sim:
 	python3 ../../bin/andromeda.py --tflite mnist.tflite --top mnist --clk $(CLK) --fps 30 --regz 64 --regb 8 --dtype 16
