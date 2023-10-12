@@ -73,6 +73,10 @@ for j in range(graph.OperatorsLength()):
         l.wdepth = np.prod(l.wshape)//l.oshape[-1]
         l.waddr = int(np.ceil(np.log2(l.wdepth)))
         l.rate = l.oshape[-2]*l.oshape[-3]*args.fps*np.prod(l.wshape)
+        l.feati = l.ishape[-2]*l.ishape[-3]*args.fps
+        l.feato = l.oshape[-2]*l.oshape[-3]*args.fps
+        if l.feati>args.clk or l.feato>args.clk:
+            print('ERROR: feature rate > clock rate','feati',l.feati,'feato',l.feato,'clock',args.clk)
         l.nmac = l.rate/args.clk
         l.nstripe = int(np.ceil(l.nmac/l.oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
         l.nrow = l.wshape[-3]+l.stride
@@ -112,8 +116,8 @@ for j in range(graph.OperatorsLength()):
             l.prev_nstripe = layers[-1].nstripe
 
         layers.append(l)
-        print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} s {}'.format(
-            j,l.nstripe,l.stride,l.rate,l.nmac,np.mean(l.scale),l.ishape,l.oshape,l.wshape,l.bshape,l.stripe.shape))
+        print('layer {:4d} nstripe {:4d} stride {:2d} rate {:6.3e} nmac {:8.2f} feat {:6.3e} {:6.3e} scale {:12.8f} i {} o {} w {} b {} s {}'.format(
+            j,l.nstripe,l.stride,l.rate,l.nmac,l.feati,l.feato,np.mean(l.scale),l.ishape,l.oshape,l.wshape,l.bshape,l.stripe.shape))
 
 layers[-1].relu=0 # don't apply activation on last layer (HACK)
 
