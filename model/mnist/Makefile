@@ -1,6 +1,6 @@
-#CLK=100e6 # nstripe==1
+CLK=100e6 # nstripe==1
 #CLK=2e6 # nstripe>1, stride=1
-CLK=0.25e6 # nstripe>1, stride=2
+#CLK=0.25e6 # nstripe>1, stride=2
 STRIDE=2 # {1,2}
 
 DUMP=

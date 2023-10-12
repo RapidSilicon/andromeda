@@ -24,16 +24,13 @@ print(args)
 if args.stride==1:
     model = keras.Sequential([
         keras.layers.InputLayer(input_shape=(1400, 1600, 2)),
-        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
         keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=8, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=16, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=32, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=64, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
-        keras.layers.Conv2D(filters=1, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
+        keras.layers.Conv2D(filters=4, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
     ])
 
 if args.stride==2:
