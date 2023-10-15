@@ -38,7 +38,7 @@ if args.stride==1:
     keras.layers.Conv2D(filters=32, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
     keras.layers.Conv2D(filters=32, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
     keras.layers.Conv2D(filters=10, kernel_size=(2, 2), strides=(1,1), activation=None, padding='valid'),
-    keras.layers.Flatten(),
+    #keras.layers.Flatten(),
     ])
 
 if args.stride==2:
@@ -50,7 +50,7 @@ if args.stride==2:
     keras.layers.Conv2D(filters=16, kernel_size=(3, 3), strides=(2,2), activation=tf.nn.relu, padding='valid'),
     keras.layers.Conv2D(filters=16, kernel_size=(3, 3), strides=(1,1), activation=tf.nn.relu, padding='valid'),
     keras.layers.Conv2D(filters=10, kernel_size=(2, 2), strides=(1,1), activation=None, padding='valid'),
-    keras.layers.Flatten(),
+    #keras.layers.Flatten(),
     ])
 
 print(model.summary())

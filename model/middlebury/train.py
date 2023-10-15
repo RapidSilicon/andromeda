@@ -52,19 +52,18 @@ if args.net=='alt1':
         d4 = upsample(d3,1)
         return d4
 
-    input0 = keras.layers.Input(shape=(368,400,3))
-    input1 = keras.layers.Input(shape=(368,400,3))
-    enc0 = encoder(input0)
-    enc1 = encoder(input1)
+    in0 = keras.layers.Input(shape=(368,400,3))
+    in1 = keras.layers.Input(shape=(368,400,3))
+    enc0 = encoder(in0)
+    enc1 = encoder(in1)
     #cat = keras.layers.Concatenate(axis=-1)([enc0,enc1])
     cat = keras.layers.Add()([enc0, enc1])
     fuse0 = keras.layers.Conv2D(filters=16, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(cat)
     fuse1 = keras.layers.Conv2D(filters=16, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(fuse0)
-    dec0 = decoder(fuse1)
-    dec1 = decoder(fuse1)
-    out = keras.layers.Concatenate(axis=-1)([dec0,dec1])
+    out0 = decoder(fuse1)
+    out1 = decoder(fuse1)
 
-    model = keras.Model(inputs=[input0, input1], outputs=out)
+    model = keras.Model(inputs=[in0, in1], outputs=[out0,out1])
 
 print(model.summary())
 
@@ -77,7 +76,8 @@ def crop_center(img,cropx,cropy):
 
 dleft=[]
 dright=[]
-ldisp=[]
+lleft=[]
+lright=[]
 for d in os.listdir(args.dataset):
     d0 = cv2.imread('{}/{}/view1.png'.format(args.dataset,d), cv2.IMREAD_COLOR)
     d1 = cv2.imread('{}/{}/view5.png'.format(args.dataset,d), cv2.IMREAD_COLOR)
@@ -93,12 +93,14 @@ for d in os.listdir(args.dataset):
     #print('d',d,'d0.shape',d0.shape,'d1.shape',d1.shape,'l0.shape',l0.shape,'l1.shape',l1.shape)
     dleft.append(d0)
     dright.append(d1)
-    ldisp.append(np.concatenate([l0,l1],axis=-1))
+    lleft.append(l0)
+    lright.append(l1)
 
 dleft = np.array(dleft)/255.0
 dright = np.array(dright)/255.0
-ldisp = np.array(ldisp)/255.0
-print('dleft.shape',dleft.shape,'dright.shape',dright.shape,'ldisp.shape',ldisp.shape)
+lleft = np.array(lleft)/255.0
+lright = np.array(lright)/255.0
+print('dleft.shape',dleft.shape,'dright.shape',dright.shape,'lleft.shape',lleft.shape,'lright.shape',lright.shape)
 
 # Train the digit classification model
 #model.compile(optimizer='adam', loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
@@ -106,7 +108,7 @@ opt = tf.keras.optimizers.Adam(args.lr)
 model.compile(optimizer=opt, loss=tf.keras.losses.MeanSquaredError())
 #model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
 #model.compile(optimizer='adam', loss=tf.keras.losses.KLDivergence())
-model.fit([dleft,dright],ldisp,epochs=args.epochs,batch_size=args.batch)
+model.fit([dleft,dright],[lleft,lright],epochs=args.epochs,batch_size=args.batch)
 #  train_images,
 #  train_labels,
 #  epochs=args.epochs,

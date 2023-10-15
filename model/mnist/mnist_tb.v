@@ -107,112 +107,20 @@ always @(negedge clk) begin
 end
 //
 
-// CHECKER
-//reg signed [u0.u1.IWIDTH*DTYPE-1:0] expect_u1 [0:u0.u1.OWIDTH*DTYPE-1];
-reg signed [32*DTYPE-1:0] expect_u1 [0:26*26-1];
-initial begin
-    $readmemh("expect_u1.mem", expect_u1);
-    $display("Loaded expect_u1.mem");
-end
-always @(posedge clk) begin
-    if (u0.u1.s_axis_tvalid)
-        if (u0.u1.s_axis_data != expect_u1[u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row])
-            $display($realtime, " MISMATCH u1 i %d\nexpected %h\ngot      %h",
-            u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row,expect_u1[u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row],u0.u1.s_axis_data);
-end
-
-// monitor
-always @(posedge clk) begin
-    if (u0.u0.s_axis_tvalid) $display($realtime, "\tu0 i %d data %h", u0.u0.s_col+u0.u0.IWIDTH*u0.u0.s_row,u0.u0.s_axis_data);
-    if (u0.u1.s_axis_tvalid) $display($realtime, "\tu1 i %d data %h", u0.u1.s_col+u0.u1.IWIDTH*u0.u1.s_row,u0.u1.s_axis_data);
-    if (u0.u2.s_axis_tvalid) $display($realtime, "\tu2 i %d data %h", u0.u2.s_col+u0.u2.IWIDTH*u0.u2.s_row,u0.u2.s_axis_data);
-    if (u0.u3.s_axis_tvalid) $display($realtime, "\tu3 i %d data %h", u0.u3.s_col+u0.u3.IWIDTH*u0.u3.s_row,u0.u3.s_axis_data);
-    if (u0.u4.s_axis_tvalid) $display($realtime, "\tu4 i %d data %h", u0.u4.s_col+u0.u4.IWIDTH*u0.u4.s_row,u0.u4.s_axis_data);
-    if (u0.u5.s_axis_tvalid) $display($realtime, "\tu5 i %d data %h", u0.u5.s_col+u0.u5.IWIDTH*u0.u5.s_row,u0.u5.s_axis_data);
-/*
-    if (u0.u6.s_axis_tvalid) $display($realtime, "\tu6 i %d data %h", u0.u6.s_col+u0.u6.IWIDTH*u0.u6.s_row,u0.u6.s_axis_data);
-    if (u0.u7.s_axis_tvalid) $display($realtime, "\tu7 i %d data %h", u0.u7.s_col+u0.u7.IWIDTH*u0.u7.s_row,u0.u7.s_axis_data);
-    if (u0.u8.s_axis_tvalid) $display($realtime, "\tu8 i %d data %h", u0.u8.s_col+u0.u8.IWIDTH*u0.u8.s_row,u0.u8.s_axis_data);
-    if (u0.u9.s_axis_tvalid) $display($realtime, "\tu9 i %d data %h", u0.u9.s_col+u0.u9.IWIDTH*u0.u9.s_row,u0.u9.s_axis_data);
-    if (u0.u10.s_axis_tvalid) $display($realtime, "\tu10 i %d data %h", u0.u10.s_col+u0.u10.IWIDTH*u0.u10.s_row,u0.u10.s_axis_data);
-*/
-end
-
-// monitor
-/*
-integer k;
-reg signed [15:0] tap1;
-always @(negedge clk) begin
-    if (mnist_tb.u0.u2.m_axis_tvalid)
-        for (k=0; k<32; k=k+1) begin
-            tap1 = mnist_tb.u0.u2.m_axis_data[k*16 +:16];
-            if (tap1 > 16'd5000)
-                $display("ochan %d data %d",k,tap1);
-        end
-end
-*/
-
-/*
-integer k,g;
-wire [16*32-1:0] tap_data [0:12];
-wire tap_valid [0:12];
-assign tap_valid[0] = mnist_tb.u0.u0.m_axis_tvalid;
-assign tap_valid[1] = mnist_tb.u0.u1.m_axis_tvalid;
-assign tap_valid[2] = mnist_tb.u0.u2.m_axis_tvalid;
-assign tap_valid[3] = mnist_tb.u0.u3.m_axis_tvalid;
-assign tap_valid[4] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[5] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[6] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[7] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[8] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[9] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[10] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[11] = mnist_tb.u0.u4.m_axis_tvalid;
-assign tap_valid[12] = mnist_tb.u0.u4.m_axis_tvalid;
-
-assign tap_data[0] = mnist_tb.u0.u0.m_axis_data;
-assign tap_data[1] = mnist_tb.u0.u1.m_axis_data;
-assign tap_data[2] = mnist_tb.u0.u2.m_axis_data;
-assign tap_data[3] = mnist_tb.u0.u3.m_axis_data;
-assign tap_data[4] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[5] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[6] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[7] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[8] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[9] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[10] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[11] = mnist_tb.u0.u4.m_axis_data;
-assign tap_data[12] = mnist_tb.u0.u4.m_axis_data;
-*/
-
-/*
-always @(negedge clk) begin
-    for (k=0; k<13; k=k+1) begin
-        if (tap_valid[k]) begin
-            for (g=0; g<32; g=g+1) begin
-                if (tap_data[k][g*16 +:16] > 16'd32767) begin
-                    $display("layer %d ochan %d data %d",k,g,$signed(tap_data[k][g*16 +:16]));
-                end
-            end
-        end
-    end
-end
-*/
-
 //dut
 mnist u0 (
     .clk(clk),
     .reset(reset),
-    .s_axis_data(s_axis_data),
-    .s_col(s_col),
-    .s_row(s_row),
-    .s_axis_tvalid(s_axis_tvalid),
+    .s_0_data(s_axis_data),
+    .s_0_col(s_col),
+    .s_0_row(s_row),
+    .s_0_valid(s_axis_tvalid),
     //.s_axis_tlast(s_axis_tlast),
     //.s_axis_tready(s_axis_tready),
-    .m_axis_data(m_axis_data),
-    .m_col(),
-    .m_row(),
-    .m_axis_tvalid(m_axis_tvalid)
+    .m_0_data(m_axis_data),
+    .m_0_col(),
+    .m_0_row(),
+    .m_0_valid(m_axis_tvalid)
     //.m_axis_tlast(m_axis_tlast),
     //.m_axis_tready(m_axis_tready)
 );
