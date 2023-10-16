@@ -55,6 +55,7 @@ def emit_wires(graph,args):
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Inputs(1)]=True
             wires[graph.Operators(j).Outputs(0)]=True
+            cats.append(graph.Operators(j).Inputs(0))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
@@ -66,6 +67,7 @@ def emit_wires(graph,args):
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
+            cats.append(graph.Operators(j).Inputs(0))
 
     s=''
     for w in wires.keys():
@@ -90,7 +92,10 @@ def emit_wires(graph,args):
 
 def emit_conv2d(j,graph,args):
     # compute parameters
-    relu=1 # TODO: need command line arg to provide list of operators for relu=0
+    if graph.Operators(j).Outputs(0) in cats:
+        relu=0
+    else:
+        relu=1 # TODO: maybe use DAG
     ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
     wshape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
     bshape = graph.Tensors(graph.Operators(j).Inputs(2)).ShapeAsNumpy()
@@ -370,6 +375,7 @@ with open(args.tflite, 'rb') as f:
 
 roms=[] # global
 reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
+cats=[] # global list of tensors that are should be driven by conv2d with RELU=0
 s=''
 s+=emit_prefix(graph,args)
 s+=emit_wires(graph,args)
