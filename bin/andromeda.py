@@ -58,6 +58,7 @@ def emit_wires(graph,args):
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
+            reps.append(graph.Operators(j).Outputs(0))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Inputs(1)]=True
@@ -125,6 +126,8 @@ def emit_conv2d(j,graph,args):
     nmac = rate/args.clk
     nstripe = int(np.ceil(nmac/oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
     nrow = wshape[-3]+stride
+    if graph.Operators(j).Inputs(0) in reps:
+        nrow+=1 # double row burst
     ncol = ishape[-2]//nstripe
     if ncol == (ishape[-2]/2.):
         ncol -=1
@@ -366,6 +369,7 @@ with open(args.tflite, 'rb') as f:
     graph = model.Subgraphs(0)
 
 roms=[] # global
+reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
 s=''
 s+=emit_prefix(graph,args)
 s+=emit_wires(graph,args)
