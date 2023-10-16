@@ -11,7 +11,7 @@ quantize:
 	python3 quantize.py |& tee quantize.log
 
 andromeda:
-	python3 ../../bin/andromeda.py --tflite mira220.tflite --top mira220 --clk $(CLK) --fps 90 --regz 64 --regb 8 --dtype 16 |& tee andromeda.log
+	python3 ../../bin/andromeda.py --tflite mira220.tflite --top mira220 --clk $(CLK) --fps 110 --regz 32 --regb 8 --dtype 8 |& tee andromeda.log
 
 vivado: andromeda
 	vivado -log vivado.log -mode tcl -source build.tcl -tclargs mira220

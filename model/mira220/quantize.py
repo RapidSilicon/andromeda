@@ -48,7 +48,7 @@ converter.representative_dataset = representative_data_gen
 # random dataset
 def representative_dataset():
     for _ in range(100):
-        data = np.random.rand(1, 1400, 1600, 2)
+        data = np.random.rand(1, 1120, 1280, 1)
         yield [data.astype(np.float32)]
 converter.representative_dataset = representative_dataset
 

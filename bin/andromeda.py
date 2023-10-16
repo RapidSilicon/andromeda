@@ -58,6 +58,13 @@ def emit_wires(graph,args):
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
+        if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
+            wires[graph.Operators(j).Inputs(0)]=True
+            wires[graph.Operators(j).Inputs(1)]=True
+            wires[graph.Operators(j).Outputs(0)]=True
+        if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
+            wires[graph.Operators(j).Inputs(0)]=True
+            wires[graph.Operators(j).Outputs(0)]=True
 
     s=''
     for w in wires.keys():
@@ -180,6 +187,36 @@ def emit_conv2d(j,graph,args):
     s+=');\n\n'
     return s
 
+def emit_concatenate(j,graph,args):
+    i0shape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
+    i1shape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
+    oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
+    s=''
+    if (i0shape[-3]==i1shape[-3]) and (i0shape[-2]==i1shape[-2]) and (i0shape[-1]+i1shape[-1]==oshape[-1]):
+        row=i0shape[-3]
+        col=i0shape[-2]
+        chan0=i0shape[-1]
+        chan1=i1shape[-1]
+        s+='concatenate #({},{},{},{},{}) u{} (\n'.format(args.dtype,row,col,chan0,chan1,j)
+        s+='.clk(clk),\n'
+        s+='.reset(reset),\n'
+        s+='.s_0_data(T{}_data),\n'.format(graph.Operators(j).Inputs(0))
+        s+='.s_0_col(T{}_col),\n'.format(graph.Operators(j).Inputs(0))
+        s+='.s_0_row(T{}_row),\n'.format(graph.Operators(j).Inputs(0))
+        s+='.s_0_valid(T{}_valid),\n'.format(graph.Operators(j).Inputs(0))
+        s+='.s_1_data(T{}_data),\n'.format(graph.Operators(j).Inputs(1))
+        s+='.s_1_col(T{}_col),\n'.format(graph.Operators(j).Inputs(1))
+        s+='.s_1_row(T{}_row),\n'.format(graph.Operators(j).Inputs(1))
+        s+='.s_1_valid(T{}_valid),\n'.format(graph.Operators(j).Inputs(1))
+        s+='.m_0_data(T{}_data),\n'.format(graph.Operators(j).Outputs(0))
+        s+='.m_0_col(T{}_col),\n'.format(graph.Operators(j).Outputs(0))
+        s+='.m_0_row(T{}_row),\n'.format(graph.Operators(j).Outputs(0))
+        s+='.m_0_valid(T{}_valid)\n'.format(graph.Operators(j).Outputs(0))
+        s+=');\n'
+    else:
+        print('CONCATENATE shape mismatch',i0shape,i1shape,oshape)
+    return s
+
 def emit_add(j,graph,args):
     i0shape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
     i1shape = graph.Tensors(graph.Operators(j).Inputs(1)).ShapeAsNumpy()
@@ -207,6 +244,19 @@ def emit_add(j,graph,args):
         s+=');\n'
     else:
         print('ADD shape mismatch',i0shape,i1shape,oshape)
+    return s
+
+def emit_identity(j,graph,args):
+    ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
+    oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
+    s=''
+    if (ishape[-3]==oshape[-3]) and (ishape[-2]==oshape[-2]):
+        s+='assign T{}_data = T{}_data;\n'.format(graph.Operators(j).Outputs(0),graph.Operators(j).Inputs(0))
+        s+='assign T{}_row = T{}_row;\n'.format(graph.Operators(j).Outputs(0),graph.Operators(j).Inputs(0))
+        s+='assign T{}_col = T{}_col;\n'.format(graph.Operators(j).Outputs(0),graph.Operators(j).Inputs(0))
+        s+='assign T{}_valid = T{}_valid;\n'.format(graph.Operators(j).Outputs(0),graph.Operators(j).Inputs(0))
+    else:
+        print('IDENTITY shape mismatch',ishape,oshape)
     return s
 
 def emit_replicate(j,graph,args):
@@ -242,6 +292,10 @@ def emit_ops(graph,args):
             s+= emit_add(j,graph,args)
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             s+= emit_replicate(j,graph,args)
+        elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
+            s+= emit_concatenate(j,graph,args)
+        elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
+            s+= emit_identity(j,graph,args)
         else:
             print('UNSUPPORTED OP',model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode())
     return s
