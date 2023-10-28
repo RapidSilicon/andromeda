@@ -29,14 +29,14 @@ module conv2d #(
     input wire [OCHAN*REGZ-1:0] bias_rd,
     input wire [OCHAN*32-1:0] scale_rd,
     input wire [OCHAN*6-1:0] shift_rd,
-    input wire [ICHAN*DTYPE-1:0] s_axis_data,
-    input wire s_axis_tvalid,
-    output wire [OCHAN*DTYPE-1:0] m_axis_data,
-    output wire m_axis_tvalid,
-    input [$clog2(IWIDTH)-1:0] s_col,
-    input [$clog2(IHEIGHT)-1:0] s_row,
-    output [$clog2(OWIDTH)-1:0] m_col,
-    output [$clog2(OHEIGHT)-1:0] m_row
+    input wire [ICHAN*DTYPE-1:0] s_0_data,
+    input wire s_0_valid,
+    output wire [OCHAN*DTYPE-1:0] m_0_data,
+    output wire m_0_valid,
+    input [$clog2(IWIDTH)-1:0] s_0_col,
+    input [$clog2(IHEIGHT)-1:0] s_0_row,
+    output [$clog2(OWIDTH)-1:0] m_0_col,
+    output [$clog2(OHEIGHT)-1:0] m_0_row
 );
 
 wire clr_acc;
@@ -63,8 +63,8 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .shift_rd(shift_rd),
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
-    .tdata_i(s_axis_data),
-    .tdata_o(m_axis_data)
+    .tdata_i(s_0_data),
+    .tdata_o(m_0_data)
 );
 
 conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OCHAN,KHEIGHT,KWIDTH,STRIDE,PREV_NSTRIPE,PREV_NCOL,NROW,NCOL,OCOL,OVERLAP,RELU,REGZ) u1 (
@@ -79,11 +79,11 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .weight_ra(weight_ra),
     .ichan_sel(ichan_sel),
     .stripe_sel(stripe_sel),
-    .s_axis_tvalid(s_axis_tvalid),
-    .m_axis_tvalid(m_axis_tvalid),
-    .s_col(s_col),
-    .s_row(s_row),
-    .m_col(m_col),
-    .m_row(m_row)
+    .s_axis_tvalid(s_0_valid),
+    .m_axis_tvalid(m_0_valid),
+    .s_col(s_0_col),
+    .s_row(s_0_row),
+    .m_col(m_0_col),
+    .m_row(m_0_row)
 );
 endmodule

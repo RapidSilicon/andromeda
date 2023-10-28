@@ -126,18 +126,19 @@ reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 reg [4:0] wait_state;
 
 always @(posedge clk)
-    if (reset || clr_acc)
+    if (reset || clr_acc0)
         wait_state <= 'd0;
     else if (wait_state<'d20)
         wait_state <= wait_state+'d1;
 
+/*
 reg start, clr_start;
 always @(posedge clk)
     if (reset || clr_start)
         start <= 1'b0;
     else if (start_row)
         start <= 1'b1;
-
+*/
 
 localparam DP_IDLE = 'd0;
 localparam DP_INIT = 'd1;
@@ -155,7 +156,7 @@ always @(posedge clk) begin
         start_alu0 <= 1'b0;
         clr_acc0 <= 1'b0;
         en_acc0 <= 1'b0;
-        clr_start <= 1'b0;
+        //clr_start <= 1'b0;
     end
     else begin
         case (state)
@@ -165,19 +166,20 @@ always @(posedge clk) begin
             ic <= 'd0;
             clr_acc0 <= 1'b0;
             en_acc0 <= 1'b0;
-            clr_start <= 1'b0;
-            if (start) begin
+            //clr_start <= 1'b0;
+            //if (start) begin
+            if (start_row) begin
                 state <= DP_INIT;
             end
         end
         DP_INIT: begin
             clr_acc0 <= 1'b1;
             en_acc0 <= 1'b0;
-            clr_start <= 1'b1;
+            //clr_start <= 1'b1;
             state <= DP_RUN;
         end
         DP_RUN: begin
-            clr_start <= 1'b0;
+            //clr_start <= 1'b0;
             en_acc0 <= 1'b1;
             weight_ra <= ky*KWIDTH*ICHAN+kx*ICHAN+ic;
             stripe_ra <= ((ky+(orow*STRIDE))%NROW)*(NCOL+OVERLAP) + kx + ocol*STRIDE;

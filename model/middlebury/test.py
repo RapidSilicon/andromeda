@@ -61,6 +61,7 @@ print('dleft.shape',dleft.shape,'dright.shape',dright.shape,'ldisp.shape',ldisp.
 
 # load keras model
 model = tf.keras.saving.load_model(args.keras)
+print(model.summary())
 
 [pred0,pred1] = model.predict([dleft,dright])
 print('pred0.shape',pred0.shape)

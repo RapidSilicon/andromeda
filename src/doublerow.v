@@ -66,5 +66,8 @@ always @(posedge clk) begin
             startrow <= 2'b00;
         end
     end
+    else begin
+        startrow <= 2'b00;
+    end
 end
 endmodule

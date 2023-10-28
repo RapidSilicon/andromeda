@@ -1,4 +1,5 @@
 import numpy as np ; print('numpy',np.__version__)
+import tensorflow as tf ; print('tensorflow', tf.__version__)
 import argparse
 import random
 import tflite
@@ -17,11 +18,6 @@ parser.add_argument('--analyze', help='run TFLite analyzer',default=False, actio
 parser.add_argument('--debug', help='verbose output',default=False, action='store_true')
 args = parser.parse_args()
 print(args)
-
-if args.analyze:
-    import tensorflow as tf ; print('tensorflow', tf.__version__)
-    tf.lite.experimental.Analyzer.analyze(model_path=args.tflite)
-    exit()
 
 def emit_prefix(graph,args):
     s=''
@@ -56,18 +52,20 @@ def emit_wires(graph,args):
             wires[graph.Operators(j).Inputs(1)]=True
             wires[graph.Operators(j).Outputs(0)]=True
             cats.append(graph.Operators(j).Inputs(0))
+            cats.append(graph.Operators(j).Inputs(1))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
-            reps.append(graph.Operators(j).Outputs(0))
+            #reps.append(graph.Operators(j).Outputs(0))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Inputs(1)]=True
             wires[graph.Operators(j).Outputs(0)]=True
+            cats.append(graph.Operators(j).Inputs(0))
+            cats.append(graph.Operators(j).Inputs(1))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
-            cats.append(graph.Operators(j).Inputs(0))
 
     s=''
     for w in wires.keys():
@@ -90,7 +88,7 @@ def emit_wires(graph,args):
     s+='\n'
     return s
 
-def emit_conv2d(j,graph,args):
+def emit_conv2d(j,graph,args,row_rate):
     # compute parameters
     if graph.Operators(j).Outputs(0) in cats:
         relu=0
@@ -123,16 +121,21 @@ def emit_conv2d(j,graph,args):
         stride=1;
     wdepth = np.prod(wshape)//oshape[-1]
     waddr = int(np.ceil(np.log2(wdepth)))
-    rate = oshape[-2]*oshape[-3]*args.fps*np.prod(wshape)
+    #rate = oshape[-2]*oshape[-3]*args.fps*np.prod(wshape)
+    #dotclocks = max(21,wshape[-1]*wshape[-2]*wshape[-3]) # ALU WAIT STATES if dot product < 21 clocks
+    dotclocks = max(21*wshape[-4],np.prod(wshape)) # ALU WAIT STATES if dot product < 21 clocks
+    if stride==2:
+        row_rate *=0.5
+    rate = row_rate*oshape[-2]*dotclocks
     feati = ishape[-2]*ishape[-3]*args.fps
     feato = oshape[-2]*oshape[-3]*args.fps
     if feati>args.clk or feato>args.clk:
-        print('ERROR: feature rate > clock rate','feati',feati,'feato',feato,'clock',args.clk)
+        print('CONV2D ERROR: feature rate > clock rate','feati',feati,'feato',feato,'clock',args.clk)
     nmac = rate/args.clk
     nstripe = int(np.ceil(nmac/oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
     nrow = wshape[-3]+stride
-    if graph.Operators(j).Inputs(0) in reps:
-        nrow+=1 # double row burst
+    #if graph.Operators(j).Inputs(0) in reps:
+    #    nrow+=1 # double row burst
     ncol = ishape[-2]//nstripe
     if ncol == (ishape[-2]/2.):
         ncol -=1
@@ -148,6 +151,10 @@ def emit_conv2d(j,graph,args):
 
     stripe = np.zeros([nstripe,nrow,ncol+overlap,ishape[-1]])
     roms.append((j,oshape[-1],waddr,weight,bias,scale)) # will be emitted as a separate file
+    #print('ROM',roms[-1])
+
+    print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} row_rate {}'.format(
+            j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape,row_rate))
 
     s=''
     s+='wire [{}*{}-1:0] OP{}_weight_rd;\n'.format(oshape[-1], args.regb,j)
@@ -166,14 +173,14 @@ def emit_conv2d(j,graph,args):
     s+='.bias_rd(OP{}_bias_rd),\n'.format(j)
     s+='.scale_rd(OP{}_scale_rd),\n'.format(j)
     s+='.shift_rd(OP{}_shift_rd),\n'.format(j)
-    s+='.s_axis_data(T{}_data),\n'.format(graph.Operators(j).Inputs(0))
-    s+='.s_col(T{}_col),\n'.format(graph.Operators(j).Inputs(0))
-    s+='.s_row(T{}_row),\n'.format(graph.Operators(j).Inputs(0))
-    s+='.s_axis_tvalid(T{}_valid),\n'.format(graph.Operators(j).Inputs(0))
-    s+='.m_axis_data(T{}_data),\n'.format(graph.Operators(j).Outputs(0))
-    s+='.m_col(T{}_col),\n'.format(graph.Operators(j).Outputs(0))
-    s+='.m_row(T{}_row),\n'.format(graph.Operators(j).Outputs(0))
-    s+='.m_axis_tvalid(T{}_valid)\n'.format(graph.Operators(j).Outputs(0))
+    s+='.s_0_data(T{}_data),\n'.format(graph.Operators(j).Inputs(0))
+    s+='.s_0_col(T{}_col),\n'.format(graph.Operators(j).Inputs(0))
+    s+='.s_0_row(T{}_row),\n'.format(graph.Operators(j).Inputs(0))
+    s+='.s_0_valid(T{}_valid),\n'.format(graph.Operators(j).Inputs(0))
+    s+='.m_0_data(T{}_data),\n'.format(graph.Operators(j).Outputs(0))
+    s+='.m_0_col(T{}_col),\n'.format(graph.Operators(j).Outputs(0))
+    s+='.m_0_row(T{}_row),\n'.format(graph.Operators(j).Outputs(0))
+    s+='.m_0_valid(T{}_valid)\n'.format(graph.Operators(j).Outputs(0))
     s+=');\n'
 
     s+='// weight_rom\n'
@@ -193,7 +200,7 @@ def emit_conv2d(j,graph,args):
     s+='.scale(OP{}_scale_rd),\n'.format(j)
     s+='.shift(OP{}_shift_rd)\n'.format(j)
     s+=');\n\n'
-    return s
+    return s,stride
 
 def emit_concatenate(j,graph,args):
     i0shape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
@@ -267,7 +274,7 @@ def emit_identity(j,graph,args):
         print('IDENTITY shape mismatch',ishape,oshape)
     return s
 
-def emit_replicate(j,graph,args):
+def emit_replicate(j,graph,args,row_rate):
     ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
     oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
     s=''
@@ -275,7 +282,12 @@ def emit_replicate(j,graph,args):
         row=ishape[-3]
         col=ishape[-2]
         chan=ishape[-1]
-        s+='replicate #({},{},{},{}) u{} (\n'.format(args.dtype,row,col,chan,j)
+        throttle = int((args.clk/row_rate)*0.5)-col
+        #throttle=int((args.clk/((oshape[-3]+ishape[-3])*0.5*args.fps))*0.5)
+        #throttle=int((args.clk/(oshape[-3]*args.fps))*0.5)
+        #throttle=int((args.clk/(ishape[-3]*args.fps))*0.5)
+        print('op {:4d} ishape {} oshape {} row {} col {} chan {} throttle {} fps {} clk {} row_rate {}'.format(j,ishape,oshape,row,col,chan,throttle,args.fps,args.clk,row_rate))
+        s+='replicate #({},{},{},{},{}) u{} (\n'.format(args.dtype,row,col,chan,throttle,j)
         s+='.clk(clk),\n'
         s+='.reset(reset),\n'
         s+='.s_0_data(T{}_data),\n'.format(graph.Operators(j).Inputs(0))
@@ -291,19 +303,45 @@ def emit_replicate(j,graph,args):
         print('REPLICATE shape mismatch',ishape,oshape)
     return s
 
-def emit_ops(graph,args):
+def emit_ops(graph,args,ops):
     s=''
+    rr={} # row rates
     for j in range(graph.OperatorsLength()):
+
+#        if (j==0) or (j==8): # TODO extract input ops and shape from graph
+#            row_rate = 368*args.fps
+#        if j==20: # HACK need to handle multiple outputs
+#            fuse_rate = row_rate
+#        if j==29: # HACK handle multiple outputs
+#            row_rate=fuse_rate
+
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONV_2D:
-            s+= emit_conv2d(j,graph,args)
+            if ops[j]['inputs'] is None: # primary input
+                row_rate = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()[-3] * args.fps
+            else:
+                row_rate = rr[ops[j]['inputs']]
+            s0,stride = emit_conv2d(j,graph,args,row_rate)
+            s+=s0
+            if stride==1:
+                rr[j] = row_rate
+            if stride==2:
+                rr[j] = row_rate*0.5
+            #if stride==2:
+            #    row_rate *=0.5
+            #s+= emit_conv2d(j,graph,args)
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.ADD:
             s+= emit_add(j,graph,args)
+            rr[j] = rr[ops[j]['inputs']]
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
-            s+= emit_replicate(j,graph,args)
+            s+= emit_replicate(j,graph,args,row_rate)
+            rr[j] = rr[ops[j]['inputs']]*2
+            #row_rate *=2
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
             s+= emit_concatenate(j,graph,args)
+            rr[j] = rr[ops[j]['inputs']]
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
             s+= emit_identity(j,graph,args)
+            rr[j] = rr[ops[j]['inputs']]
         else:
             print('UNSUPPORTED OP',model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode())
     return s
@@ -360,6 +398,8 @@ def emit_roms(graph,args):
         w+='\n'
         for i in range(channels):
             shift = int(np.ceil(np.log2(0.5/scale[i])))
+            #print('ROM',roms[j])
+            #print('DEBUG','j',j,'i',i,'scale',scale[i],'shift',shift)
             s0 = scale[i]*np.power(2,shift)
             w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+31)
             w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(s0*0x7fffffff))[2:])
@@ -373,16 +413,52 @@ with open(args.tflite, 'rb') as f:
     model = tflite.Model.GetRootAsModel(buf, 0)
     graph = model.Subgraphs(0)
 
+# dump analyzer
+tf.lite.experimental.Analyzer.analyze(model_path=args.tflite)
+# print input scale
+interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True)
+interpreter.allocate_tensors() # Needed before execution!
+input_details = interpreter.get_input_details()[0]  # Model has single input.
+output_details = interpreter.get_output_details()[0]  # Model has single output.
+input_scale, input_zero_point = input_details["quantization"]
+print('input_scale {:12.8f} input_zero_point {}'.format(input_scale,input_zero_point))
+
+tensors={}
+for j in range(graph.OperatorsLength()):
+    #print(j,graph.Operators(j).Inputs(0),graph.Operators(j).Outputs(0))
+    if graph.Operators(j).Inputs(0) not in tensors:
+        tensors[graph.Operators(j).Inputs(0)]={}
+        tensors[graph.Operators(j).Inputs(0)]['source']=None
+        tensors[graph.Operators(j).Inputs(0)]['sink']=None
+    tensors[graph.Operators(j).Inputs(0)]['sink']=j
+
+    if graph.Operators(j).Outputs(0) not in tensors:
+        tensors[graph.Operators(j).Outputs(0)]={}
+        tensors[graph.Operators(j).Outputs(0)]['source']=None
+        tensors[graph.Operators(j).Outputs(0)]['sink']=None
+    tensors[graph.Operators(j).Outputs(0)]['source']=j
+
+ops={}
+# op[j]['inputs'] -> None or []
+for j in range(graph.OperatorsLength()):
+    ops[j]={}
+    ops[j]['inputs'] = tensors[graph.Operators(j).Inputs(0)]['source']
+    ops[j]['output'] = tensors[graph.Operators(j).Outputs(0)]['sink']
+    #print('j',j,dir(graph.Operators(j)))
+    #print('j',j,graph.Operators(j).InputsLength(),graph.Operators(j).OutputsLength(), graph.Operators(j).InputsIsNone(), graph.Operators(j).OutputsIsNone())
+#exit()
+
 roms=[] # global
-reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
+#reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
 cats=[] # global list of tensors that are should be driven by conv2d with RELU=0
 s=''
 s+=emit_prefix(graph,args)
 s+=emit_wires(graph,args)
-s+=emit_ops(graph,args)
+s+=emit_ops(graph,args,ops)
 s+=emit_suffix(graph,args)
 with open('./{}.v'.format(args.top), 'w') as f:
     print(s,file=f)
 
 with open('./{}_rom.v'.format(args.top), 'w') as f:
     print(emit_roms(graph,args),file=f)
+

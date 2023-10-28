@@ -46,9 +46,9 @@ if args.net=='alt1':
 
     def decoder(i):
         d0 = upsample(i,16)
-        d1 = upsample(d0,16)
-        d2 = upsample(d1,8)
-        d3 = upsample(d2,8)
+        d1 = upsample(d0,8)
+        d2 = upsample(d1,4)
+        d3 = upsample(d2,2)
         d4 = upsample(d3,1)
         return d4
 

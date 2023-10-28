@@ -54,8 +54,19 @@ doublerow #(DTYPE,IROW,ICOL,ICHAN1) u1 (
 );
 
 // datapath
+assign m_0_data={row_1_rq,row_0_rq};
+
+// pipeline
+reg m_0_valid0,m_0_valid1;
+reg [$clog2(ICOL)-1:0] m_0_col0,m_0_col1;
+reg [$clog2(IROW)-1:0] m_0_row0,m_0_row1;
 always @(posedge clk) begin
-    m_0_data <= {row_1_rq,row_0_rq};
+    m_0_valid1 <= m_0_valid0;
+    m_0_col1 <= m_0_col0;
+    m_0_row1 <= m_0_row0;
+    m_0_valid <= m_0_valid1;
+    m_0_col <= m_0_col1;
+    m_0_row <= m_0_row1;
 end
 
 // control
@@ -72,37 +83,39 @@ always @(posedge clk) begin
         state <= CONCAT_IDLE;
         sticky_0 <= 2'b00;
         sticky_1 <= 2'b00;
-        m_0_valid <= 1'b0;
-        m_0_col <= 'd0;
-        m_0_row <= 'd0;
+        m_0_valid0 <= 1'b0;
+        m_0_col0 <= 'd0;
+        m_0_row0 <= 'd0;
     end
     else if (state==CONCAT_IDLE) begin
         sticky_0 <= sticky_0 | startrow_0;
         sticky_1 <= sticky_1 | startrow_1;
         if (sticky_0[0] && sticky_1[0]) begin
             row_ra <= 'd0;
+            m_0_valid0 <= 1'b1;
             state <= CONCAT_EMIT_ROW;
         end
         if (sticky_0[1] && sticky_1[1]) begin
             row_ra <= ICOL;
+            m_0_valid0 <= 1'b1;
             state <= CONCAT_EMIT_ROW;
         end
     end
     else if (state==CONCAT_EMIT_ROW) begin
-        if (m_0_col==ICOL-1) begin
+        if (m_0_col0==ICOL-1) begin
             state <= CONCAT_IDLE;
             sticky_0 <= 2'b00;
             sticky_1 <= 2'b00;
-            m_0_valid <= 1'b0;
-            m_0_col <= 'd0;
-            if (m_0_row==IROW-1)
-                m_0_row <= 'd0;
+            m_0_valid0 <= 1'b0;
+            m_0_col0 <= 'd0;
+            if (m_0_row0==IROW-1)
+                m_0_row0 <= 'd0;
             else
-                m_0_row <= m_0_row+'d1;
+                m_0_row0 <= m_0_row0+'d1;
         end
         else begin
-            m_0_valid <= 1'b1;
-            m_0_col <= m_0_col+'d1;
+            m_0_valid0 <= 1'b1;
+            m_0_col0 <= m_0_col0+'d1;
             row_ra <= row_ra+'d1;
         end
     end
