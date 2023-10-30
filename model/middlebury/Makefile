@@ -12,7 +12,7 @@ default:
 	echo "make {train,quantize,test,sim}
 
 train:
-	python3 train.py --lr 0.0005 --batch 1 --epochs 500 --net $(NET) |& tee log.train
+	python3 train.py --lr 0.001 --batch 1 --epochs 500 --net $(NET) |& tee log.train
 
 test:
 	python3 test.py

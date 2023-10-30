@@ -63,17 +63,18 @@ print('dleft.shape',dleft.shape,'dright.shape',dright.shape,'ldisp.shape',ldisp.
 model = tf.keras.saving.load_model(args.keras)
 print(model.summary())
 
-[pred0,pred1] = model.predict([dleft,dright])
+#[pred0,pred1] = model.predict([dleft,dright])
+pred0 = model.predict([dleft,dright])
 print('pred0.shape',pred0.shape)
-print('pred1.shape',pred1.shape)
+#print('pred1.shape',pred1.shape)
 
 for i in range(len(pred0)):
     p0 = pred0[i]
     p0 = p0*255
     p0 = p0.astype(np.uint8)
-    p1 = pred1[i]
-    p1 = p1*255
-    p1 = p1.astype(np.uint8)
+#    p1 = pred1[i]
+#    p1 = p1*255
+#    p1 = p1.astype(np.uint8)
     #pred0 = pred[i,:,:,0][:,:,np.newaxis]
     #pred0 = pred0*255
     #pred0 = pred0.astype(np.uint8)
@@ -97,7 +98,7 @@ for i in range(len(pred0)):
     dat1 = dat1.astype(np.uint8)
     #dat1 = cv2.resize(dat1, [386,258])
 
-    pimg = np.concatenate([p0,p1],axis=-2)
+    pimg = np.concatenate([p0,p0],axis=-2)
     pimg = cv2.cvtColor(pimg,cv2.COLOR_GRAY2RGB)
     pimg = cv2.resize(pimg, [800,368])
     lab = np.concatenate([lab0,lab1],axis=-2)

@@ -63,7 +63,8 @@ if args.net=='alt1':
     out0 = decoder(fuse1)
     out1 = decoder(fuse1)
 
-    model = keras.Model(inputs=[in0, in1], outputs=[out0,out1])
+    #model = keras.Model(inputs=[in0, in1], outputs=[out0,out1])
+    model = keras.Model(inputs=[in0, in1], outputs=[out0])
 
 print(model.summary())
 
@@ -108,7 +109,8 @@ opt = tf.keras.optimizers.Adam(args.lr)
 model.compile(optimizer=opt, loss=tf.keras.losses.MeanSquaredError())
 #model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
 #model.compile(optimizer='adam', loss=tf.keras.losses.KLDivergence())
-model.fit([dleft,dright],[lleft,lright],epochs=args.epochs,batch_size=args.batch)
+#model.fit([dleft,dright],[lleft,lright],epochs=args.epochs,batch_size=args.batch)
+model.fit([dleft,dright],[lleft],epochs=args.epochs,batch_size=args.batch)
 #  train_images,
 #  train_labels,
 #  epochs=args.epochs,

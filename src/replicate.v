@@ -68,6 +68,7 @@ always @(posedge clk) begin
         m_0_row0 <= 'd0;
     end
     else if (state==REP_IDLE) begin
+        throttle <= 'd0;
         if (startrow_0[0]) begin
             row_ra <= 'd0;
             row_ra_base <= 'd0;
@@ -82,16 +83,17 @@ always @(posedge clk) begin
         end
     end
     else if (state==REP_EMIT_AE) begin
+        throttle <= throttle+'d1;
         m_0_col0 <= m_0_col0+'d1;
         state <= REP_EMIT_AO;
     end
     else if (state==REP_EMIT_AO) begin
+        throttle <= throttle+'d1;
         if (m_0_col0==2*ICOL-1) begin
             row_ra <= row_ra_base;
             m_0_col0 <= 'd0;
             m_0_row0 <= m_0_row0+'d1;
             m_0_valid0 <= 1'b0;
-            throttle <= 'd0;
             state <= REP_THROTTLE;
         end
         else begin
@@ -101,12 +103,11 @@ always @(posedge clk) begin
         end
     end
     else if (state==REP_THROTTLE) begin
+        throttle <= throttle+'d1;
         if (throttle==THROTTLE) begin
             m_0_valid0 <= 1'b1;
             state <= REP_EMIT_BE;
         end
-        else
-            throttle <= throttle+'d1;
     end
     else if (state==REP_EMIT_BE) begin
         m_0_col0 <= m_0_col0+'d1;

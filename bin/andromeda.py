@@ -88,7 +88,7 @@ def emit_wires(graph,args):
     s+='\n'
     return s
 
-def emit_conv2d(j,graph,args,row_rate):
+def emit_conv2d(j,graph,args,irate):
     # compute parameters
     if graph.Operators(j).Outputs(0) in cats:
         relu=0
@@ -123,10 +123,12 @@ def emit_conv2d(j,graph,args,row_rate):
     waddr = int(np.ceil(np.log2(wdepth)))
     #rate = oshape[-2]*oshape[-3]*args.fps*np.prod(wshape)
     #dotclocks = max(21,wshape[-1]*wshape[-2]*wshape[-3]) # ALU WAIT STATES if dot product < 21 clocks
-    dotclocks = max(21*wshape[-4],np.prod(wshape)) # ALU WAIT STATES if dot product < 21 clocks
+    dotclocks = max(22*wshape[-4],np.prod(wshape)) # ALU WAIT STATES if dot product < 21 clocks
+    #print('j',j,'dotclocks',dotclocks,21*wshape[-4],np.prod(wshape))
+    rate = irate*oshape[-2]*dotclocks
+    #rate = irate*oshape[-2]*np.prod(wshape)
     if stride==2:
-        row_rate *=0.5
-    rate = row_rate*oshape[-2]*dotclocks
+        rate *=0.5
     feati = ishape[-2]*ishape[-3]*args.fps
     feato = oshape[-2]*oshape[-3]*args.fps
     if feati>args.clk or feato>args.clk:
@@ -153,8 +155,8 @@ def emit_conv2d(j,graph,args,row_rate):
     roms.append((j,oshape[-1],waddr,weight,bias,scale)) # will be emitted as a separate file
     #print('ROM',roms[-1])
 
-    print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} row_rate {}'.format(
-            j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape,row_rate))
+    print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} irate {}'.format(
+            j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape,irate))
 
     s=''
     s+='wire [{}*{}-1:0] OP{}_weight_rd;\n'.format(oshape[-1], args.regb,j)
@@ -274,7 +276,7 @@ def emit_identity(j,graph,args):
         print('IDENTITY shape mismatch',ishape,oshape)
     return s
 
-def emit_replicate(j,graph,args,row_rate):
+def emit_replicate(j,graph,args,irate):
     ishape = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()
     oshape = graph.Tensors(graph.Operators(j).Outputs(0)).ShapeAsNumpy()
     s=''
@@ -282,11 +284,12 @@ def emit_replicate(j,graph,args,row_rate):
         row=ishape[-3]
         col=ishape[-2]
         chan=ishape[-1]
-        throttle = int((args.clk/row_rate)*0.5)-col
+        throttle = int((args.clk/irate)*0.5)
+        #throttle = int((args.clk/irate)*0.5)-col
         #throttle=int((args.clk/((oshape[-3]+ishape[-3])*0.5*args.fps))*0.5)
         #throttle=int((args.clk/(oshape[-3]*args.fps))*0.5)
-        #throttle=int((args.clk/(ishape[-3]*args.fps))*0.5)
-        print('op {:4d} ishape {} oshape {} row {} col {} chan {} throttle {} fps {} clk {} row_rate {}'.format(j,ishape,oshape,row,col,chan,throttle,args.fps,args.clk,row_rate))
+        #throttle=int((args.clk/(ishape[-3]*args.fps))*0.5)-col
+        print('op {:4d} ishape {} oshape {} row {} col {} chan {} throttle {} fps {} clk {} irate {}'.format(j,ishape,oshape,row,col,chan,throttle,args.fps,args.clk,irate))
         s+='replicate #({},{},{},{},{}) u{} (\n'.format(args.dtype,row,col,chan,throttle,j)
         s+='.clk(clk),\n'
         s+='.reset(reset),\n'
@@ -305,7 +308,8 @@ def emit_replicate(j,graph,args,row_rate):
 
 def emit_ops(graph,args,ops):
     s=''
-    rr={} # row rates
+    irate={} # number of clocks until next start_row (incoming row rate)
+    orate={} # number of clocks until next start_row (outgoing row rate)
     for j in range(graph.OperatorsLength()):
 
 #        if (j==0) or (j==8): # TODO extract input ops and shape from graph
@@ -317,31 +321,38 @@ def emit_ops(graph,args,ops):
 
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONV_2D:
             if ops[j]['inputs'] is None: # primary input
-                row_rate = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()[-3] * args.fps
+                irate[j] = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()[-3] * args.fps
             else:
-                row_rate = rr[ops[j]['inputs']]
-            s0,stride = emit_conv2d(j,graph,args,row_rate)
+                irate[j] = orate[ops[j]['inputs']]
+            s0,stride = emit_conv2d(j,graph,args,irate[j])
             s+=s0
             if stride==1:
-                rr[j] = row_rate
+                orate[j] = irate[j]
             if stride==2:
-                rr[j] = row_rate*0.5
+                orate[j] = irate[j]*0.5
             #if stride==2:
             #    row_rate *=0.5
             #s+= emit_conv2d(j,graph,args)
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.ADD:
+            irate[j] = orate[ops[j]['inputs']]
             s+= emit_add(j,graph,args)
-            rr[j] = rr[ops[j]['inputs']]
+            orate[j] = irate[j]
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
-            s+= emit_replicate(j,graph,args,row_rate)
-            rr[j] = rr[ops[j]['inputs']]*2
+            irate[j] = orate[ops[j]['inputs']]
+            s+= emit_replicate(j,graph,args,irate[j])
+            orate[j] = irate[j]*2
+            #deadline[j] = deadline[ops[j]['inputs']]*2
             #row_rate *=2
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONCATENATION:
+            irate[j] = orate[ops[j]['inputs']]
             s+= emit_concatenate(j,graph,args)
-            rr[j] = rr[ops[j]['inputs']]
+            orate[j] = irate[j]
+            #deadline[j] = deadline[ops[j]['inputs']]
         elif model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
+            irate[j] = orate[ops[j]['inputs']]
             s+= emit_identity(j,graph,args)
-            rr[j] = rr[ops[j]['inputs']]
+            orate[j] = irate[j]
+            #deadline[j] = deadline[ops[j]['inputs']]
         else:
             print('UNSUPPORTED OP',model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode())
     return s
