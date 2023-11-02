@@ -56,6 +56,7 @@ if args.stride==2:
     ])
 
 print(model.summary())
+exit()
 
 # Train the digit classification model
 model.compile(optimizer='adam', loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])

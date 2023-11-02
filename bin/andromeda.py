@@ -7,6 +7,7 @@ import array
 import struct
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--linear', help='list of conv2d ops which have no nonlinearity',action='store',type=int,nargs='*')
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
 parser.add_argument('--top', help='top level module name',default='mnist')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
@@ -51,8 +52,8 @@ def emit_wires(graph,args):
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Inputs(1)]=True
             wires[graph.Operators(j).Outputs(0)]=True
-            cats.append(graph.Operators(j).Inputs(0))
-            cats.append(graph.Operators(j).Inputs(1))
+            #cats.append(graph.Operators(j).Inputs(0))
+            #cats.append(graph.Operators(j).Inputs(1))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.RESIZE_NEAREST_NEIGHBOR:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
@@ -61,8 +62,8 @@ def emit_wires(graph,args):
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Inputs(1)]=True
             wires[graph.Operators(j).Outputs(0)]=True
-            cats.append(graph.Operators(j).Inputs(0))
-            cats.append(graph.Operators(j).Inputs(1))
+            #cats.append(graph.Operators(j).Inputs(0))
+            #cats.append(graph.Operators(j).Inputs(1))
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.QUANTIZE:
             wires[graph.Operators(j).Inputs(0)]=True
             wires[graph.Operators(j).Outputs(0)]=True
@@ -90,7 +91,8 @@ def emit_wires(graph,args):
 
 def emit_conv2d(j,graph,args,irate):
     # compute parameters
-    if graph.Operators(j).Outputs(0) in cats:
+    #if graph.Operators(j).Outputs(0) in cats:
+    if j in args.linear:
         relu=0
     else:
         relu=1 # TODO: maybe use DAG
@@ -461,7 +463,7 @@ for j in range(graph.OperatorsLength()):
 
 roms=[] # global
 #reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
-cats=[] # global list of tensors that are should be driven by conv2d with RELU=0
+#cats=[] # global list of tensors that are should be driven by conv2d with RELU=0
 s=''
 s+=emit_prefix(graph,args)
 s+=emit_wires(graph,args)

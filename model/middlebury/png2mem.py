@@ -21,16 +21,26 @@ def crop_center(img,cropx,cropy):
     starty = img.shape[-3]//2-(cropy//2)    
     return img[starty:starty+cropy,startx:startx+cropx]
 
-d = cv2.imread(args.data, cv2.IMREAD_COLOR).astype(np.uint32)
+d = cv2.imread(args.data, cv2.IMREAD_COLOR).astype(np.int32)
 print('d.shape',d.shape,'d.dtype',d.dtype)
 d = crop_center(d,400,368)
 print('d.shape',d.shape,'d.dtype',d.dtype)
 
+# add zero point
+if args.dtype==9:
+    d+= -128
+
+# input_scale
+if args.dtype==16:
+    d*=(32768//256)
+
 s=''
 for r in range(d.shape[-3]):
     for c in range(d.shape[-2]):
+        #for h in range(d.shape[-1]): # channels last
         for h in range(d.shape[-1],0,-1): # channels last
             for b in range(args.dtype,0,-1):
+                #if (d[r,c,h]>>(b-1))&1:
                 if (d[r,c,h-1]>>(b-1))&1:
                     s+='1'
                 else:
