@@ -3,6 +3,7 @@ module conv2d_data #(parameter DTYPE=8,NSTRIPE=16,ICHAN=64,OCHAN=64,SDEPTH=1024,
     input clk, reset,
     input clr_acc,
     input en_acc,
+    input load_acc,
     input [4:0] alu_op,
     input [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     input [NSTRIPE-1:0] stripe_wen,
@@ -103,6 +104,8 @@ generate
                 // clr has higher priority than en
                 if (clr_acc)
                     acc[i][j] <= 'd0;
+                else if (load_acc)
+                    acc[i][j] <= mult[i][j];
                 else if (en_acc)
                     acc[i][j] <= mult[i][j] + acc[i][j];
             end
@@ -193,9 +196,9 @@ generate
                             //reg_z[i][j] <= scale_mult_signed[i][j] >>> shift[j];
                             /*
                             if (sign[i][j])
-                                reg_z[i][j] <= (scale_mult_signed[i][j] - $signed('b1<<(shift[j]-0))) >>> shift[j];
+                                reg_z[i][j] <= (scale_mult_signed[i][j] - $signed('b1<<(shift[j]-1))) >>> shift[j];
                             else
-                                reg_z[i][j] <= (scale_mult_signed[i][j] + $signed('b1<<(shift[j]-0))) >>> shift[j];
+                                reg_z[i][j] <= (scale_mult_signed[i][j] + $signed('b1<<(shift[j]-1))) >>> shift[j];
                             */
                             
                             if (sign[i][j] && round[i][j]) // round toward -inf

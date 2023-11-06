@@ -41,6 +41,7 @@ module conv2d #(
 
 wire clr_acc;
 wire en_acc;
+wire load_acc;
 wire [4:0] alu_op;
 wire [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa;
 wire [NSTRIPE-1:0] stripe_wen;
@@ -53,6 +54,7 @@ conv2d_data #(DTYPE,NSTRIPE,ICHAN,OCHAN,SDEPTH,REGZ,REGB) u0 (
     .reset(reset),
     .clr_acc(clr_acc),
     .en_acc(en_acc),
+    .load_acc(load_acc),
     .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),
@@ -72,6 +74,7 @@ conv2d_ctrl #(DTYPE,NSTRIPE,SDEPTH,WDEPTH,IHEIGHT,IWIDTH,ICHAN,OHEIGHT,OWIDTH,OC
     .reset(reset),
     .clr_acc(clr_acc),
     .en_acc(en_acc),
+    .load_acc(load_acc),
     .alu_op(alu_op),
     .stripe_wa(stripe_wa),
     .stripe_wen(stripe_wen),

@@ -26,6 +26,7 @@ module conv2d_ctrl #(
     input clk, reset,
     output reg clr_acc,
     output reg en_acc,
+    output reg load_acc,
     output reg [4:0] alu_op,
     output reg [NSTRIPE*$clog2(SDEPTH)-1:0] stripe_wa,
     output reg [NSTRIPE-1:0] stripe_wen,
@@ -93,27 +94,37 @@ always @ (posedge clk) begin
 end
 
 // dot product FSM
-reg clr_acc0,clr_acc1,clr_acc2,clr_acc3,clr_acc4;
-reg en_acc0,en_acc1,en_acc2,en_acc3,en_acc4;
+reg clr_acc0,clr_acc1,clr_acc2,clr_acc3,clr_acc4,clr_acc5;
+reg en_acc0,en_acc1,en_acc2,en_acc3,en_acc4,en_acc5;
+reg load_acc0,load_acc1,load_acc2,load_acc3,load_acc4,load_acc5;
 always @(posedge clk) begin
     clr_acc1 <= clr_acc0;
     clr_acc2 <= clr_acc1;
     clr_acc3 <= clr_acc2;
     clr_acc4 <= clr_acc3;
-    clr_acc <= clr_acc4;
+    clr_acc5 <= clr_acc4;
+    clr_acc <= clr_acc5;
     en_acc1 <= en_acc0;
     en_acc2 <= en_acc1;
     en_acc3 <= en_acc2;
     en_acc4 <= en_acc3;
-    en_acc <= en_acc4;
+    en_acc5 <= en_acc4;
+    en_acc <= en_acc5;
+    load_acc1 <= load_acc0;
+    load_acc2 <= load_acc1;
+    load_acc3 <= load_acc2;
+    load_acc4 <= load_acc3;
+    load_acc5 <= load_acc4;
+    load_acc <= load_acc5;
 end
 
-reg start_alu,start_alu0,start_alu1,start_alu2,start_alu3;
+reg start_alu,start_alu0,start_alu1,start_alu2,start_alu3,start_alu4;
 always @(posedge clk) begin
     start_alu1 <= start_alu0;
     start_alu2 <= start_alu1;
     start_alu3 <= start_alu2;
-    start_alu <= start_alu3;
+    start_alu4 <= start_alu3;
+    start_alu <= start_alu4;
 end
 
 reg [2:0] state;
@@ -126,7 +137,7 @@ reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 reg [4:0] wait_state;
 
 always @(posedge clk)
-    if (reset || clr_acc0)
+    if (reset || clr_acc0 || load_acc0)
         wait_state <= 'd0;
     else if (wait_state<'d20)
         wait_state <= wait_state+'d1;
@@ -145,6 +156,7 @@ localparam DP_INIT = 'd1;
 localparam DP_RUN = 'd2;
 localparam DP_FINISH = 'd3;
 localparam DP_WAIT = 'd4;
+localparam DP_CLEAR = 'd5;
 always @(posedge clk) begin
     if (reset) begin
         state <= 'd0;
@@ -156,6 +168,7 @@ always @(posedge clk) begin
         start_alu0 <= 1'b0;
         clr_acc0 <= 1'b0;
         en_acc0 <= 1'b0;
+        load_acc0 <= 1'b0;
         //clr_start <= 1'b0;
     end
     else begin
@@ -166,6 +179,7 @@ always @(posedge clk) begin
             ic <= 'd0;
             clr_acc0 <= 1'b0;
             en_acc0 <= 1'b0;
+            load_acc0 <= 1'b0;
             //clr_start <= 1'b0;
             //if (start) begin
             if (start_row) begin
@@ -173,11 +187,16 @@ always @(posedge clk) begin
             end
         end
         DP_INIT: begin
-            clr_acc0 <= 1'b1;
+            //clr_acc0 <= 1'b1;
             en_acc0 <= 1'b0;
+            load_acc0 <= 1'b1;
             //clr_start <= 1'b1;
             state <= DP_RUN;
         end
+//        DP_CLEAR: begin
+//            clr_acc0 <= 1'b0;
+//            state <= DP_RUN;
+//        end
         DP_RUN: begin
             //clr_start <= 1'b0;
             en_acc0 <= 1'b1;
@@ -188,7 +207,8 @@ always @(posedge clk) begin
                 if (kx==KWIDTH-1) begin
                     if (ky==KHEIGHT-1) begin
                         if (wait_state=='d20) begin // if dot product is faster than alu ops, wait for it
-                            clr_acc0 <= 1'b1;
+                            //clr_acc0 <= 1'b1;
+                            load_acc0 <= 1'b1;
                             start_alu0 <= 1'b1;
                             ocol_pipe <= ocol;
                             orow_pipe <= orow;
@@ -202,6 +222,7 @@ always @(posedge clk) begin
                                 ky <= 'd0;
                                 kx <= 'd0;
                                 ic <= 'd0;
+                                //state <= DP_CLEAR;
                             end
                         end
                         else begin
@@ -219,12 +240,14 @@ always @(posedge clk) begin
                     ic <= 'd0;
                     start_alu0 <= 1'b0;
                     clr_acc0 <= 1'b0;
+                    load_acc0 <= 1'b0;
                 end
             end
             else begin
                 ic <= ic+'d1;
                 start_alu0 <= 1'b0;
                 clr_acc0 <= 1'b0;
+                load_acc0 <= 1'b0;
             end
         end
         DP_FINISH: begin

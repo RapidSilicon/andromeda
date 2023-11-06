@@ -7,6 +7,8 @@ import os
 import cv2
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--inp', help='model input (0,1)',default=0, type=int)
+parser.add_argument('--tflite', help='tflite flatbuffer model file',default='mb2006.tflite')
 parser.add_argument('--data', help='input data png file',default='')
 parser.add_argument('--memb', help='output mem file',default='')
 parser.add_argument('--dtype', help='dtype width (int9, int16)',default=9, type=int)
@@ -21,18 +23,21 @@ def crop_center(img,cropx,cropy):
     starty = img.shape[-3]//2-(cropy//2)    
     return img[starty:starty+cropy,startx:startx+cropx]
 
-d = cv2.imread(args.data, cv2.IMREAD_COLOR).astype(np.int32)
+d = cv2.imread(args.data, cv2.IMREAD_COLOR).astype(np.float32)
+d = d/255.
 print('d.shape',d.shape,'d.dtype',d.dtype)
 d = crop_center(d,400,368)
 print('d.shape',d.shape,'d.dtype',d.dtype)
 
-# add zero point
-if args.dtype==9:
-    d+= -128
+# input zero point and scale
+interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True)
+interpreter.allocate_tensors() # Needed before execution!
+input_details = interpreter.get_input_details()[args.inp]  # Model has single input.
+input_scale, input_zero_point = input_details["quantization"]
+print('input_scale',input_scale,1./input_scale,'input_zero_point',input_zero_point)
 
-# input_scale
-if args.dtype==16:
-    d*=(32768//256)
+d = d / input_scale + input_zero_point
+d = d.astype(input_details["dtype"])
 
 s=''
 for r in range(d.shape[-3]):

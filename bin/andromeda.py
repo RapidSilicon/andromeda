@@ -114,8 +114,10 @@ def emit_conv2d(j,graph,args,irate):
         s2 = graph.Tensors(graph.Operators(j).Inputs(1)).Quantization().Scale(i)
         sbias = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) # == s1*s2
         s3 = graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
-        scale.append((s1*s2)/s3)
-
+        s0 = (s1*s2)/s3
+        #s0 *= 0.90
+        scale.append(s0)
+    #print('j',j,'scale',scale)
     stride = int(np.round(ishape[-2]/oshape[-2]))
     if oshape[-2]<wshape[-2]:
         stride=1; # HACK
@@ -414,8 +416,11 @@ def emit_roms(graph,args):
             #print('ROM',roms[j])
             #print('DEBUG','j',j,'i',i,'scale',scale[i],'shift',shift)
             s0 = scale[i]*np.power(2,shift)
-            w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+31)
-            w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(s0*0x7fffffff))[2:])
+            #print('i',i,'s0',s0)
+            #w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+31)
+            #w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(s0*0x7fffffff))[2:])
+            w+='assign shift[{}:{}] = 6\'d{};\n'.format(i*6+5,i*6,shift+32)
+            w+='assign scale[{}:{}] = 32\'h{};\n'.format(i*32+31,i*32,hex(int(s0*0xffffffff))[2:])
         w+='endmodule\n'
         w+='\n'
     return w
@@ -432,9 +437,11 @@ tf.lite.experimental.Analyzer.analyze(model_path=args.tflite)
 interpreter = tf.lite.Interpreter(model_path=args.tflite,experimental_preserve_all_tensors=True)
 interpreter.allocate_tensors() # Needed before execution!
 input_details = interpreter.get_input_details()[0]  # Model has single input.
-output_details = interpreter.get_output_details()[0]  # Model has single output.
 input_scale, input_zero_point = input_details["quantization"]
-print('input_scale {:12.8f} input_zero_point {}'.format(input_scale,input_zero_point))
+print('input_scale {:12.8f} {:12.8f} input_zero_point {}'.format(input_scale,1./input_scale,input_zero_point))
+output_details = interpreter.get_output_details()[0]  # Model has single output.
+output_scale, output_zero_point = output_details["quantization"]
+print('output_scale {:12.8f} {:12.8f} output_zero_point {}'.format(output_scale,1./output_scale,output_zero_point))
 
 tensors={}
 for j in range(graph.OperatorsLength()):

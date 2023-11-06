@@ -74,27 +74,25 @@ if args.dtype==8:
     converter.inference_input_type = tf.int8
     converter.inference_output_type = tf.int8
 
-
+'''
 def representative_data_gen():
     for i in range(len(dleft)):
         data0 = np.array([dleft[i]]).astype(np.float32)
         data1 = np.array([dright[i]]).astype(np.float32)
         yield [data0,data1]
-        
-#  for input_value in tf.data.Dataset.from_tensor_slices(np.expand_dims(tf.cast(train_images, tf.float32), axis=-1)).batch(1).take(100):
-#    # Model has only one input so each data point has one element.
-#    yield [input_value]
 converter.representative_dataset = representative_data_gen
-
 '''
+
+
 # random dataset
 def representative_dataset():
     for _ in range(100):
-        data0 = np.random.rand(1,368,400,3).astype(np.float32)
-        data1 = np.random.rand(1,368,400,3).astype(np.float32)
+        scale=1.0
+        data0 = np.random.rand(1,368,400,3).astype(np.float32) *scale
+        data1 = np.random.rand(1,368,400,3).astype(np.float32) *scale
         yield [data0,data1]
 converter.representative_dataset = representative_dataset
-'''
+
 
 tflite_model = converter.convert()
 tf.lite.experimental.Analyzer.analyze(model_content=tflite_model)
