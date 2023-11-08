@@ -211,7 +211,7 @@ generate
                           end
                     'd14 : begin
                             if (reg_z[i][j] > $signed(2**(DTYPE-1)-1)) begin // CLIP
-                                $display($realtime," CLIP %m ochan %d alu_op %d reg_z %d %h %d",j,alu_op,reg_z[i][j],reg_z[i][j],$signed(2**(DTYPE-1)-1));
+                                //$display($realtime," CLIP %m ochan %d alu_op %d reg_z %d %h %d",j,alu_op,reg_z[i][j],reg_z[i][j],$signed(2**(DTYPE-1)-1));
                                 reg_z[i][j] <= $signed(2**(DTYPE-1)-1);
                             end
                         end

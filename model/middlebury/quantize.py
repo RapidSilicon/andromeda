@@ -74,16 +74,16 @@ if args.dtype==8:
     converter.inference_input_type = tf.int8
     converter.inference_output_type = tf.int8
 
-'''
+
 def representative_data_gen():
     for i in range(len(dleft)):
         data0 = np.array([dleft[i]]).astype(np.float32)
         data1 = np.array([dright[i]]).astype(np.float32)
         yield [data0,data1]
 converter.representative_dataset = representative_data_gen
+
+
 '''
-
-
 # random dataset
 def representative_dataset():
     for _ in range(100):
@@ -92,7 +92,7 @@ def representative_dataset():
         data1 = np.random.rand(1,368,400,3).astype(np.float32) *scale
         yield [data0,data1]
 converter.representative_dataset = representative_dataset
-
+'''
 
 tflite_model = converter.convert()
 tf.lite.experimental.Analyzer.analyze(model_content=tflite_model)

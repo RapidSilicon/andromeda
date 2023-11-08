@@ -131,7 +131,7 @@ reg [2:0] state;
 reg [$clog2(KHEIGHT):0] ky;
 reg [$clog2(KWIDTH):0] kx;
 reg [$clog2(ICHAN):0] ic;
-reg [$clog2(OWIDTH):0] ocol,ocol_pipe;
+reg [$clog2(OWIDTH):0] ocol,ocol_pipe,ocol_emit;
 reg [$clog2(OHEIGHT):0] orow,orow_pipe;
 reg [ICHAN-1:0] ichan_sel0, ichan_sel1;
 reg [4:0] wait_state;
@@ -375,6 +375,7 @@ always @(posedge clk) begin
         end
         ALU_15: begin
             alu_state <= ALU_EMIT;
+            ocol_emit <= ocol_pipe;
             osel <= 'd0;
             if (RELU)
                 alu_op <= 'd15;
@@ -385,9 +386,9 @@ always @(posedge clk) begin
             alu_op <= 'd16; // z <= z
             if (osel<NSTRIPE) begin
                 osel <= osel+'d1;
-                if (osel*OCOL+ocol_pipe < OWIDTH) begin // truncate if < nstripes remainder
+                if (osel*OCOL+ocol_emit < OWIDTH) begin // truncate if < nstripes remainder
                     m_axis_tvalid0 <= 1'b1;
-                    m_col0 <= osel*OCOL+ocol_pipe;
+                    m_col0 <= osel*OCOL+ocol_emit;
                     m_row0 <= orow_pipe;
                 end
                 else

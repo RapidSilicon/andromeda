@@ -109,11 +109,13 @@ opt = tf.keras.optimizers.Adam(args.lr)
 model.compile(optimizer=opt, loss=tf.keras.losses.MeanSquaredError())
 #model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
 #model.compile(optimizer='adam', loss=tf.keras.losses.KLDivergence())
-#model.fit([dleft,dright],[lleft,lright],epochs=args.epochs,batch_size=args.batch)
-model.fit([dleft,dright],[lleft],epochs=args.epochs,batch_size=args.batch)
-#  train_images,
-#  train_labels,
-#  epochs=args.epochs,
-#  validation_data=(test_images, test_labels)
-#)
+
+model.fit([dleft,dright],[lleft,lright],epochs=args.epochs,batch_size=args.batch)
+
+#for k in range(args.epochs):
+#    augleft=dleft.copy() * np.random.randint(2,size=dleft.shape)
+#    augright=dright.copy() * np.random.randint(2,size=dright.shape)
+#    model.fit([augleft,augright],[lleft],epochs=1,batch_size=args.batch)
+#    print('k',k)
+
 model.save(args.keras)

@@ -7,6 +7,7 @@ import array
 import struct
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--requant', help='quantize layers in/out tensors',action='append',type=int,nargs=2)
 parser.add_argument('--linear', help='list of conv2d ops which have no nonlinearity',action='store',type=int,nargs='*')
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
 parser.add_argument('--top', help='top level module name',default='mnist')
@@ -115,7 +116,13 @@ def emit_conv2d(j,graph,args,irate):
         sbias = graph.Tensors(graph.Operators(j).Inputs(2)).Quantization().Scale(i) # == s1*s2
         s3 = graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
         s0 = (s1*s2)/s3
-        #s0 *= 0.90
+        # check to see if conv2d()->quantize(), combine scales
+        for tpair in args.requant:
+            if tpair[0]==graph.Operators(j).Outputs(0):
+                qsi = graph.Tensors(tpair[1]).Quantization().Scale(0)
+                qso = graph.Tensors(tpair[1]).Quantization().Scale(0)
+                print('Merging scale values','tpair',tpair,'qsi',qsi,'qso',qso,'s0',s0,'s1',s1,'s2',s2,'s3',s3)
+                s0 *= s3/qso
         scale.append(s0)
     #print('j',j,'scale',scale)
     stride = int(np.round(ishape[-2]/oshape[-2]))

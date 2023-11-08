@@ -20,7 +20,8 @@ output_details = interpreter.get_output_details()[0]  # Model has single output.
 output_scale, output_zero_point = output_details["quantization"]
 print('output_scale',output_scale,1./output_scale,'output_zero_point',output_zero_point)
 
-img = np.zeros([386,450,1],dtype=np.uint8)
+img = np.zeros([386,450,3],dtype=np.uint8)
+img[:,:]=[0,0,255]
 f = open(args.log, 'r')
 for l in f:
     #MONITOR time 4976635.000000 m_0_data 00e m_0_row   0 m_0_col   0 feat           0
@@ -39,8 +40,14 @@ for l in f:
         r = int(w[6])
         c = int(w[8])
         #img[r,c] = min(255,d)
-        img[r,c] = d
+        img[r,c] = [d,d,d]
 f.close()
 
-img = cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
+#img = cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
 cv2.imwrite(args.png, img)
+
+for row in range(img.shape[0]):
+    for col in range(img.shape[1]):
+        if img[row,col,0]==0 and img[row,col,1]==0 and img[row,col,2]==255:
+            print('EMPTY PIXEL', row, col)
+

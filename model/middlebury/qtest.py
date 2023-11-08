@@ -6,6 +6,7 @@ import numpy as np
 import pathlib
 import argparse
 import cv2
+import tflite
 #print(tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8)
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -85,10 +86,17 @@ interpreter.invoke()
 pred = interpreter.get_tensor(output_details['index'])
 pred=pred[0]
 print('pred shape',pred.shape,pred.dtype, np.amin(pred),np.amax(pred))
-pred = pred.astype(np.int32)
+output_scale, output_zero_point = output_details["quantization"]
+print('output_scale',output_scale,1./output_scale,'output_zero_point',output_zero_point)
+pred = pred * output_scale + output_zero_point
+print('pred shape',pred.shape,pred.dtype, np.amin(pred),np.amax(pred))
+#pred = pred.astype(output_details["dtype"])
+#pred = pred.astype(np.int32)
 #pred += 128
-pred = pred//128
+#pred = pred//128
+pred = pred*255.
 pred = pred.astype(np.uint8)
+print('pred shape',pred.shape,pred.dtype, np.amin(pred),np.amax(pred))
 img = cv2.cvtColor(pred,cv2.COLOR_GRAY2RGB)
 cv2.imwrite('foo.png', img)
 
@@ -106,8 +114,34 @@ def dump_expect(n,fn):
             print(s,file=f)
     f.close()
 
-for n in [53,54,55,56,57,58,59,60,70,71,73,75,77,79,81]:
+for n in [53,54,55,56,57,58,59,60,70,71,73,75,77,79,81,68,82,69,61,62,63,64,65,66,67,68]:
     dump_expect(n,'expect_{}.memh'.format(n))
+
+
+exit()
+#DEBUG
+for x in interpreter.get_tensor_details():
+    if x['index']==60:
+        scale60=x['quantization_parameters']['scales'][0]
+    if x['index']==82:
+        scale82=x['quantization_parameters']['scales'][0]
+print(scale60/scale82)
+
+exit()
+with open(args.tflite, 'rb') as f:
+    buf = f.read()
+    model = tflite.Model.GetRootAsModel(buf, 0)
+    graph = model.Subgraphs(0)
+print(dir(graph.Operators(16)))
+print(dir(graph.Operators(7)))
+exit()
+
+#graph.Operators(j)
+print(dir(interpreter))
+for x in interpreter.get_tensor_details():
+    print(x)
+#print(interpreter.get_tensor_details())
+#print('op16',interpreter.get_input_details()[16]['quantization'], interpreter.get_output_details()[16]['quantization'])
 exit()
 
 def dump_tensor(n,typ=None,ochan=0,row=0):
