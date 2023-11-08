@@ -1,11 +1,15 @@
 set_param synth.elaboration.rodinMoreOptions "rt::set_parameter var_size_limit 300000000"
+read_verilog demo.v
 read_verilog ./${argv}.v
 read_verilog ./${argv}_rom.v
 read_verilog -sv ../../src/conv2d_data.v
 read_verilog -sv ../../src/conv2d_ctrl.v
 read_verilog -sv ../../src/conv2d.v
+read_verilog -sv ../../src/doublerow.v
+read_verilog -sv ../../src/concatenate.v
 read_xdc build.xdc
-synth_design -top ${argv} -part "xcau25p-ffvb676-2-e"
+synth_design -top demo -part "xcau25p-ffvb676-2-e"
+#synth_design -top ${argv} -part "xcau25p-ffvb676-2-e"
 #synth_design -top ${argv} -part "xcku040-ffva1156-2-i"
 #synth_design -top ${argv} -part "xc7vx485tffg1761-2"
 #synth_design -top ${argv} -part "xc7vx1140tflg1926-1"
