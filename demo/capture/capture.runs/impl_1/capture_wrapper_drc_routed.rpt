@@ -1,0 +1,370 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
+| Date         : Sat Nov 11 15:46:08 2023
+| Host         : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
+| Command      : report_drc -file capture_wrapper_drc_routed.rpt -pb capture_wrapper_drc_routed.pb -rpx capture_wrapper_drc_routed.rpx
+| Design       : capture_wrapper
+| Device       : xcau25p-ffvb676-2-e
+| Speed File   : -2
+| Design State : Fully Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 66
++-----------+----------+----------------------------------------+------------+
+| Rule      | Severity | Description                            | Violations |
++-----------+----------+----------------------------------------+------------+
+| AVAL-269  | Warning  | OBUFT_has_two_FFs_with_wrong_IOB_attrs | 32         |
+| REQP-1617 | Warning  | use_IOB_register                       | 32         |
+| REQP-1857 | Warning  | RAMB18E2_writefirst_collision_advisory | 1          |
+| RTSTAT-10 | Warning  | No routable loads                      | 1          |
++-----------+----------+----------------------------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+AVAL-269#1 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[0].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[0].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#2 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[10].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[10].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#3 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[11].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[11].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#4 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[12].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[12].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#5 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[13].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[13].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#6 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[14].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[14].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#7 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[15].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[15].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#8 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[16].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[16].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#9 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[17].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[17].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#10 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[18].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[18].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#11 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[19].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[19].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#12 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[1].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[1].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#13 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[20].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[20].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#14 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[21].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[21].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#15 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[22].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[22].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#16 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[23].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[23].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#17 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[24].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[24].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#18 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[25].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[25].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#19 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[26].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[26].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#20 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[27].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[27].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#21 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[28].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[28].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#22 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[29].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[29].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#23 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[2].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[2].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#24 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[30].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[30].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#25 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[31].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[31].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#26 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[3].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[3].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#27 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[4].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[4].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#28 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[5].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[5].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#29 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[6].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[6].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#30 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[7].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[7].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#31 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[8].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[8].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+AVAL-269#32 Warning
+OBUFT_has_two_FFs_with_wrong_IOB_attrs  
+The OBUFT capture_i/frontpanel_0/inst/okHI/iob_regs[9].iobf0 has T (tri-state) pin driven by Flop capture_i/frontpanel_0/inst/okHI/iob_regs[9].regvalid with IOB = TRUE. The T pin should use the IOB_TRI_REG attribute. The incorrect attribute will be ignored.
+Related violations: <none>
+
+REQP-1617#1 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[0].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#2 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[10].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#3 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[11].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#4 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[12].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#5 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[13].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#6 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[14].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#7 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[15].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#8 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[16].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#9 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[17].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#10 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[18].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#11 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[19].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#12 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[1].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#13 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[20].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#14 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[21].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#15 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[22].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#16 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[23].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#17 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[24].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#18 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[25].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#19 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[26].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#20 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[27].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#21 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[28].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#22 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[29].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#23 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[2].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#24 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[30].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#25 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[31].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#26 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[3].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#27 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[4].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#28 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[5].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#29 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[6].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#30 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[7].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#31 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[8].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1617#32 Warning
+use_IOB_register  
+The FDRE cell capture_i/frontpanel_0/inst/okHI/iob_regs[9].regvalid has IOB set to TRUE, but does not connect directly to an IO cell. Remove the constraint or ensure the FDRE is properly connected to an IO.
+Related violations: <none>
+
+REQP-1857#1 Warning
+RAMB18E2_writefirst_collision_advisory  
+Synchronous clocking is detected for BRAM (capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_noinit.ram/DEVICE_8SERIES.NO_BMM_INFO.SDP.WIDE_PRIM18.ram) in SDP mode with WRITE_FIRST write-mode. It is strongly suggested to change this mode to NO_CHANGE for best power characteristics. However, both WRITE_FIRST and NO_CHANGE may exhibit address collisions if the same address appears on both read and write ports resulting in unknown or corrupted read data. It is suggested to confirm via simulation that an address collision never occurs and if so it is suggested to try and avoid this situation. If address collisions cannot be avoided, the write-mode may be set to READ_FIRST which guarantees that the read data is the prior contents of the memory at the cost of additional power in the design. See the FPGA Memory Resources User Guide for additional information.
+Related violations: <none>
+
+RTSTAT-10#1 Warning
+No routable loads  
+2 net(s) have no routable loads. The problem bus(es) and/or net(s) are capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_fb
+capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_i.
+Related violations: <none>
+
+

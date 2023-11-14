@@ -1,0 +1,21 @@
+verilog xil_defaultlib --include "../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/templates" --include "../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/common" --include "../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel" --include "../../../../capture.gen/sources_1/bd/capture/ipshared/c2c6" --include "../../../../capture.gen/sources_1/bd/capture/ipshared/ec67/hdl" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/capture_frontpanel_0_0_wrapper_simulation.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel/okHost.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel/okWireOR.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel/okWireIn.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel/okTriggerIn.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/FrontPanel/okWireOut.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/test_bench_template.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_frontpanel_0_0/gateware/simulation/capture_frontpanel_0_0_simulation.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_clk_wiz.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_fb_ahb_0_4/sim/capture_fb_ahb_0_4.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_axi_crossbar_0_0/sim/capture_axi_crossbar_0_0.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_leds_0_0/gateware/capture_leds_0_0_driver.v" \
+"../../../../capture.gen/sources_1/bd/capture/ip/capture_leds_0_0/gateware/capture_leds_0_0.v" \
+"../../../../capture.gen/sources_1/bd/capture/sim/capture.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

@@ -1,0 +1,6 @@
+vhdl xil_defaultlib  \
+"../../../bd/hier_0/ip/hier_0_axi_gpio_1_0/sim/hier_0_axi_gpio_1_0.vhd" \
+"../../../bd/hier_0/ip/hier_0_axi_iic_0_0/sim/hier_0_axi_iic_0_0.vhd" \
+
+# Do not sort compile order
+nosort

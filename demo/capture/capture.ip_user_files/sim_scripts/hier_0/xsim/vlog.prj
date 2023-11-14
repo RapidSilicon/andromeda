@@ -1,0 +1,11 @@
+verilog xil_defaultlib --include "../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl" \
+"../../../bd/hier_0/ip/hier_0_xbar_0/sim/hier_0_xbar_0.v" \
+"../../../bd/hier_0/ip/hier_0_auto_pc_0/sim/hier_0_auto_pc_0.v" \
+"../../../bd/hier_0/ip/hier_0_leds_0_0/gateware/hier_0_leds_0_0_driver.v" \
+"../../../bd/hier_0/ip/hier_0_leds_0_0/gateware/hier_0_leds_0_0.v" \
+"../../../bd/hier_0/sim/hier_0.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

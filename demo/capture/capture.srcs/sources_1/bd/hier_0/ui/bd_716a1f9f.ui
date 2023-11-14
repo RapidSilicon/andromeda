@@ -1,0 +1,31 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"1.25",
+   "Default View_TopLeft":"-272,-123",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.5.8 2022-09-21 7111 VDI=41 GEI=38 GUI=JA:10.0
+#  -string -flagsOSRD
+preplace port S00_AXI -pg 1 -lvl 0 -x 0 -y 110 -defaultsOSRD
+preplace port board_leds -pg 1 -lvl 3 -x 630 -y 60 -defaultsOSRD
+preplace port szg_port_a_cam1_iic -pg 1 -lvl 3 -x 630 -y 320 -defaultsOSRD
+preplace port szg_port_a_cam1_reset -pg 1 -lvl 3 -x 630 -y 220 -defaultsOSRD
+preplace port port-id_ARESETN_0 -pg 1 -lvl 0 -x 0 -y 150 -defaultsOSRD
+preplace port port-id_s_axi_aclk -pg 1 -lvl 0 -x 0 -y 50 -defaultsOSRD
+preplace inst axi_gpio_1 -pg 1 -lvl 2 -x 470 -y 200 -defaultsOSRD
+preplace inst axi_iic_0 -pg 1 -lvl 2 -x 470 -y 340 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 1 -x 170 -y 190 -defaultsOSRD
+preplace inst leds_0 -pg 1 -lvl 2 -x 470 -y 60 -defaultsOSRD
+preplace netloc ARESETN_1 1 0 2 20 330 330
+preplace netloc axi_gpio_1_gpio_io_o 1 1 2 330 120 610
+preplace netloc frontpanel_0_okClk 1 0 2 30 50 320
+preplace netloc Conn1 1 0 1 NJ 110
+preplace netloc axi_gpio_1_GPIO2 1 2 1 NJ 220
+preplace netloc axi_iic_0_IIC 1 2 1 NJ 320
+preplace netloc axi_interconnect_0_M00_AXI 1 1 1 N 180
+preplace netloc axi_interconnect_0_M01_AXI 1 1 1 310 200n
+preplace netloc leds_0_led_out 1 2 1 NJ 60
+levelinfo -pg 1 0 170 470 630
+pagesize -pg 1 -db -bbox -sgen -130 0 830 420
+"
+}
+0

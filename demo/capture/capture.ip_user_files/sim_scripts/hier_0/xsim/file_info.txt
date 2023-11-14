@@ -1,0 +1,8 @@
+hier_0_axi_gpio_1_0.vhd,vhdl,xil_defaultlib,../../../bd/hier_0/ip/hier_0_axi_gpio_1_0/sim/hier_0_axi_gpio_1_0.vhd,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0_axi_iic_0_0.vhd,vhdl,xil_defaultlib,../../../bd/hier_0/ip/hier_0_axi_iic_0_0/sim/hier_0_axi_iic_0_0.vhd,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0_xbar_0.v,verilog,xil_defaultlib,../../../bd/hier_0/ip/hier_0_xbar_0/sim/hier_0_xbar_0.v,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0_auto_pc_0.v,verilog,xil_defaultlib,../../../bd/hier_0/ip/hier_0_auto_pc_0/sim/hier_0_auto_pc_0.v,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0_leds_0_0_driver.v,verilog,xil_defaultlib,../../../bd/hier_0/ip/hier_0_leds_0_0/gateware/hier_0_leds_0_0_driver.v,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0_leds_0_0.v,verilog,xil_defaultlib,../../../bd/hier_0/ip/hier_0_leds_0_0/gateware/hier_0_leds_0_0.v,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+hier_0.v,verilog,xil_defaultlib,../../../bd/hier_0/sim/hier_0.v,incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"incdir="../../../../capture.gen/sources_1/bd/hier_0/ipshared/ec67/hdl"
+glbl.v,Verilog,xil_defaultlib,glbl.v
