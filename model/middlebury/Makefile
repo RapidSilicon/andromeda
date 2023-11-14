@@ -38,8 +38,10 @@ vivado: andromeda
 gendata:
 #	python3 png2mem.py --data dataset/Flowerpots/view1.png --memb data_0.mem --tflite mb2006.tflite --inp 0 --dtype 9
 #	python3 png2mem.py --data dataset/Flowerpots/view5.png --memb data_1.mem --tflite mb2006.tflite --inp 1 --dtype 9
-	python3 png2mem.py --data dataset/Monopoly/view1.png --memb data_0.mem --tflite mb2006.tflite --inp 0 --dtype 16
-	python3 png2mem.py --data dataset/Monopoly/view5.png --memb data_1.mem --tflite mb2006.tflite --inp 1 --dtype 16
+#	python3 png2mem.py --data dataset/Monopoly/view1.png --memb data_0.mem --tflite mb2006.tflite --inp 0 --dtype 16
+#	python3 png2mem.py --data dataset/Monopoly/view5.png --memb data_1.mem --tflite mb2006.tflite --inp 1 --dtype 16
+	python3 png2mem.py --data dataset/Bowling1/view1.png --memb data_0.mem --tflite mb2006.tflite --inp 0 --dtype 16
+	python3 png2mem.py --data dataset/Bowling1/view5.png --memb data_1.mem --tflite mb2006.tflite --inp 1 --dtype 16
 
 #sim: andromeda gendata qtest
 sim:
