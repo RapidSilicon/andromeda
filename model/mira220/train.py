@@ -26,6 +26,40 @@ print(args)
 #test_images = test_images.astype(np.float32) / 255.0
 
 # Define the model architecture
+if args.net=='alt2':
+    def downsample(i,filters,nl=tf.nn.relu):
+        u0 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(i)
+        u1 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(2,2), activation=tf.nn.relu, padding='valid')(u0)
+        u2 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(1,1), activation=nl, padding='valid')(u1)
+        return u2
+
+    def encoder(i):
+        e0 = downsample(i,16)
+        e1 = downsample(e0,32)
+        e2 = downsample(e1,64)
+        e3 = downsample(e2,128)
+        e4 = downsample(e3,256)
+        e5 = downsample(e4,512,nl=None)
+        return e5
+
+    in0 = keras.layers.Input(shape=(1400,1600,3))
+    out = encoder(in0)
+    #head = encoder(in0)
+    #out = keras.layers.Conv2D(512, kernel_size=(1,1), strides=(1,1), activation=None, padding='valid')(head)
+    #cat = keras.layers.Concatenate(axis=-1)([enc0,enc1])
+    #cat = keras.layers.Add()([enc0, enc1])
+    #fuse0 = keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(cat)
+    #fuse1 = keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(fuse0)
+    #fuse2 = keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(fuse1)
+    #fuse0 = downsample(cat,16)
+    #out = downsample(fuse0,32,nl=None)
+    #out = keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation=None, padding='valid')(fuse1)
+    #out0 = decoder(fuse1)
+    #out1 = decoder(fuse1)
+
+    #model = keras.Model(inputs=[in0, in1], outputs=[out0,out1])
+    model = keras.Model(inputs=[in0], outputs=[out])
+
 if args.net=='alt1':
     def downsample(i,filters,nl=tf.nn.relu):
         u0 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(2,2), activation=tf.nn.relu, padding='valid')(i)
@@ -35,7 +69,9 @@ if args.net=='alt1':
     def encoder(i):
         e0 = downsample(i,2)
         e1 = downsample(e0,4)
-        e2 = downsample(e1,8,nl=None)
+        #e2 = downsample(e1,8,nl=None)
+        e2 = downsample(e1,8)
+        e3 = keras.layers.Conv2D(filters, kernel_size=(1,1), strides=(1,1), activation=None, padding='valid')(e2)
         return e2
 
 #    def upsample(i,filters):
