@@ -11,7 +11,8 @@ import datetime
 import random
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--stretch', help='grid random scale',default=0.3, type=float)
+parser.add_argument('--gallery', help='produce thumbnail examples',default=False, action='store_true')
+parser.add_argument('--stretch', help='grid random scale',default=0.9, type=float)
 parser.add_argument('--nballs', help='sample size',default=2000, type=int)
 parser.add_argument('--ballsize', help='gaussian scale',default=10.0, type=float)
 parser.add_argument('--log', help='log file',default='./log.train')
@@ -75,7 +76,8 @@ def generate_batch(args):
     d = np.zeros([args.batch,1400,1600,3]).astype(np.uint8)
     l = np.zeros([args.batch,14*16]).astype(np.float32)
     #grid=[(x,y) for x in range(-args.sidex//2,args.sidex//2,args.spacex) for y in range(-args.sidey//2,args.sidey//2,args.spacey)]
-    grid=[(x+args.spacex//2,y+args.spacey//2) for x in range(0,args.sidex+args.spacex,args.spacex) for y in range(0,args.sidey+args.spacey,args.spacey)]
+    grid=[(x+args.spacex//2,y+args.spacey//2) for x in range(0,args.sidex,args.spacex) for y in range(0,args.sidey,args.spacey)]
+    #print('grid',len(grid),grid)
     # randomly render colored gaussian balls on grid
     for i in range(args.batch):
         for j in range(14*16):
@@ -107,6 +109,24 @@ def generate_batch(args):
     cv2.imshow('train', cv2.resize(d[0],dsize=(800,700),interpolation=cv2.INTER_LINEAR)) 
     cv2.waitKey(1)
     return (d/255.,l)
+
+if args.gallery:
+    border=5
+    h=140
+    w=160
+    col=10
+    row=5
+    args.batch=row*col
+    d,l=generate_batch(args)
+    d = (d*255).astype(np.uint8)
+    img=np.zeros([(h+border)*row,(w+border)*col,3],dtype=np.uint8)
+    img.fill(255)
+    for i in range(d.shape[0]):
+        img[(i//col)*(h+border):(i//col)*(h+border)+h,(i%col)*(w+border):(i%col)*(w+border)+w]=cv2.resize(d[i],dsize=(w,h),interpolation=cv2.INTER_LANCZOS4)
+    cv2.imshow('gallery',img)
+    cv2.imwrite('gallery.png',img)
+    cv2.waitKey(0)
+    exit()
 
 opt = tf.keras.optimizers.Adam(args.lr)
 model.compile(optimizer=opt)
