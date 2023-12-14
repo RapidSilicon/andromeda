@@ -48,9 +48,11 @@ converter.representative_dataset = representative_data_gen
 # random dataset
 def representative_dataset():
     for _ in range(100):
-        data0 = np.random.rand(1, 1120, 1280, 1).astype(np.float32)
-        data1 = np.random.rand(1, 1120, 1280, 1).astype(np.float32)
-        yield [data0,data1]
+        data0 = np.random.rand(1, 1400, 1600, 3).astype(np.float32)
+        #data0 = np.random.rand(1, 1120, 1280, 1).astype(np.float32)
+        #data1 = np.random.rand(1, 1120, 1280, 1).astype(np.float32)
+        #yield [data0,data1]
+        yield [data0]
 converter.representative_dataset = representative_dataset
 
 tflite_model = converter.convert()

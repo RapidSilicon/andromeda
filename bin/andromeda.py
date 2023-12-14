@@ -91,9 +91,11 @@ def emit_wires(graph,args):
     return s
 
 def emit_conv2d(j,graph,args,irate):
+    global tmac
+    global tbuf
     # compute parameters
     #if graph.Operators(j).Outputs(0) in cats:
-    if j in args.linear:
+    if args.linear is not None and j in args.linear:
         relu=0
     else:
         relu=1 # TODO: maybe use DAG
@@ -117,12 +119,13 @@ def emit_conv2d(j,graph,args,irate):
         s3 = graph.Tensors(graph.Operators(j).Outputs(0)).Quantization().Scale(0)
         s0 = (s1*s2)/s3
         # check to see if conv2d()->quantize(), combine scales
-        for tpair in args.requant:
-            if tpair[0]==graph.Operators(j).Outputs(0):
-                qsi = graph.Tensors(tpair[1]).Quantization().Scale(0)
-                qso = graph.Tensors(tpair[1]).Quantization().Scale(0)
-                print('Merging scale values','tpair',tpair,'qsi',qsi,'qso',qso,'s0',s0,'s1',s1,'s2',s2,'s3',s3)
-                s0 *= s3/qso
+        if args.requant is not None:
+            for tpair in args.requant:
+                if tpair[0]==graph.Operators(j).Outputs(0):
+                    qsi = graph.Tensors(tpair[1]).Quantization().Scale(0)
+                    qso = graph.Tensors(tpair[1]).Quantization().Scale(0)
+                    print('Merging scale values','tpair',tpair,'qsi',qsi,'qso',qso,'s0',s0,'s1',s1,'s2',s2,'s3',s3)
+                    s0 *= s3/qso
         scale.append(s0)
     #print('j',j,'scale',scale)
     stride = int(np.round(ishape[-2]/oshape[-2]))
@@ -166,6 +169,8 @@ def emit_conv2d(j,graph,args,irate):
     roms.append((j,oshape[-1],waddr,weight,bias,scale)) # will be emitted as a separate file
     #print('ROM',roms[-1])
 
+    tmac += oshape[-1]*nstripe
+    tbuf += nrow*ncol*ishape[-1]*nstripe
     print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} irate {}'.format(
             j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape,irate))
 
@@ -475,6 +480,8 @@ for j in range(graph.OperatorsLength()):
     #print('j',j,graph.Operators(j).InputsLength(),graph.Operators(j).OutputsLength(), graph.Operators(j).InputsIsNone(), graph.Operators(j).OutputsIsNone())
 #exit()
 
+tmac=0 # global
+tbuf=0 # global
 roms=[] # global
 #reps=[] # global list of tensors that are driven by replicate(), for double row burst handling
 #cats=[] # global list of tensors that are should be driven by conv2d with RELU=0
@@ -489,3 +496,5 @@ with open('./{}.v'.format(args.top), 'w') as f:
 with open('./{}_rom.v'.format(args.top), 'w') as f:
     print(emit_roms(graph,args),file=f)
 
+print('tmac',tmac,'clk',args.clk)
+print('tbuf',tbuf)
