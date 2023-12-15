@@ -53,7 +53,8 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// clk_out1__100.00000______0.000______50.0______115.831_____87.180
+// clk_out1__100.00000______0.000______50.0______144.719____114.212
+// clk_out2__200.00000______0.000______50.0______126.455____114.212
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -67,6 +68,7 @@ module capture_clk_wiz_0_0_clk_wiz
  (// Clock in ports
   // Clock out ports
   output        clk_out1,
+  output        clk_out2,
   input         clk_in1_p,
   input         clk_in1_n
  );
@@ -104,15 +106,7 @@ wire clk_in2_capture_clk_wiz_0_0;
   wire        clkfbout_capture_clk_wiz_0_0;
   wire        clkfboutb_unused;
     wire clkout0b_unused;
-   wire clkout1_unused;
    wire clkout1b_unused;
-   wire clkout2_unused;
-   wire clkout2b_unused;
-   wire clkout3_unused;
-   wire clkout3b_unused;
-   wire clkout4_unused;
-  wire        clkout5_unused;
-  wire        clkout6_unused;
   wire        clkfbstopped_unused;
   wire        clkinstopped_unused;
 
@@ -120,22 +114,47 @@ wire clk_in2_capture_clk_wiz_0_0;
 
 // Auto Instantiation//
 
-
-BUFGCE_DIV #(
-      .BUFGCE_DIVIDE(1.0),      // 1-8
-      // Programmable Inversion Attributes: Specifies built-in programmable inversion on specific pins
-      .IS_CE_INVERTED(1'b0),  // Optional inversion for CE
-      .IS_CLR_INVERTED(1'b0), // Optional inversion for CLR
-      .IS_I_INVERTED(1'b0)    // Optional inversion for I
-   )
-   BUFGCE_DIV_CLK1_inst (
-      .O(clk_out1_capture_clk_wiz_0_0),     // 1-bit output: Buffer
-      .CE(1'b1),   // 1-bit input: Buffer enable
-      .CLR(1'b0), // 1-bit input: Asynchronous clear
-      .I(clk_in1_capture_clk_wiz_0_0)      // 1-bit input: Buffer
-   );
-   
-   
+  
+    PLLE4_ADV
+  #(
+    .COMPENSATION         ("AUTO"),
+    .STARTUP_WAIT         ("FALSE"),
+    .DIVCLK_DIVIDE        (1),
+    .CLKFBOUT_MULT        (8),
+    .CLKFBOUT_PHASE       (0.000),
+    .CLKOUT0_DIVIDE       (8),
+    .CLKOUT0_PHASE        (0.000),
+    .CLKOUT0_DUTY_CYCLE   (0.500),
+    .CLKOUT1_DIVIDE       (4),
+    .CLKOUT1_PHASE        (0.000),
+    .CLKOUT1_DUTY_CYCLE   (0.500),
+    .CLKIN_PERIOD         (10.000))
+  
+  plle4_adv_inst
+    // Output clocks
+   (
+    .CLKFBOUT            (clkfbout_capture_clk_wiz_0_0),
+    .CLKOUT0             (clk_out1_capture_clk_wiz_0_0),
+    .CLKOUT0B            (clkout0b_unused),
+    .CLKOUT1             (clk_out2_capture_clk_wiz_0_0),
+    .CLKOUT1B            (clkout1b_unused),
+     // Input clock control
+    .CLKFBIN             (clkfbout_capture_clk_wiz_0_0),
+    .CLKIN               (clk_in1_capture_clk_wiz_0_0),
+    // Ports for dynamic reconfiguration
+    .DADDR               (7'h0),
+    .DCLK                (1'b0),
+    .DEN                 (1'b0),
+    .DI                  (16'h0),
+    .DO                  (do_unused),
+    .DRDY                (drdy_unused),
+    .DWE                 (1'b0),
+    .CLKOUTPHYEN         (1'b0),
+    .CLKOUTPHY           (),
+    // Other control and status signals
+    .LOCKED              (locked_int),
+    .PWRDWN              (1'b0),
+    .RST                 (1'b0));
 
 
 
@@ -149,8 +168,14 @@ BUFGCE_DIV #(
 
 
 
-  assign clk_out1 = clk_out1_capture_clk_wiz_0_0;
+  BUFG clkout1_buf
+   (.O   (clk_out1),
+    .I   (clk_out1_capture_clk_wiz_0_0));
 
+
+  BUFG clkout2_buf
+   (.O   (clk_out2),
+    .I   (clk_out2_capture_clk_wiz_0_0));
 
 
 

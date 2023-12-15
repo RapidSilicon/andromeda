@@ -1,0 +1,764 @@
+#-----------------------------------------------------------
+# Vivado v2023.2 (64-bit)
+# SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
+# IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+# SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+# Start of session at: Mon Dec  4 15:41:08 2023
+# Process ID: 29656
+# Current directory: C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1
+# Command line: vivado.exe -log bd_d757_phy_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source bd_d757_phy_0.tcl
+# Log file: C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/bd_d757_phy_0.vds
+# Journal file: C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1\vivado.jou
+# Running On: LAPTOP-FEFLDCST, OS: Windows, CPU Frequency: 2995 MHz, CPU Physical cores: 4, Host memory: 34048 MB
+#-----------------------------------------------------------
+source bd_d757_phy_0.tcl -notrace
+create_project: Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 477.125 ; gain = 180.762
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Xilinx/Downloads/FrontPanel-Vivado-IP-Dist-v1.0.3'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2023.2/data/ip'.
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: bd_d757_phy_0
+Command: synth_design -top bd_d757_phy_0 -part xcau25p-ffvb676-2-e -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xcau25p'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xcau25p'
+INFO: [Device 21-403] Loading part xcau25p-ffvb676-2-e
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 35808
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:10 ; elapsed = 00:00:10 . Memory (MB): peak = 1998.484 ; gain = 419.781
+---------------------------------------------------------------------------------
+INFO: [Synth 8-11241] undeclared symbol 'multi_intf_lock_sync', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:482]
+INFO: [Synth 8-11241] undeclared symbol 'locked', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:522]
+INFO: [Synth 8-11241] undeclared symbol 'dl0_rxskewcalhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:779]
+INFO: [Synth 8-11241] undeclared symbol 'dl1_rxskewcalhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:816]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:851]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:852]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:854]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:857]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:859]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:861]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:862]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:863]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:866]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:868]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:869]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:870]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:871]
+INFO: [Synth 8-11241] undeclared symbol 'dl2_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:872]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:887]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:888]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:890]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:893]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:895]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:897]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:898]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:899]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:902]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:904]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:905]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:906]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:907]
+INFO: [Synth 8-11241] undeclared symbol 'dl3_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:908]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:931]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:932]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:934]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:939]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:941]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:945]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:946]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:947]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:950]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:954]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:955]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:956]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:957]
+INFO: [Synth 8-11241] undeclared symbol 'dl4_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:958]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:981]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:982]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:984]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:989]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:991]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:995]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:996]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:997]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1000]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1004]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1005]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1006]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1007]
+INFO: [Synth 8-11241] undeclared symbol 'dl5_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1008]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1030]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1031]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1033]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1038]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1040]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1044]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1045]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1046]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1049]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1053]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1054]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1055]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1056]
+INFO: [Synth 8-11241] undeclared symbol 'dl6_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1057]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxvalidhs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1079]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxactivehs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1080]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1082]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_stopstate', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1087]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_ulpsactivenot', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1089]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxclkesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1093]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxlpdtesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1094]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxulpsesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1095]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_rxvalidesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1098]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_errsoths', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1102]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_errsotsynchs', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1103]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_erresc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1104]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_errsyncesc', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1105]
+INFO: [Synth 8-11241] undeclared symbol 'dl7_errcontrol', assumed default net type 'wire' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1106]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0.v:90]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_core' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_core.v:92]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_c1' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_c1.v:98]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_support' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:102]
+WARNING: [Synth 8-5974] attribute "use_dsp48" has been deprecated, please use "use_dsp" instead 
+WARNING: [Synth 8-5974] attribute "use_dsp48" has been deprecated, please use "use_dsp" instead 
+WARNING: [Synth 8-5974] attribute "use_dsp48" has been deprecated, please use "use_dsp" instead 
+WARNING: [Synth 8-7071] port 'lane0_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane1_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane2_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane3_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane4_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane5_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane6_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'lane7_tap' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'tap_val_dyn_out' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'alt_skew_calb' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'init_periodic_skew_calb' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_valid_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_rd_data_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_addr_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_wr_data_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_wr_en_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_nibble_sel_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'calib_status_l2' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_valid_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_rd_data_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_addr_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_wr_data_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_wr_en_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'riu_nibble_sel_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7071] port 'calib_status_l3' of module 'mipi_dphy_v4_3_8_rx_fab_top' is unconnected for instance 'dphy_rx_fab_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+WARNING: [Synth 8-7023] instance 'dphy_rx_fab_top' of module 'mipi_dphy_v4_3_8_rx_fab_top' has 320 connections declared, but only 295 given [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:709]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_hssio_rx' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/synth/bd_d757_phy_0_hssio_rx.v:53]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:49]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_hssio_rx_hssio_wiz_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_hssio_wiz_top.v:47]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_hssio_rx_mipi_iobuf_rx' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/hdl/bd_d757_phy_0_hssio_rx_mipi_iobuf_rx.v:48]
+INFO: [Synth 8-6157] synthesizing module 'IBUFDS_DPHY' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:73762]
+INFO: [Synth 8-6155] done synthesizing module 'IBUFDS_DPHY' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:73762]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_hssio_rx_mipi_iobuf_rx' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/hdl/bd_d757_phy_0_hssio_rx_mipi_iobuf_rx.v:48]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_bs_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:17012]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_tx_bs' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:14411]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_tx_bs' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:14411]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_tx_bs_tri' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:9980]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_tx_bs_tri' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:9980]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_rx_bs' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:10387]
+INFO: [Synth 8-6157] synthesizing module 'RX_BITSLICE' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133583]
+INFO: [Synth 8-6155] done synthesizing module 'RX_BITSLICE' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133583]
+INFO: [Synth 8-6157] synthesizing module 'RX_BITSLICE__parameterized0' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133583]
+INFO: [Synth 8-6155] done synthesizing module 'RX_BITSLICE__parameterized0' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133583]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_rx_bs' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:10387]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_rxtx_bs' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:5396]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_rxtx_bs' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:5396]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_bs_top' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:17012]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_bs_ctrl_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1649]
+INFO: [Synth 8-6157] synthesizing module 'BITSLICE_CONTROL' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1608]
+INFO: [Synth 8-6155] done synthesizing module 'BITSLICE_CONTROL' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1608]
+INFO: [Synth 8-6157] synthesizing module 'RIU_OR' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133383]
+INFO: [Synth 8-6155] done synthesizing module 'RIU_OR' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:133383]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_bs_ctrl_top' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1649]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_clk_rst_top' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1434]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_clk_scheme' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1000]
+INFO: [Synth 8-6157] synthesizing module 'PLLE4_ADV' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:111594]
+INFO: [Synth 8-6155] done synthesizing module 'PLLE4_ADV' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:111594]
+INFO: [Synth 8-6157] synthesizing module 'BUFGCE' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1961]
+INFO: [Synth 8-6155] done synthesizing module 'BUFGCE' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1961]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_clk_scheme' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1000]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_rst_scheme' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:357]
+INFO: [Synth 8-6157] synthesizing module 'high_speed_selectio_wiz_v3_6_6_sync_cell' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:49]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_sync_cell' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:49]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_rst_scheme' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:357]
+INFO: [Synth 8-6155] done synthesizing module 'high_speed_selectio_wiz_v3_6_6_clk_rst_top' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1434]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_hssio_rx_hssio_wiz_top' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_hssio_wiz_top.v:47]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:49]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_hssio_rx' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/synth/bd_d757_phy_0_hssio_rx.v:53]
+WARNING: [Synth 8-7071] port 'pll0_clkout0' of module 'bd_d757_phy_0_hssio_rx' is unconnected for instance 'bd_d757_phy_0_rx_hssio_i' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1171]
+WARNING: [Synth 8-7023] instance 'bd_d757_phy_0_rx_hssio_i' of module 'bd_d757_phy_0_hssio_rx' has 46 connections declared, but only 45 given [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:1171]
+INFO: [Synth 8-6157] synthesizing module 'BUFG' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1951]
+INFO: [Synth 8-6155] done synthesizing module 'BUFG' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1951]
+INFO: [Synth 8-6157] synthesizing module 'bd_d757_phy_0_clock_module' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_clock_module.v:87]
+	Parameter C_DPHY_LANES bound to: 2 - type: integer 
+	Parameter MTBF_SYNC_STAGES bound to: 3 - type: integer 
+	Parameter C_HS_LINE_RATE bound to: 800 - type: integer 
+	Parameter C_STABLE_CLK_PERIOD bound to: 5.000000 - type: double 
+	Parameter C_TXPLL_CLKIN_PERIOD bound to: 10.000000 - type: double 
+	Parameter EN_DPHY_IO bound to: 1 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_clock_module' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_clock_module.v:87]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_support' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0/support/bd_d757_phy_0_support.v:102]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_c1' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_c1.v:98]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0_core' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_core.v:92]
+INFO: [Synth 8-6155] done synthesizing module 'bd_d757_phy_0' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0.v:90]
+WARNING: [Synth 8-3848] Net data_to_bs_n_out in module/entity bd_d757_phy_0_hssio_rx_mipi_iobuf_rx does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/hdl/bd_d757_phy_0_hssio_rx_mipi_iobuf_rx.v:78]
+WARNING: [Synth 8-3848] Net data_to_pins in module/entity bd_d757_phy_0_hssio_rx_mipi_iobuf_rx does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/hdl/bd_d757_phy_0_hssio_rx_mipi_iobuf_rx.v:79]
+WARNING: [Synth 8-3848] Net w_rxtx_rx_fifo_wrclk_out in module/entity high_speed_selectio_wiz_v3_6_6_rxtx_bs does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:8877]
+WARNING: [Synth 8-3848] Net pll1_clkout0_out in module/entity high_speed_selectio_wiz_v3_6_6_clk_scheme does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:1041]
+WARNING: [Synth 8-6014] Unused sequential element wait_bsc_dly_rdy_timeout_reg was removed.  [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:584]
+WARNING: [Synth 8-6014] Unused sequential element wait_bsc_vtc_rdy_timeout_reg was removed.  [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ipshared/dcd9/hdl/high_speed_selectio_wiz_v3_6_rfs.v:585]
+WARNING: [Synth 8-3848] Net intf_rdy in module/entity bd_d757_phy_0_hssio_rx_hssio_wiz_top does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_hssio_wiz_top.v:504]
+WARNING: [Synth 8-3848] Net pll0_clkout1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:494]
+WARNING: [Synth 8-3848] Net pll1_clkout0 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:495]
+WARNING: [Synth 8-3848] Net pll1_locked in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:496]
+WARNING: [Synth 8-3848] Net clk_from_ibuf in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:509]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:525]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:526]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:529]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:530]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:533]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:534]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:537]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:538]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:541]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:542]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:545]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:546]
+WARNING: [Synth 8-3848] Net dly_rdy_bsc7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:549]
+WARNING: [Synth 8-3848] Net vtc_rdy_bsc7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:550]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg0_bs1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:569]
+WARNING: [Synth 8-3848] Net riu_valid_bg0_bs1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:570]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:575]
+WARNING: [Synth 8-3848] Net riu_valid_bg1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:576]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg1_bs2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:581]
+WARNING: [Synth 8-3848] Net riu_valid_bg1_bs2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:582]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg1_bs3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:587]
+WARNING: [Synth 8-3848] Net riu_valid_bg1_bs3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:588]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:593]
+WARNING: [Synth 8-3848] Net riu_valid_bg2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:594]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg2_bs4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:599]
+WARNING: [Synth 8-3848] Net riu_valid_bg2_bs4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:600]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg2_bs5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:605]
+WARNING: [Synth 8-3848] Net riu_valid_bg2_bs5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:606]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:611]
+WARNING: [Synth 8-3848] Net riu_valid_bg3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:612]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg3_bs6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:617]
+WARNING: [Synth 8-3848] Net riu_valid_bg3_bs6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:618]
+WARNING: [Synth 8-3848] Net riu_rd_data_bg3_bs7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:623]
+WARNING: [Synth 8-3848] Net riu_valid_bg3_bs7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:624]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_0 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:648]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_0 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:653]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_0 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:659]
+WARNING: [Synth 8-3848] Net bitslip_error_0 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:668]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:675]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:680]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:686]
+WARNING: [Synth 8-3848] Net bitslip_error_1 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:695]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:702]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:707]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:713]
+WARNING: [Synth 8-3848] Net bitslip_error_2 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:722]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:729]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:734]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:740]
+WARNING: [Synth 8-3848] Net bitslip_error_3 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:749]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:756]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:761]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:767]
+WARNING: [Synth 8-3848] Net bitslip_error_4 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:776]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:783]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:788]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:794]
+WARNING: [Synth 8-3848] Net bitslip_error_5 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:803]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:807]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:812]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:818]
+WARNING: [Synth 8-3848] Net fifo_empty_6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:824]
+WARNING: [Synth 8-3848] Net bitslip_error_6 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:827]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:831]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:836]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:842]
+WARNING: [Synth 8-3848] Net fifo_empty_7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:848]
+WARNING: [Synth 8-3848] Net bitslip_error_7 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:851]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_8 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:855]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_8 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:860]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_8 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:866]
+WARNING: [Synth 8-3848] Net fifo_empty_8 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:872]
+WARNING: [Synth 8-3848] Net bitslip_error_8 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:875]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_9 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:879]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_9 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:884]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_9 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:890]
+WARNING: [Synth 8-3848] Net fifo_empty_9 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:896]
+WARNING: [Synth 8-3848] Net bitslip_error_9 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:899]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_10 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:903]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_10 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:908]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_10 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:914]
+WARNING: [Synth 8-3848] Net fifo_empty_10 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:920]
+WARNING: [Synth 8-3848] Net bitslip_error_10 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:923]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_11 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:927]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_11 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:932]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_11 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:938]
+WARNING: [Synth 8-3848] Net fifo_empty_11 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:944]
+WARNING: [Synth 8-3848] Net bitslip_error_11 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:947]
+WARNING: [Synth 8-3848] Net tx_cntvalueout_12 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:951]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_12 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:956]
+WARNING: [Synth 8-3848] Net rx_cntvalueout_ext_12 in module/entity bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6 does not have driver. [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_high_speed_selectio_wiz_v3_6_6.v:962]
+INFO: [Common 17-14] Message 'Synth 8-3848' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+WARNING: [Synth 8-7129] Port clkoutphy_out in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll_locked in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mmcm_clk_in in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port cl_rxclkactivehs in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll_clk_in in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll_reset in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mmcm_reset in module bd_d757_phy_0_clock_module is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll0_clkout1 in module high_speed_selectio_wiz_v3_6_6_rst_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port fab_clk_pll1_in in module high_speed_selectio_wiz_v3_6_6_rst_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll1_locked_in in module high_speed_selectio_wiz_v3_6_6_rst_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll1_clkout0_out in module high_speed_selectio_wiz_v3_6_6_clk_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll1_rst_in in module high_speed_selectio_wiz_v3_6_6_clk_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pll1_clkoutphy_en_in in module high_speed_selectio_wiz_v3_6_6_clk_scheme is either unconnected or has no load
+WARNING: [Synth 8-7129] Port shared_pll0_clkout0_in in module high_speed_selectio_wiz_v3_6_6_clk_rst_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port shared_pll1_clkout0_in in module high_speed_selectio_wiz_v3_6_6_clk_rst_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port shared_pll0_locked_in in module high_speed_selectio_wiz_v3_6_6_clk_rst_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port shared_pll1_locked_in in module high_speed_selectio_wiz_v3_6_6_clk_rst_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_addr_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_nibble_sel_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[15] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[14] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[13] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[12] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[11] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[10] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[9] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[8] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[7] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[6] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_data_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n0_riu_wr_en_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_addr_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_nibble_sel_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[15] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[14] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[13] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[12] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[11] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[10] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[9] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[8] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[7] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[6] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_data_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n1_riu_wr_en_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_addr_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_nibble_sel_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[15] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[14] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[13] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[12] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[11] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[10] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[9] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[8] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[7] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[6] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_data_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n2_riu_wr_en_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[5] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[4] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[3] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[2] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[1] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_addr_in[0] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_nibble_sel_in in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_wr_data_in[15] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_wr_data_in[14] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_wr_data_in[13] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port n3_riu_wr_data_in[12] in module high_speed_selectio_wiz_v3_6_6_bs_ctrl_top is either unconnected or has no load
+INFO: [Common 17-14] Message 'Synth 8-7129' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:23 ; elapsed = 00:00:23 . Memory (MB): peak = 2204.875 ; gain = 626.172
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:23 ; elapsed = 00:00:24 . Memory (MB): peak = 2222.793 ; gain = 644.090
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:23 ; elapsed = 00:00:24 . Memory (MB): peak = 2222.793 ; gain = 644.090
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.680 . Memory (MB): peak = 2234.855 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 5 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_ooc.xdc] for cell 'inst'
+create_clock: Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 2345.891 ; gain = 0.055
+Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_ooc.xdc] for cell 'inst'
+Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc] for cell 'inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst'
+Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc] for cell 'inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst'
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/bd_d757_phy_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/bd_d757_phy_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0.xdc] for cell 'inst'
+Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0.xdc] for cell 'inst'
+INFO: [Timing 38-2] Deriving generated clocks
+Parsing XDC File [C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/dont_touch.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/dont_touch.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/bd_d757_phy_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/bd_d757_phy_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc] for cell 'inst'
+Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc] for cell 'inst'
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/bd_d757_phy_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/bd_d757_phy_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 2345.891 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 4 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+  IBUFDS_DPHY => IBUFDS_DPHY (DPHY_DIFFINBUF, IBUFCTRL): 3 instances
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.181 . Memory (MB): peak = 2345.891 ; gain = 0.000
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:52 ; elapsed = 00:00:54 . Memory (MB): peak = 2345.891 ; gain = 767.188
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xcau25p-ffvb676-2-e
+INFO: [Synth 8-6742] Reading net delay rules and data
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:52 ; elapsed = 00:00:54 . Memory (MB): peak = 2345.891 ; gain = 767.188
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property KEEP_HIERARCHY = SOFT for inst/inst/bd_d757_phy_0_rx_support_i/\slave_rx.bd_d757_phy_0_rx_hssio_i /inst. (constraint file  C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/dont_touch.xdc, line 8).
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/dont_touch.xdc, line 14).
+Applied set_property KEEP_HIERARCHY = SOFT for inst/inst/bd_d757_phy_0_rx_support_i/\slave_rx.bd_d757_phy_0_rx_hssio_i . (constraint file  auto generated constraint).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:52 ; elapsed = 00:00:54 . Memory (MB): peak = 2345.891 ; gain = 767.188
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'rst_blk_state_reg' in module 'mipi_dphy_v4_3_8_rx_rst_logic'
+INFO: [Synth 8-802] inferred FSM for state register 'dl_rx_state_reg' in module 'mipi_dphy_v4_3_8_csi_rx_data_lane_sm'
+INFO: [Synth 8-802] inferred FSM for state register 'gen_hs_high_rates_spec_v1_1.dl_state_reg' in module 'mipi_dphy_v4_3_8_rx_data_lane'
+INFO: [Synth 8-802] inferred FSM for state register 'rst_blk_state_reg' in module 'mipi_dphy_v4_3_8_rx_support_rst_logic'
+INFO: [Synth 8-802] inferred FSM for state register 'GEN_RIU_NOT_FROM_PLL.hssio_state_reg' in module 'high_speed_selectio_wiz_v3_6_6_rst_scheme'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+               RST_BEGIN |                              000 |                              000
+       ASSERT_ALL_RESETS |                              001 |                              001
+      RELEASE_MMCM_RESET |                              010 |                              010
+          RESET_FSM_DONE |                              011 |                              101
+         WAIT_FOR_ENABLE |                              100 |                              100
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'rst_blk_state_reg' using encoding 'sequential' in module 'mipi_dphy_v4_3_8_rx_rst_logic'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             DL_RX_BEGIN |                             0000 |                             0000
+        DL_WO_INIT_LP_11 |                             0001 |                             0001
+                  iSTATE |                             0010 |                             1111
+*
+         DL_RX_INIT_DONE |                             0011 |                             0010
+              DL_RX_STOP |                             0100 |                             0011
+           DL_RX_HS_RQST |                             0101 |                             0100
+           DL_RX_HS_TERM |                             0110 |                             0101
+           DL_RX_HS_SYNC |                             0111 |                             0110
+            DL_RX_HS_RUN |                             1000 |                             0111
+          DL_RX_HS_ABORT |                             1001 |                             1000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'dl_rx_state_reg' using encoding 'sequential' in module 'mipi_dphy_v4_3_8_csi_rx_data_lane_sm'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                DL_START |                               00 |                               00
+                 DL_STOP |                               01 |                               01
+               DL_ACTIVE |                               10 |                               10
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'gen_hs_high_rates_spec_v1_1.dl_state_reg' using encoding 'sequential' in module 'mipi_dphy_v4_3_8_rx_data_lane'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+               RST_BEGIN |                              000 |                              000
+       ASSERT_ALL_RESETS |                              001 |                              001
+       RELEASE_PHY_RESET |                              010 |                              010
+          RESET_FSM_DONE |                              011 |                              100
+              CHECK_SRST |                              100 |                              011
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'rst_blk_state_reg' using encoding 'sequential' in module 'mipi_dphy_v4_3_8_rx_support_rst_logic'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+*
+       ASSERT_ALL_RESETS |                        000000001 |                        000000001
+      DEASSERT_PLL_RESET |                        000000010 |                        000000010
+       WAIT_FOR_PLL_LOCK |                        000000100 |                        000000100
+      DEASSERT_BS_RESETS |                        000001000 |                        000001000
+  ASSERT_PLL_CLKOUTPHYEN |                        000010000 |                        000010000
+    WAIT_FOR_BSC_DLY_RDY |                        000100000 |                        000100000
+       ASSERT_BSC_EN_VTC |                        001000000 |                        001000000
+    WAIT_FOR_BSC_VTC_RDY |                        010000000 |                        010000000
+          RESET_SEQ_DONE |                        100000000 |                        100000000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3898] No Re-encoding of one hot register 'GEN_RIU_NOT_FROM_PLL.hssio_state_reg' in module 'high_speed_selectio_wiz_v3_6_6_rst_scheme'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:56 ; elapsed = 00:00:58 . Memory (MB): peak = 2345.891 ; gain = 767.188
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   16 Bit       Adders := 4     
+	   2 Input    9 Bit       Adders := 8     
+	   2 Input    8 Bit       Adders := 2     
+	   2 Input    7 Bit       Adders := 1     
+	   2 Input    5 Bit       Adders := 5     
+	   2 Input    4 Bit       Adders := 1     
++---Registers : 
+	               64 Bit    Registers := 6     
+	               52 Bit    Registers := 1     
+	               32 Bit    Registers := 66    
+	               24 Bit    Registers := 1     
+	               21 Bit    Registers := 2     
+	               18 Bit    Registers := 6     
+	               16 Bit    Registers := 54    
+	                9 Bit    Registers := 86    
+	                8 Bit    Registers := 20    
+	                7 Bit    Registers := 3     
+	                5 Bit    Registers := 5     
+	                4 Bit    Registers := 11    
+	                3 Bit    Registers := 3     
+	                2 Bit    Registers := 11    
+	                1 Bit    Registers := 488   
++---Muxes : 
+	   2 Input   64 Bit        Muxes := 1     
+	   2 Input   32 Bit        Muxes := 10    
+	   2 Input   18 Bit        Muxes := 1     
+	   2 Input   16 Bit        Muxes := 8     
+	   2 Input    9 Bit        Muxes := 13    
+	  10 Input    9 Bit        Muxes := 1     
+	   2 Input    8 Bit        Muxes := 3     
+	   2 Input    7 Bit        Muxes := 3     
+	   2 Input    6 Bit        Muxes := 2     
+	   2 Input    5 Bit        Muxes := 8     
+	  18 Input    4 Bit        Muxes := 2     
+	   2 Input    4 Bit        Muxes := 2     
+	  12 Input    3 Bit        Muxes := 2     
+	   3 Input    3 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 4     
+	  10 Input    3 Bit        Muxes := 1     
+	   6 Input    3 Bit        Muxes := 2     
+	   3 Input    2 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 7     
+	   2 Input    1 Bit        Muxes := 169   
+	   5 Input    1 Bit        Muxes := 68    
+	   9 Input    1 Bit        Muxes := 1     
+	   8 Input    1 Bit        Muxes := 5     
+	  10 Input    1 Bit        Muxes := 36    
+	   3 Input    1 Bit        Muxes := 11    
+	  24 Input    1 Bit        Muxes := 16    
+	  25 Input    1 Bit        Muxes := 5     
+	   4 Input    1 Bit        Muxes := 2     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 1200 (col length:96)
+BRAMs: 600 (col length: RAMB18 96 RAMB36 48)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:01:22 ; elapsed = 00:01:24 . Memory (MB): peak = 2345.891 ; gain = 767.188
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:36 ; elapsed = 00:01:39 . Memory (MB): peak = 2596.945 ; gain = 1018.242
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:01:37 ; elapsed = 00:01:40 . Memory (MB): peak = 2617.082 ; gain = 1038.379
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:01:39 ; elapsed = 00:01:42 . Memory (MB): peak = 2734.352 ; gain = 1155.648
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:01:45 ; elapsed = 00:01:48 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:45 ; elapsed = 00:01:48 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-----------------+------+
+|      |Cell             |Count |
++------+-----------------+------+
+|1     |BITSLICE_CONTROL |     1|
+|2     |BUFG             |     1|
+|3     |BUFGCE           |     2|
+|4     |CARRY8           |    19|
+|5     |LUT1             |  1014|
+|6     |LUT2             |   104|
+|7     |LUT3             |   121|
+|8     |LUT4             |   104|
+|9     |LUT5             |   125|
+|10    |LUT6             |   575|
+|11    |PLLE4_ADV        |     1|
+|12    |RX_BITSLICE      |     3|
+|14    |FDCE             |   322|
+|15    |FDPE             |   113|
+|16    |FDRE             |  4391|
+|17    |FDSE             |    57|
+|18    |IBUFDS_DPHY      |     3|
++------+-----------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 5212 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:01:03 ; elapsed = 00:01:28 . Memory (MB): peak = 2747.699 ; gain = 1045.898
+Synthesis Optimization Complete : Time (s): cpu = 00:01:46 ; elapsed = 00:01:49 . Memory (MB): peak = 2747.699 ; gain = 1168.996
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.158 . Memory (MB): peak = 2747.699 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 24 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+WARNING: [Constraints 18-5254] DIFF_TERM is not supported in UltraScale devices.  Automatically translating DIFF_TERM of TRUE to DIFF_TERM_ADV=TERM_100.  Refer to UG571: UltraScale Architecture SelectIO User Guide for more detail.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Opt 31-326] The CLKFBOUT to CLKFBIN net for instance inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst/top_inst/clk_rst_top_inst/clk_scheme_inst/GEN_PLL_IN_IP_USP.plle4_adv_pll0_inst with COMPENSATION=INTERNAL is optimized away to aid design routability
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 2775.535 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 4 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+  IBUFDS_DPHY => IBUFDS_DPHY (DPHY_DIFFINBUF, IBUFCTRL): 3 instances
+
+Synth Design complete | Checksum: 6ddf3197
+INFO: [Common 17-83] Releasing license: Synthesis
+181 Infos, 246 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:59 ; elapsed = 00:02:05 . Memory (MB): peak = 2775.535 ; gain = 2213.828
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.016 . Memory (MB): peak = 2775.535 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/bd_d757_phy_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP bd_d757_phy_0, cache-ID = 904bc0524a6672a2
+INFO: [Coretcl 2-1174] Renamed 81 cell refs.
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.024 . Memory (MB): peak = 2775.535 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/bd_d757_phy_0_synth_1/bd_d757_phy_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file bd_d757_phy_0_utilization_synth.rpt -pb bd_d757_phy_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Dec  4 15:43:38 2023...

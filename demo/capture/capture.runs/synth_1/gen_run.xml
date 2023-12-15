@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1699745757" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/fb_ahb.dcp">
+<GenRun Id="synth_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1701733265" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/fb_ahb.dcp">
   <File Type="PA-TCL" Name="capture_wrapper.tcl"/>
   <File Type="RDS-PROPCONSTRS" Name="capture_wrapper_drc_synth.rpt"/>
   <File Type="REPORTS-TCL" Name="capture_wrapper_reports.tcl"/>
@@ -90,9 +90,14 @@
     <Step Id="synth_design"/>
   </Strategy>
   <BlockFileSet Type="BlockSrcs" Name="capture_frontpanel_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_rx_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_clk_wiz_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_proc_sys_reset_0_1"/>
+  <BlockFileSet Type="BlockSrcs" Name="capture_fifo_generator_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_axi_crossbar_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_fb_ahb_0_4"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_axi_gpio_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="capture_mipi_csi2_rx_subsyst_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_phy_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_vfb_0_0"/>
 </GenRun>

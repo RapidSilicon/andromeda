@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="impl_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1699745757">
+<GenRun Id="impl_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1701733265">
   <File Type="ROUTE-PWR" Name="capture_wrapper_power_routed.rpt"/>
   <File Type="PA-TCL" Name="capture_wrapper.tcl"/>
   <File Type="ROUTE-PWR-SUM" Name="capture_wrapper_power_summary_routed.pb"/>
@@ -173,9 +173,14 @@
     <Step Id="write_bitstream"/>
   </Strategy>
   <BlockFileSet Type="BlockSrcs" Name="capture_frontpanel_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_rx_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_clk_wiz_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_proc_sys_reset_0_1"/>
+  <BlockFileSet Type="BlockSrcs" Name="capture_fifo_generator_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_axi_crossbar_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_fb_ahb_0_4"/>
   <BlockFileSet Type="BlockSrcs" Name="capture_axi_gpio_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="capture_mipi_csi2_rx_subsyst_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_phy_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="bd_d757_vfb_0_0"/>
 </GenRun>

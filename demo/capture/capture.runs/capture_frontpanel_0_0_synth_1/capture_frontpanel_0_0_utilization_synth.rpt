@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-| Date         : Thu Oct 26 15:23:14 2023
+| Date         : Thu Nov 30 15:16:20 2023
 | Host         : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
 | Command      : report_utilization -file capture_frontpanel_0_0_utilization_synth.rpt -pb capture_frontpanel_0_0_utilization_synth.pb
 | Design       : capture_frontpanel_0_0
@@ -32,13 +32,13 @@ Table of Contents
 +----------------------------+------+-------+------------+-----------+-------+
 |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
 +----------------------------+------+-------+------------+-----------+-------+
-| CLB LUTs*                  |  919 |     0 |          0 |    141000 |  0.65 |
-|   LUT as Logic             |  887 |     0 |          0 |    141000 |  0.63 |
+| CLB LUTs*                  |  957 |     0 |          0 |    141000 |  0.68 |
+|   LUT as Logic             |  925 |     0 |          0 |    141000 |  0.66 |
 |   LUT as Memory            |   32 |     0 |          0 |     99840 |  0.03 |
 |     LUT as Distributed RAM |   32 |     0 |            |           |       |
 |     LUT as Shift Register  |    0 |     0 |            |           |       |
-| CLB Registers              | 1451 |   102 |          0 |    282000 |  0.51 |
-|   Register as Flip Flop    | 1451 |   102 |          0 |    282000 |  0.51 |
+| CLB Registers              | 1454 |   103 |          0 |    282000 |  0.52 |
+|   Register as Flip Flop    | 1454 |   103 |          0 |    282000 |  0.52 |
 |   Register as Latch        |    0 |     0 |          0 |    282000 |  0.00 |
 | CARRY8                     |   23 |     0 |          0 |     27120 |  0.08 |
 | F7 Muxes                   |    8 |     0 |          0 |    108480 | <0.01 |
@@ -62,9 +62,9 @@ Warning! LUT value is adjusted to account for LUT combining.
 | 0     |            _ |       Reset |            - |
 | 0     |          Yes |           - |            - |
 | 26    |          Yes |           - |          Set |
-| 269   |          Yes |           - |        Reset |
+| 270   |          Yes |           - |        Reset |
 | 26    |          Yes |         Set |            - |
-| 1130  |          Yes |       Reset |            - |
+| 1132  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -157,11 +157,11 @@ Warning! LUT value is adjusted to account for LUT combining.
 +------------+------+---------------------+
 |  Ref Name  | Used | Functional Category |
 +------------+------+---------------------+
-| FDRE       | 1130 |            Register |
-| LUT6       |  332 |                 CLB |
-| LUT4       |  273 |                 CLB |
-| FDCE       |  269 |            Register |
-| LUT5       |  224 |                 CLB |
+| FDRE       | 1132 |            Register |
+| LUT6       |  334 |                 CLB |
+| LUT4       |  277 |                 CLB |
+| FDCE       |  270 |            Register |
+| LUT5       |  256 |                 CLB |
 | LUT2       |  113 |                 CLB |
 | LUT1       |   50 |                 CLB |
 | INBUF      |   38 |                 I/O |
@@ -203,6 +203,7 @@ Warning! LUT value is adjusted to account for LUT combining.
 | okTriggerIn            |    1 |
 | okCoreHarness          |    1 |
 | okCore                 |    1 |
+| okBTPipeOut            |    1 |
 | fifo_generator_v13_2_5 |    1 |
 +------------------------+------+
 

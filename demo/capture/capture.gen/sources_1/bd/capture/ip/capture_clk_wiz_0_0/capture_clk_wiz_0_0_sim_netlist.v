@@ -2,7 +2,7 @@
 // Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-// Date        : Tue Oct 24 12:05:11 2023
+// Date        : Thu Nov 30 15:13:06 2023
 // Host        : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
 //               c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_sim_netlist.v
@@ -16,27 +16,33 @@
 (* NotValidForBitStream *)
 module capture_clk_wiz_0_0
    (clk_out1,
+    clk_out2,
     clk_in1_p,
     clk_in1_n);
   output clk_out1;
+  output clk_out2;
   input clk_in1_p;
   input clk_in1_n;
 
   (* IBUF_LOW_PWR *) (* RTL_KEEP = "yes" *) wire clk_in1_n;
   (* IBUF_LOW_PWR *) (* RTL_KEEP = "yes" *) wire clk_in1_p;
   wire clk_out1;
+  wire clk_out2;
 
   capture_clk_wiz_0_0_clk_wiz inst
        (.clk_in1_n(clk_in1_n),
         .clk_in1_p(clk_in1_p),
-        .clk_out1(clk_out1));
+        .clk_out1(clk_out1),
+        .clk_out2(clk_out2));
 endmodule
 
 module capture_clk_wiz_0_0_clk_wiz
    (clk_out1,
+    clk_out2,
     clk_in1_p,
     clk_in1_n);
   output clk_out1;
+  output clk_out2;
   input clk_in1_p;
   input clk_in1_n;
 
@@ -44,22 +50,18 @@ module capture_clk_wiz_0_0_clk_wiz
   wire clk_in1_n;
   wire clk_in1_p;
   wire clk_out1;
+  wire clk_out1_capture_clk_wiz_0_0;
+  wire clk_out2;
+  wire clk_out2_capture_clk_wiz_0_0;
+  wire NLW_plle4_adv_inst_CLKFBIN_UNCONNECTED;
+  wire NLW_plle4_adv_inst_CLKFBOUT_UNCONNECTED;
+  wire NLW_plle4_adv_inst_CLKOUT0B_UNCONNECTED;
+  wire NLW_plle4_adv_inst_CLKOUT1B_UNCONNECTED;
+  wire NLW_plle4_adv_inst_CLKOUTPHY_UNCONNECTED;
+  wire NLW_plle4_adv_inst_DRDY_UNCONNECTED;
+  wire NLW_plle4_adv_inst_LOCKED_UNCONNECTED;
+  wire [15:0]NLW_plle4_adv_inst_DO_UNCONNECTED;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
-  BUFGCE_DIV #(
-    .BUFGCE_DIVIDE(1),
-    .CE_TYPE("SYNC"),
-    .HARDSYNC_CLR("FALSE"),
-    .IS_CE_INVERTED(1'b0),
-    .IS_CLR_INVERTED(1'b0),
-    .IS_I_INVERTED(1'b0),
-    .SIM_DEVICE("ULTRASCALE"),
-    .STARTUP_SYNC("FALSE")) 
-    BUFGCE_DIV_CLK1_inst
-       (.CE(1'b1),
-        .CLR(1'b0),
-        .I(clk_in1_capture_clk_wiz_0_0),
-        .O(clk_out1));
   (* BOX_TYPE = "PRIMITIVE" *) 
   (* CAPACITANCE = "DONT_CARE" *) 
   (* IBUF_DELAY_VALUE = "0" *) 
@@ -71,6 +73,67 @@ module capture_clk_wiz_0_0_clk_wiz
        (.I(clk_in1_p),
         .IB(clk_in1_n),
         .O(clk_in1_capture_clk_wiz_0_0));
+  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* XILINX_LEGACY_PRIM = "BUFG" *) 
+  (* XILINX_TRANSFORM_PINMAP = "VCC:CE" *) 
+  BUFGCE #(
+    .CE_TYPE("ASYNC"),
+    .SIM_DEVICE("ULTRASCALE_PLUS")) 
+    clkout1_buf
+       (.CE(1'b1),
+        .I(clk_out1_capture_clk_wiz_0_0),
+        .O(clk_out1));
+  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* XILINX_LEGACY_PRIM = "BUFG" *) 
+  (* XILINX_TRANSFORM_PINMAP = "VCC:CE" *) 
+  BUFGCE #(
+    .CE_TYPE("ASYNC"),
+    .SIM_DEVICE("ULTRASCALE_PLUS")) 
+    clkout2_buf
+       (.CE(1'b1),
+        .I(clk_out2_capture_clk_wiz_0_0),
+        .O(clk_out2));
+  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* OPT_MODIFIED = "MLO" *) 
+  PLLE4_ADV #(
+    .CLKFBOUT_MULT(8),
+    .CLKFBOUT_PHASE(0.000000),
+    .CLKIN_PERIOD(10.000000),
+    .CLKOUT0_DIVIDE(8),
+    .CLKOUT0_DUTY_CYCLE(0.500000),
+    .CLKOUT0_PHASE(0.000000),
+    .CLKOUT1_DIVIDE(4),
+    .CLKOUT1_DUTY_CYCLE(0.500000),
+    .CLKOUT1_PHASE(0.000000),
+    .CLKOUTPHY_MODE("VCO_2X"),
+    .COMPENSATION("INTERNAL"),
+    .DIVCLK_DIVIDE(1),
+    .IS_CLKFBIN_INVERTED(1'b0),
+    .IS_CLKIN_INVERTED(1'b0),
+    .IS_PWRDWN_INVERTED(1'b0),
+    .IS_RST_INVERTED(1'b0),
+    .REF_JITTER(0.010000),
+    .STARTUP_WAIT("FALSE")) 
+    plle4_adv_inst
+       (.CLKFBIN(NLW_plle4_adv_inst_CLKFBIN_UNCONNECTED),
+        .CLKFBOUT(NLW_plle4_adv_inst_CLKFBOUT_UNCONNECTED),
+        .CLKIN(clk_in1_capture_clk_wiz_0_0),
+        .CLKOUT0(clk_out1_capture_clk_wiz_0_0),
+        .CLKOUT0B(NLW_plle4_adv_inst_CLKOUT0B_UNCONNECTED),
+        .CLKOUT1(clk_out2_capture_clk_wiz_0_0),
+        .CLKOUT1B(NLW_plle4_adv_inst_CLKOUT1B_UNCONNECTED),
+        .CLKOUTPHY(NLW_plle4_adv_inst_CLKOUTPHY_UNCONNECTED),
+        .CLKOUTPHYEN(1'b0),
+        .DADDR({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DCLK(1'b0),
+        .DEN(1'b0),
+        .DI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DO(NLW_plle4_adv_inst_DO_UNCONNECTED[15:0]),
+        .DRDY(NLW_plle4_adv_inst_DRDY_UNCONNECTED),
+        .DWE(1'b0),
+        .LOCKED(NLW_plle4_adv_inst_LOCKED_UNCONNECTED),
+        .PWRDWN(1'b0),
+        .RST(1'b0));
 endmodule
 `ifndef GLBL
 `define GLBL

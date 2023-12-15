@@ -48,7 +48,7 @@
         "WO.ADDR_1": [ { "value": "0x21", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "WO.ADDR_2": [ { "value": "0x22", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "WO.ADDR_3": [ { "value": "0x23", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
-        "WO.ADDR_4": [ { "value": "0xff", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
+        "WO.ADDR_4": [ { "value": "0xff", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "WO.ADDR_5": [ { "value": "0xff", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "WO.ADDR_6": [ { "value": "0xff", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "WO.ADDR_7": [ { "value": "0xff", "resolve_type": "user", "format": "bitString", "usage": "all" } ],

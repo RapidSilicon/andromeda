@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------
 // File: capture_frontpanel_0_0_synthesis.v
-// Creation Date: Thu 10/26/2023 at 15:02:48 -0700
+// Creation Date: Thu 11/30/2023 at 15:10:28 -0800
 // IP Version: opalkelly.com:ip:frontpanel:1.0 (Rev: 3)
 // Tool Version: Vivado v2023.2 (64-bit)
 // Opal Kelly Board: XEM8320-AU25P (Part: xcau25p-ffvb676-2-e)
@@ -56,6 +56,18 @@ module capture_frontpanel_0_0(
     input  wire        ti40_ep_clk,
 
 //----------------------------------------------------------------------------------------------------------------------------------
+// Block Throttle PipeOuts
+//----------------------------------------------------------------------------------------------------------------------------------
+    (* X_INTERFACE_INFO = "opalkelly.com:interface:btpipeout:1.0 btpipeouta0 EP_DATAIN" *)
+    input  wire [31:0] btpoa0_ep_datain,
+    (* X_INTERFACE_INFO = "opalkelly.com:interface:btpipeout:1.0 btpipeouta0 EP_READ" *)
+    output wire        btpoa0_ep_read,
+    (* X_INTERFACE_INFO = "opalkelly.com:interface:btpipeout:1.0 btpipeouta0 EP_BLOCKSTROBE" *)
+    output wire        btpoa0_ep_blockstrobe,
+    (* X_INTERFACE_INFO = "opalkelly.com:interface:btpipeout:1.0 btpipeouta0 EP_READY" *)
+    input  wire        btpoa0_ep_ready,
+
+//----------------------------------------------------------------------------------------------------------------------------------
 // Host Interface
 //----------------------------------------------------------------------------------------------------------------------------------
     (* X_INTERFACE_INFO = "opalkelly.com:interface:host_interface:1.0 host_interface okUH" *)
@@ -82,6 +94,10 @@ capture_frontpanel_0_0_wrapper_synthesis inst (
     .wo23_ep_datain(wo23_ep_datain),
     .ti40_ep_trigger(ti40_ep_trigger),
     .ti40_ep_clk(ti40_ep_clk),
+    .btpoa0_ep_datain(btpoa0_ep_datain),
+    .btpoa0_ep_read(btpoa0_ep_read),
+    .btpoa0_ep_blockstrobe(btpoa0_ep_blockstrobe),
+    .btpoa0_ep_ready(btpoa0_ep_ready),
     .okUH(okUH),
     .okHU(okHU),
     .okUHU(okUHU),

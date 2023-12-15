@@ -119,11 +119,26 @@
         <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/capture_fb_ahb_0_4/capture_fb_ahb_0_4.xci">
           <Proxy FileSetName="capture_fb_ahb_0_4"/>
         </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/capture_fifo_generator_0_0/capture_fifo_generator_0_0.xci">
+          <Proxy FileSetName="capture_fifo_generator_0_0"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/capture_frontpanel_0_0/capture_frontpanel_0_0.xci">
           <Proxy FileSetName="capture_frontpanel_0_0"/>
         </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0.xci">
+          <Proxy FileSetName="capture_mipi_csi2_rx_subsyst_0_0"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/capture_proc_sys_reset_0_1/capture_proc_sys_reset_0_1.xci">
           <Proxy FileSetName="capture_proc_sys_reset_0_1"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/ip_2/bd_d757_rx_0.xci">
+          <Proxy FileSetName="bd_d757_rx_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/ip_3/bd_d757_phy_0.xci">
+          <Proxy FileSetName="bd_d757_phy_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="capture.bd" FileRelPathName="ip/ip_4/bd_d757_vfb_0_0.xci">
+          <Proxy FileSetName="bd_d757_vfb_0_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PGENDIR/sources_1/bd/capture/hdl/capture_wrapper.v">
@@ -239,6 +254,36 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
+    <FileSet Name="capture_mipi_csi2_rx_subsyst_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/capture_mipi_csi2_rx_subsyst_0_0" RelGenDir="$PGENDIR/capture_mipi_csi2_rx_subsyst_0_0">
+      <Config>
+        <Option Name="TopModule" Val="capture_mipi_csi2_rx_subsyst_0_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="capture_fifo_generator_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/capture_fifo_generator_0_0" RelGenDir="$PGENDIR/capture_fifo_generator_0_0">
+      <Config>
+        <Option Name="TopModule" Val="capture_fifo_generator_0_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="bd_d757_rx_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/bd_d757_rx_0" RelGenDir="$PGENDIR/bd_d757_rx_0">
+      <Config>
+        <Option Name="TopModule" Val="bd_d757_rx_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="bd_d757_phy_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/bd_d757_phy_0" RelGenDir="$PGENDIR/bd_d757_phy_0">
+      <Config>
+        <Option Name="TopModule" Val="bd_d757_phy_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="bd_d757_vfb_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/bd_d757_vfb_0_0" RelGenDir="$PGENDIR/bd_d757_vfb_0_0">
+      <Config>
+        <Option Name="TopModule" Val="bd_d757_vfb_0_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
   </FileSets>
   <Simulators>
     <Simulator Name="XSim">
@@ -322,6 +367,66 @@
     <Run Id="capture_fb_ahb_0_4_synth_1" Type="Ft3:Synth" SrcSet="capture_fb_ahb_0_4" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_fb_ahb_0_4" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/capture_fb_ahb_0_4_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_fb_ahb_0_4_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_fb_ahb_0_4_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="capture_mipi_csi2_rx_subsyst_0_0_synth_1" Type="Ft3:Synth" SrcSet="capture_mipi_csi2_rx_subsyst_0_0" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_mipi_csi2_rx_subsyst_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/capture_mipi_csi2_rx_subsyst_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_mipi_csi2_rx_subsyst_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_mipi_csi2_rx_subsyst_0_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="capture_fifo_generator_0_0_synth_1" Type="Ft3:Synth" SrcSet="capture_fifo_generator_0_0" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_fifo_generator_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/capture_fifo_generator_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_fifo_generator_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_fifo_generator_0_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_rx_0_synth_1" Type="Ft3:Synth" SrcSet="bd_d757_rx_0" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_rx_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_d757_rx_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_rx_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_rx_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_phy_0_synth_1" Type="Ft3:Synth" SrcSet="bd_d757_phy_0" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_phy_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_d757_phy_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_phy_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_phy_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_vfb_0_0_synth_1" Type="Ft3:Synth" SrcSet="bd_d757_vfb_0_0" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_vfb_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/bd_d757_vfb_0_0_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_vfb_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_vfb_0_0_synth_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -435,6 +540,101 @@
     <Run Id="capture_fb_ahb_0_4_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_fb_ahb_0_4" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="capture_fb_ahb_0_4_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_fb_ahb_0_4_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_fb_ahb_0_4_impl_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="capture_mipi_csi2_rx_subsyst_0_0_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_mipi_csi2_rx_subsyst_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="capture_mipi_csi2_rx_subsyst_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_mipi_csi2_rx_subsyst_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_mipi_csi2_rx_subsyst_0_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="capture_fifo_generator_0_0_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="capture_fifo_generator_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="capture_fifo_generator_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/capture_fifo_generator_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/capture_fifo_generator_0_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_rx_0_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_rx_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_d757_rx_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_rx_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_rx_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_phy_0_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_phy_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_d757_phy_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_phy_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_phy_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="bd_d757_vfb_0_0_impl_1" Type="Ft2:EntireDesign" Part="xcau25p-ffvb676-2-e" ConstrsSet="bd_d757_vfb_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="bd_d757_vfb_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/bd_d757_vfb_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/bd_d757_vfb_0_0_impl_1">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>

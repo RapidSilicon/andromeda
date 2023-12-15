@@ -1,13 +1,14 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xE331D0828081F068",
+      "boundary_crc": "0xF0B701378FFF4CB2",
       "device": "xcau25p-ffvb676-2-e",
       "gen_directory": "../../../../capture.gen/sources_1/bd/capture",
       "name": "capture",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2023.2"
+      "tool_version": "2023.2",
+      "validated": "true"
     },
     "design_tree": {
       "frontpanel_0": "",
@@ -19,7 +20,8 @@
       "axi_iic_0": "",
       "leds_0": "",
       "mipi_csi2_rx_subsyst_0": "",
-      "fifo_generator_0": ""
+      "fifo_generator_0": "",
+      "xlconstant_0": ""
     },
     "interface_ports": {
       "host_interface": {
@@ -134,11 +136,15 @@
           },
           "DATA_N": {
             "physical_name": "mipi_phy_if_data_n",
-            "direction": "I"
+            "direction": "I",
+            "left": "1",
+            "right": "0"
           },
           "DATA_P": {
             "physical_name": "mipi_phy_if_data_p",
-            "direction": "I"
+            "direction": "I",
+            "left": "1",
+            "right": "0"
           }
         }
       },
@@ -218,6 +224,9 @@
           },
           "WO.ADDR_3": {
             "value": "0x23"
+          },
+          "WO.ADDR_4": {
+            "value": "0xff"
           },
           "WO.COUNT": {
             "value": "4"
@@ -536,7 +545,7 @@
             "value": "0x0000000000200000"
           },
           "M02_A00_ADDR_WIDTH": {
-            "value": "12"
+            "value": "16"
           },
           "M02_A00_BASE_ADDR": {
             "value": "0x0000000000300000"
@@ -624,6 +633,9 @@
         "xci_path": "ip\\capture_mipi_csi2_rx_subsyst_0_0\\capture_mipi_csi2_rx_subsyst_0_0.xci",
         "inst_hier_path": "mipi_csi2_rx_subsyst_0",
         "parameters": {
+          "CMN_INC_VFB": {
+            "value": "true"
+          },
           "CMN_NUM_LANES": {
             "value": "2"
           },
@@ -633,17 +645,41 @@
           "CMN_PXL_FORMAT": {
             "value": "RAW8"
           },
+          "CSI_BUF_DEPTH": {
+            "value": "16384"
+          },
+          "CSI_EMB_NON_IMG": {
+            "value": "true"
+          },
+          "C_CSI_EN_ACTIVELANES": {
+            "value": "true"
+          },
+          "C_CSI_EN_CRC": {
+            "value": "true"
+          },
           "C_CSI_FILTER_USERDATATYPE": {
+            "value": "true"
+          },
+          "C_EN_CSI_V2_0": {
+            "value": "false"
+          },
+          "C_EN_TIMEOUT_REGS": {
             "value": "true"
           },
           "DPHYRX_BOARD_INTERFACE": {
             "value": "szg_port_a_rxcsi_cam1"
           },
+          "DPY_EN_REG_IF": {
+            "value": "true"
+          },
           "DPY_LINE_RATE": {
-            "value": "1500"
+            "value": "800"
           },
           "SupportLevel": {
             "value": "1"
+          },
+          "VFB_TU_WIDTH": {
+            "value": "32"
           }
         },
         "interface_ports": {
@@ -658,7 +694,7 @@
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
             "parameters": {
               "ADDR_WIDTH": {
-                "value": "12"
+                "value": "13"
               },
               "DATA_WIDTH": {
                 "value": "32"
@@ -673,6 +709,11 @@
             "mode": "Master",
             "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
             "vlnv": "xilinx.com:interface:axis_rtl:1.0"
+          },
+          "emb_nonimg": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+            "vlnv": "xilinx.com:interface:axis_rtl:1.0"
           }
         },
         "addressing": {
@@ -680,13 +721,19 @@
             "csirxss_s_axi": {
               "address_blocks": {
                 "Reg": {
-                  "base_address": "0x000",
-                  "range": "4K",
-                  "width": "12",
+                  "base_address": "0x0000",
+                  "range": "8K",
+                  "width": "13",
                   "usage": "register",
                   "bank_blocks": {
                     "rx;/rx/s_axi/reg0;xilinx.com:ip:mipi_csi2_rx_ctrl:1.0;/rx;s_axi;NONE;NONE": {
-                      "base_address": "0x000",
+                      "base_address": "0x0000",
+                      "range": "4K",
+                      "width": "12",
+                      "usage": "register"
+                    },
+                    "phy;/phy/s_axi/Reg;xilinx.com:ip:mipi_dphy:4.3;/phy;s_axi;NONE;NONE": {
+                      "base_address": "0x1000",
                       "range": "4K",
                       "width": "12",
                       "usage": "register"
@@ -714,8 +761,23 @@
           "Input_Depth": {
             "value": "65536"
           },
+          "Overflow_Flag": {
+            "value": "true"
+          },
           "Programmable_Empty_Type": {
             "value": "Single_Programmable_Empty_Threshold_Constant"
+          }
+        }
+      },
+      "xlconstant_0": {
+        "vlnv": "xilinx.com:ip:xlconstant:1.1",
+        "ip_revision": "8",
+        "xci_name": "capture_xlconstant_0_0",
+        "xci_path": "ip\\capture_xlconstant_0_0\\capture_xlconstant_0_0.xci",
+        "inst_hier_path": "xlconstant_0",
+        "parameters": {
+          "CONST_WIDTH": {
+            "value": "1"
           }
         }
       }
@@ -781,6 +843,13 @@
         "ports": [
           "fifo_generator_0/dout",
           "frontpanel_0/btpoa0_ep_datain"
+        ]
+      },
+      "Net1": {
+        "ports": [
+          "xlconstant_0/dout",
+          "mipi_csi2_rx_subsyst_0/video_out_tready",
+          "mipi_csi2_rx_subsyst_0/emb_nonimg_tready"
         ]
       },
       "axi_crossbar_0_s_axi_arready": {
@@ -850,7 +919,8 @@
           "axi_gpio_0/s_axi_aresetn",
           "axi_iic_0/s_axi_aresetn",
           "fb_ahb_0/resetn",
-          "mipi_csi2_rx_subsyst_0/lite_aresetn"
+          "mipi_csi2_rx_subsyst_0/lite_aresetn",
+          "mipi_csi2_rx_subsyst_0/video_aresetn"
         ]
       },
       "fb_ahb_0_global_resetn1": {
@@ -970,7 +1040,9 @@
           "axi_gpio_0/s_axi_aclk",
           "axi_iic_0/s_axi_aclk",
           "fb_ahb_0/clk",
-          "mipi_csi2_rx_subsyst_0/lite_aclk"
+          "mipi_csi2_rx_subsyst_0/lite_aclk",
+          "mipi_csi2_rx_subsyst_0/video_aclk",
+          "fifo_generator_0/clk"
         ]
       },
       "frontpanel_0_ti40_ep_trigger": {
@@ -1025,6 +1097,12 @@
         "ports": [
           "mipi_csi2_rx_subsyst_0/video_out_tvalid",
           "fifo_generator_0/wr_en"
+        ]
+      },
+      "proc_sys_reset_0_peripheral_reset": {
+        "ports": [
+          "proc_sys_reset_0/peripheral_reset",
+          "fifo_generator_0/srst"
         ]
       }
     }

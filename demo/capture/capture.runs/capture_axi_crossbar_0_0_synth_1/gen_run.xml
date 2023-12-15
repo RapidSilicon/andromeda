@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="capture_axi_crossbar_0_0_synth_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1699550214">
+<GenRun Id="capture_axi_crossbar_0_0_synth_1" LaunchPart="xcau25p-ffvb676-2-e" LaunchTime="1701535873">
   <File Type="PA-TCL" Name="capture_axi_crossbar_0_0.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="capture_axi_crossbar_0_0_drc_synth.rpt"/>
   <File Type="REPORTS-TCL" Name="capture_axi_crossbar_0_0_reports.tcl"/>
   <File Type="RDS-RDS" Name="capture_axi_crossbar_0_0.vds"/>
   <File Type="RDS-UTIL" Name="capture_axi_crossbar_0_0_utilization_synth.rpt"/>
   <File Type="RDS-UTIL-PB" Name="capture_axi_crossbar_0_0_utilization_synth.pb"/>
   <File Type="RDS-DCP" Name="capture_axi_crossbar_0_0.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="capture_axi_crossbar_0_0_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="capture_axi_crossbar_0_0_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="BlockSrcs" RelSrcDir="$PSRCDIR/capture_axi_crossbar_0_0" RelGenDir="$PGENDIR/capture_axi_crossbar_0_0">
     <File Path="$PSRCDIR/sources_1/bd/capture/ip/capture_axi_crossbar_0_0/capture_axi_crossbar_0_0.xci">
       <FileInfo>

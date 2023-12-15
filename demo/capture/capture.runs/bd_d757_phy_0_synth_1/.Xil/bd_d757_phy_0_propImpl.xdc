@@ -1,0 +1,23 @@
+set_property SRC_FILE_INFO {cfile:c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc rfile:../../../capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc id:1 order:EARLY scoped_inst:inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst} [current_design]
+set_property SRC_FILE_INFO {cfile:c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc rfile:../../../capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc id:2 order:LATE scoped_inst:inst} [current_design]
+current_instance inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst
+set_property src_info {type:SCOPED_XDC file:1 line:53 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN L18 [get_ports clk_rxp]
+set_property src_info {type:SCOPED_XDC file:1 line:62 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN K18 [get_ports clk_rxn]
+set_property src_info {type:SCOPED_XDC file:1 line:68 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN M20 [get_ports data_rxp0]
+set_property src_info {type:SCOPED_XDC file:1 line:74 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN M21 [get_ports data_rxn0]
+set_property src_info {type:SCOPED_XDC file:1 line:80 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN J19 [get_ports data_rxp1]
+set_property src_info {type:SCOPED_XDC file:1 line:86 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN J20 [get_ports data_rxn1]
+current_instance
+current_instance inst
+set_property src_info {type:SCOPED_XDC file:2 line:67 export:INPUT save:INPUT read:READ} [current_design]
+create_waiver -internal -scope -type CDC -id {CDC-10} -user "mipi_dphy" -tag "1047195" -description "Waiving the CDC-10 as it will not cause any issue as the IBUFDS LPRX port driven by a constant" -to [get_pins -hier *s_level_out_d1_cdc_to_reg/D]
+set_property src_info {type:SCOPED_XDC file:2 line:74 export:INPUT save:INPUT read:READ} [current_design]
+create_waiver -internal -scope -type CDC -id {CDC-11} -user "mipi_dphy" -tag "1088530" -description "Waiving the CDC-11 , its a condition where same flop output is going to multiple synchrzrs . As the instances are created based on conditions we cannot use same synchrizr & fan-out is bound to happen & it will not cause any functional issue as its taken care in design" -from [get_pins -hier *en_hs_datapath_reg/C]
+set_property src_info {type:SCOPED_XDC file:2 line:75 export:INPUT save:INPUT read:READ} [current_design]
+create_waiver -internal -scope -type CDC -id {CDC-11} -user "mipi_dphy" -tag "1090987" -description "Waiving the CDC-11 , as there are two different cores i.e. CSI2tx/ DSI2 controller ,  DPHY and the fanout to two different synchrzers is inevitable" -from [get_pins -hier *init_done_reg/C]

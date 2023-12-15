@@ -71,6 +71,8 @@ proc create_report { reportName command } {
 }
 OPTRACE "synth_1" START { ROLLUP_AUTO }
 set_param chipscope.maxJobs 2
+set_msg_config  -id {[BD 41-1306]}  -suppress 
+set_msg_config  -id {[BD 41-1271]}  -suppress 
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xcau25p-ffvb676-2-e
 
@@ -80,7 +82,7 @@ set_param synth.vivado.isSynthRun true
 set_msg_config -source 4 -id {IP_Flow 19-2162} -severity warning -new_severity info
 set_property webtalk.parent_dir C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.cache/wt [current_project]
 set_property parent.project_path C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.xpr [current_project]
-set_property XPM_LIBRARIES {XPM_CDC XPM_MEMORY} [current_project]
+set_property XPM_LIBRARIES {XPM_CDC XPM_FIFO XPM_MEMORY} [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
 set_property board_part_repo_paths {C:/Users/rob.liston/AppData/Roaming/Xilinx/Vivado/2023.2/xhub/board_store/xilinx_board_store} [current_project]
@@ -110,6 +112,27 @@ set_property used_in_implementation false [get_files -all c:/Users/rob.liston/De
 set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_axi_iic_0_0/capture_axi_iic_0_0_ooc.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_leds_0_0/capture_leds_0_0_board.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_leds_0_0/gateware/xem8320.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_0/bd_d757_xbar_0_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_1/bd_d757_r_sync_0_board.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_1/bd_d757_r_sync_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_1/bd_d757_r_sync_0_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_2/bd_d757_rx_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_2/bd_d757_rx_0_fixed_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_2/bd_d757_rx_0_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/ip_0/bd_d757_phy_0_hssio_rx_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_clocks.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_3/bd_d757_phy_0_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_4/ip_0/bd_d757_vfb_0_0_axisswitch_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/ip/ip_4/bd_d757_vfb_0_0_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/bd_0/bd_d757_ooc.xdc]
+set_property used_in_synthesis false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0_impl.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0_impl.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0_board.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0_fixed_ooc.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_fifo_generator_0_0/capture_fifo_generator_0_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_fifo_generator_0_0/capture_fifo_generator_0_0_ooc.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/capture_ooc.xdc]
 
 OPTRACE "Adding files" END { }

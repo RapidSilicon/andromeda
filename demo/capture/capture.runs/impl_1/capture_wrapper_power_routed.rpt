@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-| Date             : Sat Nov 11 15:46:33 2023
+| Date             : Mon Dec  4 16:08:30 2023
 | Host             : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
 | Command          : report_power -file capture_wrapper_power_routed.rpt -pb capture_wrapper_power_summary_routed.pb -rpx capture_wrapper_power_routed.rpx
 | Design           : capture_wrapper
@@ -30,14 +30,14 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.580        |
+| Total On-Chip Power (W)  | 0.773        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 0.129        |
-| Device Static (W)        | 0.451        |
+| Dynamic (W)              | 0.320        |
+| Device Static (W)        | 0.453        |
 | Effective TJA (C/W)      | 1.7          |
-| Max Ambient (C)          | 99.0         |
-| Junction Temperature (C) | 26.0         |
+| Max Ambient (C)          | 98.7         |
+| Junction Temperature (C) | 26.3         |
 | Confidence Level         | Low          |
 | Setting File             | ---          |
 | Simulation Activity File | ---          |
@@ -52,21 +52,22 @@ Table of Contents
 +--------------------------+-----------+----------+-----------+-----------------+
 | On-Chip                  | Power (W) | Used     | Available | Utilization (%) |
 +--------------------------+-----------+----------+-----------+-----------------+
-| Clocks                   |     0.010 |        7 |       --- |             --- |
-| CLB Logic                |     0.011 |     3316 |       --- |             --- |
-|   LUT as Logic           |     0.004 |     1213 |    141000 |            0.86 |
-|   LUT as Distributed RAM |    <0.001 |       32 |     99840 |            0.03 |
-|   Register               |     0.007 |     1624 |    282000 |            0.58 |
-|   CARRY8                 |    <0.001 |       27 |     27120 |            0.10 |
-|   LUT as Shift Register  |    <0.001 |       19 |     99840 |            0.02 |
-|   Others                 |     0.000 |       83 |       --- |             --- |
-|   F7/F8 Muxes            |     0.000 |       21 |    216960 |           <0.01 |
-| Signals                  |     0.003 |     2654 |       --- |             --- |
-| Block RAM                |     0.002 |        2 |       300 |            0.67 |
+| Clocks                   |     0.036 |       14 |       --- |             --- |
+| CLB Logic                |     0.017 |    13196 |       --- |             --- |
+|   LUT as Logic           |     0.009 |     4352 |    141000 |            3.09 |
+|   Register               |     0.007 |     6752 |    282000 |            2.39 |
+|   LUT as Distributed RAM |    <0.001 |       88 |     99840 |            0.09 |
+|   CARRY8                 |    <0.001 |       99 |     27120 |            0.37 |
+|   LUT as Shift Register  |    <0.001 |       21 |     99840 |            0.02 |
+|   Others                 |     0.000 |      818 |       --- |             --- |
+|   F7/F8 Muxes            |     0.000 |       30 |    216960 |            0.01 |
+| Signals                  |     0.009 |    11640 |       --- |             --- |
+| Block RAM                |     0.029 |       82 |       300 |           27.33 |
 | MMCM                     |     0.088 |        0 |       --- |             --- |
-| I/O                      |     0.015 |       52 |       280 |           18.57 |
-| Static Power             |     0.451 |          |           |                 |
-| Total                    |     0.580 |          |           |                 |
+| PLL                      |     0.112 |        2 |       --- |             --- |
+| I/O                      |     0.028 |       58 |       280 |           20.71 |
+| Static Power             |     0.453 |          |           |                 |
+| Total                    |     0.773 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -76,17 +77,17 @@ Table of Contents
 +------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source     | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint     |       0.850 |     0.160 |       0.022 |      0.138 |       NA    | Unspecified | NA         |
-| Vccint_io  |       0.850 |     0.044 |       0.009 |      0.035 |       NA    | Unspecified | NA         |
+| Vccint     |       0.850 |     0.242 |       0.101 |      0.141 |       NA    | Unspecified | NA         |
+| Vccint_io  |       0.850 |     0.051 |       0.016 |      0.035 |       NA    | Unspecified | NA         |
 | Vccbram    |       0.850 |     0.002 |       0.000 |      0.002 |       NA    | Unspecified | NA         |
-| Vccaux     |       1.800 |     0.177 |       0.049 |      0.128 |       NA    | Unspecified | NA         |
-| Vccaux_io  |       1.800 |     0.037 |       0.006 |      0.031 |       NA    | Unspecified | NA         |
+| Vccaux     |       1.800 |     0.239 |       0.110 |      0.128 |       NA    | Unspecified | NA         |
+| Vccaux_io  |       1.800 |     0.040 |       0.009 |      0.031 |       NA    | Unspecified | NA         |
 | Vcco33     |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco25     |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| Vcco18     |       1.800 |     0.002 |       0.002 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco18     |       1.800 |     0.003 |       0.003 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco15     |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco135    |       1.350 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| Vcco12     |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco12     |       1.200 |     0.001 |       0.001 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco10     |       1.000 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vccadc     |       1.800 |     0.008 |       0.000 |      0.008 |       NA    | Unspecified | NA         |
 | MGTYAVcc   |       0.900 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -132,14 +133,21 @@ Table of Contents
 2.2 Clock Constraints
 ---------------------
 
-+---------------------------+----------------------------------------------+-----------------+
-| Clock                     | Domain                                       | Constraint (ns) |
-+---------------------------+----------------------------------------------+-----------------+
-| fixed_fabric_100mhz_clk_p | fixed_fabric_100mhz_clk_p                    |            10.0 |
-| mmcm0_clk0                | capture_i/frontpanel_0/inst/okHI/mmcm0_clk0  |             9.9 |
-| mmcm0_clkfb               | capture_i/frontpanel_0/inst/okHI/mmcm0_clkfb |             9.9 |
-| okUH0                     | host_interface_okuh[0]                       |             9.9 |
-+---------------------------+----------------------------------------------+-----------------+
++----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| Clock                            | Domain                                                                                                                                                                                         | Constraint (ns) |
++----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| GEN_PLL_IN_IP_USP.pll0_clkout0   | capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst/top_inst/clk_rst_top_inst/clk_scheme_inst/GEN_PLL_IN_IP_USP.pll0_clkout0 |             5.3 |
+| clk_out1_capture_clk_wiz_0_0     | capture_i/clk_wiz_0/inst/clk_out1_capture_clk_wiz_0_0                                                                                                                                          |            10.0 |
+| clk_out2_capture_clk_wiz_0_0     | capture_i/clk_wiz_0/inst/clk_out2_capture_clk_wiz_0_0                                                                                                                                          |             5.0 |
+| clkoutphy_out                    | capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst/top_inst/clk_rst_top_inst/clk_scheme_inst/shared_pll0_clkoutphy_out      |             0.7 |
+| clkoutphy_out_DIV                | capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst/top_inst/bs_ctrl_top_inst/rx_bs0_tx_bit_ctrl_in[26]                      |             5.3 |
+| fixed_fabric_100mhz_clk_p        | fixed_fabric_100mhz_clk_p                                                                                                                                                                      |            10.0 |
+| mipi_phy_if_clk_p                | mipi_phy_if_clk_p                                                                                                                                                                              |             2.5 |
+| mipi_phy_if_clk_p_FIFO_WRCLK_OUT | capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.bd_d757_phy_0_rx_hssio_i/inst/top_inst/bs_top_inst/u_rx_bs/fifo_wr_clk_0                               |            10.0 |
+| mmcm0_clk0                       | capture_i/frontpanel_0/inst/okHI/mmcm0_clk0                                                                                                                                                    |             9.9 |
+| mmcm0_clkfb                      | capture_i/frontpanel_0/inst/okHI/mmcm0_clkfb                                                                                                                                                   |             9.9 |
+| okUH0                            | host_interface_okuh[0]                                                                                                                                                                         |             9.9 |
++----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
 
 
 3. Detailed Reports
@@ -148,19 +156,23 @@ Table of Contents
 3.1 By Hierarchy
 ----------------
 
-+------------------+-----------+
-| Name             | Power (W) |
-+------------------+-----------+
-| capture_wrapper  |     0.129 |
-|   capture_i      |     0.128 |
-|     axi_iic_0    |     0.002 |
-|       U0         |     0.002 |
-|     clk_wiz_0    |     0.002 |
-|       inst       |     0.002 |
-|     frontpanel_0 |     0.120 |
-|       inst       |     0.120 |
-|     leds_0       |     0.002 |
-|       inst       |     0.002 |
-+------------------+-----------+
++----------------------------+-----------+
+| Name                       | Power (W) |
++----------------------------+-----------+
+| capture_wrapper            |     0.320 |
+|   capture_i                |     0.319 |
+|     axi_iic_0              |     0.002 |
+|       U0                   |     0.002 |
+|     clk_wiz_0              |     0.052 |
+|       inst                 |     0.052 |
+|     fifo_generator_0       |     0.023 |
+|       U0                   |     0.023 |
+|     frontpanel_0           |     0.123 |
+|       inst                 |     0.123 |
+|     leds_0                 |     0.002 |
+|       inst                 |     0.002 |
+|     mipi_csi2_rx_subsyst_0 |     0.116 |
+|       inst                 |     0.116 |
++----------------------------+-----------+
 
 

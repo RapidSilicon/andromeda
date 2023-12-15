@@ -28,4 +28,13 @@ set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==capture_axi
 # IP: bd/capture/ip/capture_leds_0_0/capture_leds_0_0.xci
 set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==capture_leds_0_0 || ORIG_REF_NAME==capture_leds_0_0} -quiet] -quiet
 
+# IP: bd/capture/ip/capture_mipi_csi2_rx_subsyst_0_0/capture_mipi_csi2_rx_subsyst_0_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==capture_mipi_csi2_rx_subsyst_0_0 || ORIG_REF_NAME==capture_mipi_csi2_rx_subsyst_0_0} -quiet] -quiet
+
+# IP: bd/capture/ip/capture_fifo_generator_0_0/capture_fifo_generator_0_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==capture_fifo_generator_0_0 || ORIG_REF_NAME==capture_fifo_generator_0_0} -quiet] -quiet
+
+# IP: bd/capture/ip/capture_xlconstant_0_0/capture_xlconstant_0_0.xci
+set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==capture_xlconstant_0_0 || ORIG_REF_NAME==capture_xlconstant_0_0} -quiet] -quiet
+
 # XDC: c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/capture_ooc.xdc

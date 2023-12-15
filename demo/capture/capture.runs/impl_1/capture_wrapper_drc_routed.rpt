@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-| Date         : Sat Nov 11 15:46:08 2023
+| Date         : Mon Dec  4 16:08:09 2023
 | Host         : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
 | Command      : report_drc -file capture_wrapper_drc_routed.rpt -pb capture_wrapper_drc_routed.pb -rpx capture_wrapper_drc_routed.rpx
 | Design       : capture_wrapper
@@ -363,8 +363,16 @@ Related violations: <none>
 
 RTSTAT-10#1 Warning
 No routable loads  
-2 net(s) have no routable loads. The problem bus(es) and/or net(s) are capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_fb
-capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_i.
+16 net(s) have no routable loads. The problem bus(es) and/or net(s) are capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_fb,
+capture_i/frontpanel_0/inst/okHI/core0/core0/a0/cb0/U0/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwss.wsts/ram_afull_i,
+capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.dphy_rx_fab_top/gen_rx_data_lane[0].rx_data_lane_inst/fifo_rd_rst_t1_nxt,
+capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.dphy_rx_fab_top/gen_rx_data_lane[0].rx_data_lane_inst/fifo_rd_rst_t2,
+capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.dphy_rx_fab_top/gen_rx_data_lane[1].rx_data_lane_inst/fifo_rd_rst_t1_nxt,
+capture_i/mipi_csi2_rx_subsyst_0/inst/phy/inst/inst/bd_d757_phy_0_rx_support_i/slave_rx.dphy_rx_fab_top/gen_rx_data_lane[1].rx_data_lane_inst/fifo_rd_rst_t2,
+capture_i/mipi_csi2_rx_subsyst_0/inst/rx/inst/AXI_LITE.reg_inf/shutdown_i[3:0],
+capture_i/mipi_csi2_rx_subsyst_0/inst/rx/inst/phecc/syndrome_code[6],
+capture_i/mipi_csi2_rx_subsyst_0/inst/rx/inst/phecc/syndrome_code[7]
+capture_i/mipi_csi2_rx_subsyst_0/inst/rx/inst/vc_fixed[3:0].
 Related violations: <none>
 
 

@@ -3,8 +3,8 @@
 # SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
 # IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
 # SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
-# Start of session at: Tue Oct 24 12:02:46 2023
-# Process ID: 44792
+# Start of session at: Thu Nov 30 15:11:13 2023
+# Process ID: 32752
 # Current directory: C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1
 # Command line: vivado.exe -log capture_clk_wiz_0_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source capture_clk_wiz_0_0.tcl
 # Log file: C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1/capture_clk_wiz_0_0.vds
@@ -12,7 +12,7 @@
 # Running On: LAPTOP-FEFLDCST, OS: Windows, CPU Frequency: 2995 MHz, CPU Physical cores: 4, Host memory: 34048 MB
 #-----------------------------------------------------------
 source capture_clk_wiz_0_0.tcl -notrace
-create_project: Time (s): cpu = 00:00:09 ; elapsed = 00:00:13 . Memory (MB): peak = 477.652 ; gain = 180.562
+create_project: Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 474.934 ; gain = 179.840
 INFO: [IP_Flow 19-234] Refreshing IP repositories
 INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Xilinx/Downloads/FrontPanel-Vivado-IP-Dist-v1.0.3'.
 INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2023.2/data/ip'.
@@ -24,36 +24,46 @@ INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xcau25p
 INFO: [Device 21-403] Loading part xcau25p-ffvb676-2-e
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 50500
+INFO: [Synth 8-7075] Helper process launched with PID 27196
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1987.418 ; gain = 419.473
+Starting RTL Elaboration : Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 1986.504 ; gain = 420.137
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-6157] synthesizing module 'capture_clk_wiz_0_0' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.v:65]
-INFO: [Synth 8-6157] synthesizing module 'capture_clk_wiz_0_0_clk_wiz' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_clk_wiz.v:65]
+INFO: [Synth 8-6157] synthesizing module 'capture_clk_wiz_0_0' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.v:66]
+INFO: [Synth 8-6157] synthesizing module 'capture_clk_wiz_0_0_clk_wiz' [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_clk_wiz.v:66]
 INFO: [Synth 8-6157] synthesizing module 'IBUFDS' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:73646]
 INFO: [Synth 8-6155] done synthesizing module 'IBUFDS' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:73646]
-INFO: [Synth 8-6157] synthesizing module 'BUFGCE_DIV' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1990]
-	Parameter BUFGCE_DIVIDE bound to: 1 - type: integer 
-	Parameter IS_CE_INVERTED bound to: 1'b0 
-	Parameter IS_CLR_INVERTED bound to: 1'b0 
-	Parameter IS_I_INVERTED bound to: 1'b0 
-INFO: [Synth 8-6155] done synthesizing module 'BUFGCE_DIV' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1990]
-INFO: [Synth 8-6155] done synthesizing module 'capture_clk_wiz_0_0_clk_wiz' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_clk_wiz.v:65]
-INFO: [Synth 8-6155] done synthesizing module 'capture_clk_wiz_0_0' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.v:65]
+INFO: [Synth 8-6157] synthesizing module 'PLLE4_ADV' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:111594]
+	Parameter CLKFBOUT_MULT bound to: 8 - type: integer 
+	Parameter CLKFBOUT_PHASE bound to: 0.000000 - type: double 
+	Parameter CLKIN_PERIOD bound to: 10.000000 - type: double 
+	Parameter CLKOUT0_DIVIDE bound to: 8 - type: integer 
+	Parameter CLKOUT0_DUTY_CYCLE bound to: 0.500000 - type: double 
+	Parameter CLKOUT0_PHASE bound to: 0.000000 - type: double 
+	Parameter CLKOUT1_DIVIDE bound to: 4 - type: integer 
+	Parameter CLKOUT1_DUTY_CYCLE bound to: 0.500000 - type: double 
+	Parameter CLKOUT1_PHASE bound to: 0.000000 - type: double 
+	Parameter COMPENSATION bound to: AUTO - type: string 
+	Parameter DIVCLK_DIVIDE bound to: 1 - type: integer 
+	Parameter STARTUP_WAIT bound to: FALSE - type: string 
+INFO: [Synth 8-6155] done synthesizing module 'PLLE4_ADV' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:111594]
+INFO: [Synth 8-6157] synthesizing module 'BUFG' [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1951]
+INFO: [Synth 8-6155] done synthesizing module 'BUFG' (0#1) [C:/Xilinx/Vivado/2023.2/scripts/rt/data/unisim_comp.v:1951]
+INFO: [Synth 8-6155] done synthesizing module 'capture_clk_wiz_0_0_clk_wiz' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_clk_wiz.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'capture_clk_wiz_0_0' (0#1) [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.v:66]
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:13 ; elapsed = 00:00:17 . Memory (MB): peak = 2097.059 ; gain = 529.113
+Finished RTL Elaboration : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 2097.941 ; gain = 531.574
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 2097.059 ; gain = 529.113
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 2097.941 ; gain = 531.574
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:14 ; elapsed = 00:00:17 . Memory (MB): peak = 2097.059 ; gain = 529.113
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 2097.941 ; gain = 531.574
 ---------------------------------------------------------------------------------
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2097.059 ; gain = 0.000
-INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2097.941 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 4 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 
@@ -64,23 +74,25 @@ Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/ca
 Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_board.xdc] for cell 'inst'
 Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0_board.xdc] for cell 'inst'
 Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.xdc] for cell 'inst'
-create_clock: Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 2125.477 ; gain = 0.676
+create_clock: Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 2104.379 ; gain = 1.816
 Finished Parsing XDC File [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.xdc] for cell 'inst'
 INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [c:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.gen/sources_1/bd/capture/ip/capture_clk_wiz_0_0/capture_clk_wiz_0_0.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/capture_clk_wiz_0_0_propImpl.xdc].
 Resolution: To avoid this warning, move constraints listed in [.Xil/capture_clk_wiz_0_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+INFO: [Timing 38-2] Deriving generated clocks
 Parsing XDC File [C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1/dont_touch.xdc]
 Finished Parsing XDC File [C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1/dont_touch.xdc]
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2125.477 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2104.977 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
-  A total of 1 instances were transformed.
+  A total of 3 instances were transformed.
+  BUFG => BUFGCE: 2 instances
   IBUFDS => IBUFDS (DIFFINBUF, IBUFCTRL): 1 instance 
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.034 . Memory (MB): peak = 2125.477 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.059 . Memory (MB): peak = 2105.129 ; gain = 0.152
 INFO: [Designutils 20-5008] Incremental synthesis strategy off
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:40 ; elapsed = 00:00:46 . Memory (MB): peak = 2125.477 ; gain = 557.531
+Finished Constraint Validation : Time (s): cpu = 00:00:37 ; elapsed = 00:00:40 . Memory (MB): peak = 2105.129 ; gain = 538.762
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
@@ -88,7 +100,7 @@ Start Loading Part and Timing Information
 Loading part: xcau25p-ffvb676-2-e
 INFO: [Synth 8-6742] Reading net delay rules and data
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:40 ; elapsed = 00:00:46 . Memory (MB): peak = 2125.477 ; gain = 557.531
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:37 ; elapsed = 00:00:41 . Memory (MB): peak = 2105.129 ; gain = 538.762
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
@@ -97,10 +109,10 @@ Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  C:/Users/
 Applied set_property KEEP = true for clk_in1_n. (constraint file  auto generated constraint).
 Applied set_property KEEP = true for clk_in1_p. (constraint file  auto generated constraint).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:40 ; elapsed = 00:00:46 . Memory (MB): peak = 2125.477 ; gain = 557.531
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:37 ; elapsed = 00:00:41 . Memory (MB): peak = 2105.129 ; gain = 538.762
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:40 ; elapsed = 00:00:46 . Memory (MB): peak = 2125.477 ; gain = 557.531
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:38 ; elapsed = 00:00:41 . Memory (MB): peak = 2105.129 ; gain = 538.762
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
@@ -123,25 +135,25 @@ Start Cross Boundary and Area Optimization
 ---------------------------------------------------------------------------------
 WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:43 ; elapsed = 00:00:50 . Memory (MB): peak = 2125.477 ; gain = 557.531
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:41 ; elapsed = 00:00:44 . Memory (MB): peak = 2105.129 ; gain = 538.762
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:04 ; elapsed = 00:01:12 . Memory (MB): peak = 2523.555 ; gain = 955.609
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:59 ; elapsed = 00:01:05 . Memory (MB): peak = 2519.559 ; gain = 953.191
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:01:04 ; elapsed = 00:01:12 . Memory (MB): peak = 2523.555 ; gain = 955.609
+Finished Timing Optimization : Time (s): cpu = 00:00:59 ; elapsed = 00:01:05 . Memory (MB): peak = 2519.820 ; gain = 953.453
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:01:04 ; elapsed = 00:01:12 . Memory (MB): peak = 2533.117 ; gain = 965.172
+Finished Technology Mapping : Time (s): cpu = 00:00:59 ; elapsed = 00:01:05 . Memory (MB): peak = 2529.438 ; gain = 963.070
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -159,37 +171,37 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished IO Insertion : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -202,38 +214,41 @@ Report BlackBoxes:
 +-+--------------+----------+
 
 Report Cell Usage: 
-+------+-----------+------+
-|      |Cell       |Count |
-+------+-----------+------+
-|1     |BUFGCE_DIV |     1|
-|2     |IBUFDS     |     1|
-+------+-----------+------+
++------+----------+------+
+|      |Cell      |Count |
++------+----------+------+
+|1     |BUFG      |     2|
+|2     |PLLE4_ADV |     1|
+|3     |IBUFDS    |     1|
++------+----------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 1 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:43 ; elapsed = 00:01:04 . Memory (MB): peak = 2548.730 ; gain = 952.367
-Synthesis Optimization Complete : Time (s): cpu = 00:01:13 ; elapsed = 00:01:22 . Memory (MB): peak = 2548.730 ; gain = 980.785
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:39 ; elapsed = 00:00:57 . Memory (MB): peak = 2545.223 ; gain = 971.668
+Synthesis Optimization Complete : Time (s): cpu = 00:01:07 ; elapsed = 00:01:13 . Memory (MB): peak = 2545.223 ; gain = 978.855
 INFO: [Project 1-571] Translating synthesized netlist
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2548.730 ; gain = 0.000
-INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2545.223 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 4 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2589.602 ; gain = 0.000
+INFO: [Opt 31-326] The CLKFBOUT to CLKFBIN net for instance inst/plle4_adv_inst with COMPENSATION=INTERNAL is optimized away to aid design routability
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2586.129 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
-  A total of 1 instances were transformed.
+  A total of 3 instances were transformed.
+  BUFG => BUFGCE: 2 instances
   IBUFDS => IBUFDS (DIFFINBUF, IBUFCTRL): 1 instance 
 
-Synth Design complete | Checksum: 5c9225af
+Synth Design complete | Checksum: 33026daa
 INFO: [Common 17-83] Releasing license: Synthesis
-31 Infos, 1 Warnings, 0 Critical Warnings and 0 Errors encountered.
+35 Infos, 1 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:01:27 ; elapsed = 00:01:50 . Memory (MB): peak = 2589.602 ; gain = 2027.844
-Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2589.602 ; gain = 0.000
+synth_design: Time (s): cpu = 00:01:19 ; elapsed = 00:01:29 . Memory (MB): peak = 2586.129 ; gain = 2024.207
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2586.129 ; gain = 0.000
 INFO: [Common 17-1381] The checkpoint 'C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1/capture_clk_wiz_0_0.dcp' has been generated.
-INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP capture_clk_wiz_0_0, cache-ID = bb41ba7c6f018ea4
-Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2589.602 ; gain = 0.000
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP capture_clk_wiz_0_0, cache-ID = fb46055e933ddd87
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2586.129 ; gain = 0.000
 INFO: [Common 17-1381] The checkpoint 'C:/Users/rob.liston/Desktop/andromeda/demo/capture/capture.runs/capture_clk_wiz_0_0_synth_1/capture_clk_wiz_0_0.dcp' has been generated.
 INFO: [runtcl-4] Executing : report_utilization -file capture_clk_wiz_0_0_utilization_synth.rpt -pb capture_clk_wiz_0_0_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Tue Oct 24 12:05:11 2023...
+INFO: [Common 17-206] Exiting Vivado at Thu Nov 30 15:13:06 2023...

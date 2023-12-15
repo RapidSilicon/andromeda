@@ -2,7 +2,7 @@
 //Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-//Date        : Sat Nov 11 15:35:55 2023
+//Date        : Mon Dec  4 15:40:55 2023
 //Host        : LAPTOP-FEFLDCST running 64-bit major release  (build 9200)
 //Command     : generate_target capture_wrapper.bd
 //Design      : capture_wrapper
@@ -18,6 +18,10 @@ module capture_wrapper
     host_interface_okhu,
     host_interface_okuh,
     host_interface_okuhu,
+    mipi_phy_if_clk_n,
+    mipi_phy_if_clk_p,
+    mipi_phy_if_data_n,
+    mipi_phy_if_data_p,
     szg_port_a_cam1_iic_scl_io,
     szg_port_a_cam1_iic_sda_io,
     szg_port_a_cam1_reset_tri_o);
@@ -28,6 +32,10 @@ module capture_wrapper
   output [2:0]host_interface_okhu;
   input [4:0]host_interface_okuh;
   inout [31:0]host_interface_okuhu;
+  input mipi_phy_if_clk_n;
+  input mipi_phy_if_clk_p;
+  input [1:0]mipi_phy_if_data_n;
+  input [1:0]mipi_phy_if_data_p;
   inout szg_port_a_cam1_iic_scl_io;
   inout szg_port_a_cam1_iic_sda_io;
   output szg_port_a_cam1_reset_tri_o;
@@ -39,6 +47,10 @@ module capture_wrapper
   wire [2:0]host_interface_okhu;
   wire [4:0]host_interface_okuh;
   wire [31:0]host_interface_okuhu;
+  wire mipi_phy_if_clk_n;
+  wire mipi_phy_if_clk_p;
+  wire [1:0]mipi_phy_if_data_n;
+  wire [1:0]mipi_phy_if_data_p;
   wire szg_port_a_cam1_iic_scl_i;
   wire szg_port_a_cam1_iic_scl_io;
   wire szg_port_a_cam1_iic_scl_o;
@@ -57,6 +69,10 @@ module capture_wrapper
         .host_interface_okhu(host_interface_okhu),
         .host_interface_okuh(host_interface_okuh),
         .host_interface_okuhu(host_interface_okuhu),
+        .mipi_phy_if_clk_n(mipi_phy_if_clk_n),
+        .mipi_phy_if_clk_p(mipi_phy_if_clk_p),
+        .mipi_phy_if_data_n(mipi_phy_if_data_n),
+        .mipi_phy_if_data_p(mipi_phy_if_data_p),
         .szg_port_a_cam1_iic_scl_i(szg_port_a_cam1_iic_scl_i),
         .szg_port_a_cam1_iic_scl_o(szg_port_a_cam1_iic_scl_o),
         .szg_port_a_cam1_iic_scl_t(szg_port_a_cam1_iic_scl_t),
