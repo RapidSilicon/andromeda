@@ -1,0 +1,3 @@
+date
+ls -l ../capture/capture.runs/impl_1/capture_wrapper.bit 
+cp -p ../capture/capture.runs/impl_1/capture_wrapper.bit .
