@@ -8,7 +8,7 @@ import numpy as np
 import argparse
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--keras', help='keras model file',default='qamtest.keras')
+parser.add_argument('--keras', help='keras model file',default='enc_model.keras')
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='enc_model.tflite')
 parser.add_argument('--dtype', help='dtype width (int8, int16)',default=16, type=int)
 parser.add_argument('--debug', help='verbose output',default=False, action='store_true')

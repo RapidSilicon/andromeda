@@ -1,3 +1,4 @@
+SHELL=bash
 CLK=500e6 # nstripe==1
 ALT=alt1
 BATCH=3

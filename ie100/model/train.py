@@ -23,7 +23,7 @@ parser.add_argument('--spacex', help='QAM grid',default=100, type=int)
 parser.add_argument('--sidey', help='QAM grid',default=1400, type=int)
 parser.add_argument('--spacey', help='QAM grid',default=100, type=int)
 parser.add_argument('--net', help='network name',default='alt1')
-parser.add_argument('--keras', help='keras model file',default='qamtest.keras')
+parser.add_argument('--keras', help='keras model file',default='enc_model.keras')
 parser.add_argument('--epochs', help='training epochs',default=1000000, type=int)
 parser.add_argument('--batch', help='batch size',default=3, type=int)
 parser.add_argument('--lr', help='learning rate',default=0.0001, type=float)
@@ -96,9 +96,9 @@ print(args,file=open(args.log,'a'))
 
 # Define the model architecture
 if args.net=='alt1':
-    def downsample(i,filters,nl=tf.nn.selu):
-        u0 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(1,1), activation=tf.nn.selu, padding='valid')(i)
-        u1 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(2,2), activation=tf.nn.selu, padding='valid')(u0)
+    def downsample(i,filters,nl=tf.nn.relu):
+        u0 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(1,1), activation=tf.nn.relu, padding='valid')(i)
+        u1 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(2,2), activation=tf.nn.relu, padding='valid')(u0)
         u2 = keras.layers.Conv2D(filters, kernel_size=(3,3), strides=(1,1), activation=nl, padding='valid')(u1)
         return u2
 
@@ -116,10 +116,10 @@ if args.net=='alt1':
     out = encoder(in0)
     enc_model = keras.Model(inputs=[in0], outputs=[out])
     x = enc_model(in0)
-    d0 = keras.layers.Conv2D(64, kernel_size=(1,1), strides=(1,1), activation=tf.nn.selu, padding='valid')(x)
-    d1 = keras.layers.Flatten()(d0)
-    d2 = keras.layers.Dense(1000,activation=tf.nn.selu)(d1)
-    d3 = keras.layers.Dense(1000,activation=tf.nn.selu)(d2)
+    #d0 = keras.layers.Conv2D(64, kernel_size=(1,1), strides=(1,1), activation=tf.nn.relu, padding='valid')(x)
+    d1 = keras.layers.Flatten()(x)
+    d2 = keras.layers.Dense(1000,activation=tf.nn.relu)(d1)
+    d3 = keras.layers.Dense(1000,activation=tf.nn.relu)(d2)
     #d4 = keras.layers.Dense(1000,activation=tf.nn.selu)(d3)
     #d5 = keras.layers.Dense(1000,activation=tf.nn.selu)(d4)
     #d6 = keras.layers.Dense(1000,activation=tf.nn.selu)(d5)
@@ -166,7 +166,7 @@ while True:
         print('i {:6d} wall {} loss {:12.10f} grad {:12.10f} accuracy {:4.3f} p {} y {}'.format(i,datetime.datetime.now(),np.mean(loss),np.mean(grad),accuracy,p[0,0:5],y[0,0:5]))
         print('i {:6d} wall {} loss {:12.10f} grad {:12.10f} accuracy {:4.3f} p {} y {}'.format(i,datetime.datetime.now(),np.mean(loss),np.mean(grad),accuracy,p[0,0:5],y[0,0:5]),file=open(args.log,'a'))
     if i%100==0:
-        model.save(args.keras)
+        enc_model.save(args.keras)
     i+=1
         
     
