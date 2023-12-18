@@ -1,7 +1,0 @@
-vhdl xil_defaultlib  \
-"../../../../capture.gen/sources_1/bd/capture/ip/capture_proc_sys_reset_0_1/sim/capture_proc_sys_reset_0_1.vhd" \
-"../../../../capture.gen/sources_1/bd/capture/ip/capture_axi_gpio_0_0/sim/capture_axi_gpio_0_0.vhd" \
-"../../../../capture.gen/sources_1/bd/capture/ip/capture_axi_iic_0_0/sim/capture_axi_iic_0_0.vhd" \
-
-# Do not sort compile order
-nosort

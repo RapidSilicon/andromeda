@@ -1,2 +1,0 @@
-cp ./build/digilent_arty/gateware/digilent_arty.bin /mnt/c/Users/rob.liston/Desktop
-cp ./software/demo.bin /mnt/c/Users/rob.liston/Desktop/tftpboot/boot.bin
