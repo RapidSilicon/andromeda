@@ -12,7 +12,8 @@ parser.add_argument('--linear', help='list of conv2d ops which have no nonlinear
 parser.add_argument('--tflite', help='tflite flatbuffer model file',default='../model/mnist.tflite')
 parser.add_argument('--top', help='top level module name',default='mnist')
 parser.add_argument('--clk', help='FPGA clock rate',default=500e6, type=float)
-parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
+#parser.add_argument('--fps', help='first layer input shape arrival rate',default=100., type=float)
+parser.add_argument('--rowtime', help='first layer input rate (s)',default=22000e-9, type=float)
 parser.add_argument('--dtype', help='dtype width (int8, int16)',default=8, type=int)
 parser.add_argument('--regz', help='regz width e.g. 32,48,64',default=32, type=int)
 parser.add_argument('--regb', help='regb width (weight) (int8, int16)',default=8, type=int)
@@ -143,27 +144,43 @@ def emit_conv2d(j,graph,args,irate):
     #rate = irate*oshape[-2]*np.prod(wshape)
     if stride==2:
         rate *=0.5
-    feati = ishape[-2]*ishape[-3]*args.fps
-    feato = oshape[-2]*oshape[-3]*args.fps
-    if feati>args.clk or feato>args.clk:
-        print('CONV2D ERROR: feature rate > clock rate','feati',feati,'feato',feato,'clock',args.clk)
+    #feati = ishape[-2]*ishape[-3]*args.fps
+    #feato = oshape[-2]*oshape[-3]*args.fps
+    #feati = 1./(ishape[-2]*args.rowtime)
+    #feato = 1.(oshape[-3]*args.rowtime)
+    if ishape[-2]/args.clk>args.rowtime or oshape[-2]/args.clk>args.rowtime:
+        print('CONV2D ERROR: feature rate > clock rate','ishape',ishape,'oshape',oshape,'clk',args.clk)
     nmac = rate/args.clk
     nstripe = int(np.ceil(nmac/oshape[-1])) # always compute ochan dot products in parallel, TODO enable single MAC layer
     nrow = wshape[-3]+stride
     #if graph.Operators(j).Inputs(0) in reps:
     #    nrow+=1 # double row burst
-    ncol = ishape[-2]//nstripe
-    if ncol == (ishape[-2]/2.):
-        ncol -=1
-    ocol = int(np.ceil(oshape[-2]/nstripe))
 
     if stride==1:
         overlap=2
     elif stride==2:
         overlap=1
 
-    if nstripe==1:
-        overlap=0
+    #if nstripe==1:
+    #    overlap=0
+
+#    ncol = ishape[-2]//nstripe
+#    if ncol == (ishape[-2]/2.):
+#        ncol -=1
+#    #ncol = (ishape[-2]-overlap)//nstripe
+#    #ocol = ncol//stride
+
+    #ncol = int(np.round(((ishape[-2]-overlap)/nstripe)))
+    #ocol = int(np.round(oshape[-2]/nstripe))
+
+    if stride==1:
+        ncol = int(np.ceil((oshape[-2]/nstripe)))
+        ocol = int(np.ceil((oshape[-2]/nstripe)))
+    elif stride==2:
+        ncol = int(np.ceil(((oshape[-2]*2)/nstripe)))
+        ocol = int(np.ceil(((oshape[-2]*1)/nstripe)))
+        if ncol%2:
+            ncol+=1 # wtf
 
     stripe = np.zeros([nstripe,nrow,ncol+overlap,ishape[-1]])
     roms.append((j,oshape[-1],waddr,weight,bias,scale)) # will be emitted as a separate file
@@ -171,8 +188,8 @@ def emit_conv2d(j,graph,args,irate):
 
     tmac += oshape[-1]*nstripe
     tbuf += nrow*ncol*ishape[-1]*nstripe
-    print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {} irate {}'.format(
-            j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape,irate))
+    print('op {:4d} nstripe {:8.4f} {} stride {:2d} rate {:6.3e} nmac {:8.2f} scale {:12.8f} i {} o {} w {} b {}'.format(
+            j,nmac/oshape[-1],nstripe,stride,rate,nmac,np.mean(scale),ishape,oshape,wshape,bshape))
 
     s=''
     s+='wire [{}*{}-1:0] OP{}_weight_rd;\n'.format(oshape[-1], args.regb,j)
@@ -305,7 +322,7 @@ def emit_replicate(j,graph,args,irate):
         #throttle=int((args.clk/((oshape[-3]+ishape[-3])*0.5*args.fps))*0.5)
         #throttle=int((args.clk/(oshape[-3]*args.fps))*0.5)
         #throttle=int((args.clk/(ishape[-3]*args.fps))*0.5)-col
-        print('op {:4d} ishape {} oshape {} row {} col {} chan {} throttle {} fps {} clk {} irate {}'.format(j,ishape,oshape,row,col,chan,throttle,args.fps,args.clk,irate))
+        print('op {:4d} ishape {} oshape {} row {} col {} chan {} throttle {} rowtime {} clk {} irate {}'.format(j,ishape,oshape,row,col,chan,throttle,args.rowtime,args.clk,irate))
         s+='replicate #({},{},{},{},{}) u{} (\n'.format(args.dtype,row,col,chan,throttle,j)
         s+='.clk(clk),\n'
         s+='.reset(reset),\n'
@@ -337,7 +354,8 @@ def emit_ops(graph,args,ops):
 
         if model.OperatorCodes(graph.Operators(j).OpcodeIndex()).BuiltinCode() == tflite.BuiltinOperator.CONV_2D:
             if ops[j]['inputs'] is None: # primary input
-                irate[j] = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()[-3] * args.fps
+                #irate[j] = graph.Tensors(graph.Operators(j).Inputs(0)).ShapeAsNumpy()[-3] * args.fps
+                irate[j] = 1./args.rowtime
             else:
                 irate[j] = orate[ops[j]['inputs']]
             s0,stride = emit_conv2d(j,graph,args,irate[j])
