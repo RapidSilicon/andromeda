@@ -79,7 +79,8 @@ task = tf.keras.models.load_model(args.task)
 logits = task(encoder(data/32767.))
 p=1/(1+np.exp(-logits)) # sigmoid
 acc1=np.mean(np.round(p)==label)
-#print('p1',p)
+if args.debug:
+    print('p1',p)
 
 #fff = encoder(data/32767.)
 #print('fff',fff.shape,np.amin(fff),np.amax(fff))
@@ -102,7 +103,8 @@ feat = np.expand_dims(feat,0)
 #print('feat shape',feat.shape,feat.dtype, np.amin(feat),np.amax(feat))
 logits = task(feat)
 p=1/(1+np.exp(-logits)) # sigmoid
-#print('p2',p)
+if args.debug:
+    print('p2',p)
 acc2=np.mean(np.round(p)==label)
 
 # EVALUATE ANDROMEDA ENCODER, FLOATING POINT TASK
@@ -110,7 +112,8 @@ feat=parse_log(args.log)
 feat = feat*output_scale+output_zero_point
 logits = task(feat)
 p=1/(1+np.exp(-logits)) # sigmoid
-#print('p3',p)
+if args.debug:
+    print('p3',p)
 acc3=np.mean(np.round(p)==label)
 
 #print('feat',feat[0,0,0])

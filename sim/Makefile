@@ -31,3 +31,6 @@ test:
 sim:
 	$(SIM_COMPILE) testbench.v encoder.v encoder_rom.v ../src/conv2d_data.v ../src/conv2d_ctrl.v ../src/conv2d.v
 	script --command $(SIM_RUN) --flush log.sim
+
+check:
+	python3 check.py --log log.sim 
