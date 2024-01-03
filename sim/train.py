@@ -9,6 +9,7 @@ import datetime
 import random
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--nbatch', help='number of training batches',default=100000, type=int)
 parser.add_argument('--gallery', help='produce thumbnail examples',default=False, action='store_true')
 parser.add_argument('--test', help='produce a test example and label for testbench.v',default=False, action='store_true')
 parser.add_argument('--smin', help='ball scale size min',default=5, type=int)
@@ -202,7 +203,7 @@ task_model.compile()
 #grad=[]
 #pred=[]
 i=0
-while True:
+while i<args.nbatch:
     #print('weights',model.get_weights())
     (x,y)=generate_batch(args)
     with tf.GradientTape() as tape:

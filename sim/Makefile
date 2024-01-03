@@ -10,14 +10,13 @@ SIM_RUN= ./simv
 #SIM_RUN= "~/iverilog/build/bin/vvp sim.vvp -lxt2"
 
 
-default:
-	echo "make {gallery,train,quantize,andromeda,test,sim}"
+all: gallery train quantize andromeda test sim check
 
 gallery:
 	python3 train.py --smin 10 --smax 10 --stretch 0 --gallery
 
 train:
-	python3 train.py --smin 10 --smax 10 --stretch 0 --lr 0.00001 --batch 3
+	python3 train.py --smin 10 --smax 10 --stretch 0 --lr 0.00001 --batch 3 --nbatch 50000
 
 quantize:
 	python3 quant.py --dtype 16 --keras encoder.keras --tflite encoder.tflite |& tee log.quantize
