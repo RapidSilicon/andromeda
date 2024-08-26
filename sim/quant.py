@@ -31,7 +31,7 @@ print(args)
 #test_images = test_images.astype(np.float32) / 255.0
 
 # load keras model
-model = tf.keras.saving.load_model(args.keras)
+model = tf.keras.models.load_model(args.keras)
 model.compile()
 
 # convert to tflite

@@ -1,0 +1,170 @@
+2024-08-26 12:29:22.568981: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-08-26 12:29:22.572181: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-08-26 12:29:22.583261: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:485] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2024-08-26 12:29:22.601575: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:8454] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2024-08-26 12:29:22.606789: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1452] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+DEBUG:tensorflow:Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+2024-08-26 12:29:23.577898: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+/home/me/anaconda3/lib/python3.10/site-packages/keras/src/saving/saving_lib.py:713: UserWarning: Skipping variable loading for optimizer 'rmsprop', because it has 38 variables whereas the saved optimizer has 2 variables. 
+  saveable.load_own_variables(weights_store.get(inner_path))
+INFO:tensorflow:Assets written to: /tmp/tmpvlr774is/assets
+INFO:tensorflow:Assets written to: /tmp/tmpvlr774is/assets
+Namespace(keras='encoder.keras', tflite='encoder.tflite', dtype=16, sidex=1700, spacex=100, sidey=1500, spacey=100, smin=5, smax=30, stretch=0.5, nballs=2000, debug=False)
+Saved artifact at '/tmp/tmpvlr774is'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 1400, 1600, 3), dtype=tf.float32, name='input_layer')
+Output Type:
+  TensorSpec(shape=(None, 14, 18, 512), dtype=tf.float32, name=None)
+Captures:
+  139909735266112: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735418688: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735422736: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735427664: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735431008: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735431712: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735431888: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735547120: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735550640: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735550816: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735552224: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735554160: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735554688: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735556624: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735558208: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735558384: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735561024: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735561552: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735562256: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735679424: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735681008: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735681184: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735683648: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735683824: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735686288: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735686464: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735688928: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735689104: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735691744: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735692272: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909735692976: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909573644128: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909573641840: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909573643776: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909573645536: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  139909573645712: TensorSpec(shape=(), dtype=tf.resource, name=None)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1724700565.999032    6945 tf_tfl_flatbuffer_helpers.cc:392] Ignored output_format.
+W0000 00:00:1724700565.999058    6945 tf_tfl_flatbuffer_helpers.cc:395] Ignored drop_control_dependency.
+2024-08-26 12:29:25.999697: I tensorflow/cc/saved_model/reader.cc:83] Reading SavedModel from: /tmp/tmpvlr774is
+2024-08-26 12:29:26.001643: I tensorflow/cc/saved_model/reader.cc:52] Reading meta graph with tags { serve }
+2024-08-26 12:29:26.001660: I tensorflow/cc/saved_model/reader.cc:147] Reading SavedModel debug info (if present) from: /tmp/tmpvlr774is
+2024-08-26 12:29:26.020897: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:388] MLIR V1 optimization pass is not enabled
+2024-08-26 12:29:26.024018: I tensorflow/cc/saved_model/loader.cc:236] Restoring SavedModel bundle.
+2024-08-26 12:29:26.213338: I tensorflow/cc/saved_model/loader.cc:220] Running initialization op on SavedModel bundle at path: /tmp/tmpvlr774is
+2024-08-26 12:29:26.254559: I tensorflow/cc/saved_model/loader.cc:462] SavedModel load for tags { serve }; Status: success: OK. Took 254865 microseconds.
+2024-08-26 12:29:26.288843: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+=== TFLite ModelAnalyzer ===
+
+Your TFLite model has '1' subgraph(s). In the subgraph description below,
+T# represents the Tensor numbers. For example, in Subgraph#0, the CONV_2D op takes
+tensor #0 and tensor #35 and tensor #36 as input and produces tensor #37 as output.
+
+Subgraph#0 main(T#0) -> [T#54]
+  Op#0 CONV_2D(T#0, T#35, T#36) -> [T#37]
+  Op#1 CONV_2D(T#37, T#34, T#17) -> [T#38]
+  Op#2 CONV_2D(T#38, T#33, T#16) -> [T#39]
+  Op#3 CONV_2D(T#39, T#32, T#15) -> [T#40]
+  Op#4 CONV_2D(T#40, T#31, T#14) -> [T#41]
+  Op#5 CONV_2D(T#41, T#30, T#13) -> [T#42]
+  Op#6 CONV_2D(T#42, T#29, T#12) -> [T#43]
+  Op#7 CONV_2D(T#43, T#28, T#11) -> [T#44]
+  Op#8 CONV_2D(T#44, T#27, T#10) -> [T#45]
+  Op#9 CONV_2D(T#45, T#26, T#9) -> [T#46]
+  Op#10 CONV_2D(T#46, T#25, T#8) -> [T#47]
+  Op#11 CONV_2D(T#47, T#24, T#7) -> [T#48]
+  Op#12 CONV_2D(T#48, T#23, T#6) -> [T#49]
+  Op#13 CONV_2D(T#49, T#22, T#5) -> [T#50]
+  Op#14 CONV_2D(T#50, T#21, T#4) -> [T#51]
+  Op#15 CONV_2D(T#51, T#20, T#3) -> [T#52]
+  Op#16 CONV_2D(T#52, T#19, T#2) -> [T#53]
+  Op#17 CONV_2D(T#53, T#18, T#1) -> [T#54]
+
+Tensors of Subgraph#0
+  T#0(serving_default_input_layer:0) shape_signature:[-1, 1400, 1600, 3], type:INT16
+  T#1(arith.constant) shape:[512], type:INT64 RO 4096 bytes, buffer: 2, data:[??, ??, ??, ??, ??, ...]
+  T#2(arith.constant1) shape:[512], type:INT64 RO 4096 bytes, buffer: 3, data:[??, ??, ??, ??, ??, ...]
+  T#3(arith.constant2) shape:[512], type:INT64 RO 4096 bytes, buffer: 4, data:[??, ??, ??, ??, ??, ...]
+  T#4(arith.constant3) shape:[256], type:INT64 RO 2048 bytes, buffer: 5, data:[??, ??, ??, ??, ??, ...]
+  T#5(arith.constant4) shape:[256], type:INT64 RO 2048 bytes, buffer: 6, data:[??, ??, ??, ??, ??, ...]
+  T#6(arith.constant5) shape:[256], type:INT64 RO 2048 bytes, buffer: 7, data:[??, ??, ??, ??, ??, ...]
+  T#7(arith.constant6) shape:[128], type:INT64 RO 1024 bytes, buffer: 8, data:[??, ??, ??, ??, ??, ...]
+  T#8(arith.constant7) shape:[128], type:INT64 RO 1024 bytes, buffer: 9, data:[??, ??, ??, ??, ??, ...]
+  T#9(arith.constant8) shape:[128], type:INT64 RO 1024 bytes, buffer: 10, data:[??, ??, ??, ??, ??, ...]
+  T#10(arith.constant9) shape:[64], type:INT64 RO 512 bytes, buffer: 11, data:[??, ??, ??, ??, ??, ...]
+  T#11(arith.constant10) shape:[64], type:INT64 RO 512 bytes, buffer: 12, data:[??, ??, ??, ??, ??, ...]
+  T#12(arith.constant11) shape:[64], type:INT64 RO 512 bytes, buffer: 13, data:[??, ??, ??, ??, ??, ...]
+  T#13(arith.constant12) shape:[32], type:INT64 RO 256 bytes, buffer: 14, data:[??, ??, ??, ??, ??, ...]
+  T#14(arith.constant13) shape:[32], type:INT64 RO 256 bytes, buffer: 15, data:[??, ??, ??, ??, ??, ...]
+  T#15(arith.constant14) shape:[32], type:INT64 RO 256 bytes, buffer: 16, data:[??, ??, ??, ??, ??, ...]
+  T#16(arith.constant15) shape:[16], type:INT64 RO 128 bytes, buffer: 17, data:[??, ??, ??, ??, ??, ...]
+  T#17(arith.constant16) shape:[16], type:INT64 RO 128 bytes, buffer: 18, data:[??, ??, ??, ??, ??, ...]
+  T#18(arith.constant17) shape:[512, 3, 3, 512], type:INT8 RO 2359296 bytes, buffer: 19, data:[|, ., @, ., ., ...]
+  T#19(arith.constant18) shape:[512, 3, 3, 512], type:INT8 RO 2359296 bytes, buffer: 20, data:[U, ., ., Y, ., ...]
+  T#20(arith.constant19) shape:[512, 3, 3, 256], type:INT8 RO 1179648 bytes, buffer: 21, data:[., ., ., p, 9, ...]
+  T#21(arith.constant20) shape:[256, 3, 3, 256], type:INT8 RO 589824 bytes, buffer: 22, data:[5, ., ., G, ., ...]
+  T#22(arith.constant21) shape:[256, 3, 3, 256], type:INT8 RO 589824 bytes, buffer: 23, data:[., ., ?, ., ., ...]
+  T#23(arith.constant22) shape:[256, 3, 3, 128], type:INT8 RO 294912 bytes, buffer: 24, data:[., O, ., ., ., ...]
+  T#24(arith.constant23) shape:[128, 3, 3, 128], type:INT8 RO 147456 bytes, buffer: 25, data:[., ., ., ., P, ...]
+  T#25(arith.constant24) shape:[128, 3, 3, 128], type:INT8 RO 147456 bytes, buffer: 26, data:[., ., ., ., ., ...]
+  T#26(arith.constant25) shape:[128, 3, 3, 64], type:INT8 RO 73728 bytes, buffer: 27, data:[*, ., O, ., ., ...]
+  T#27(arith.constant26) shape:[64, 3, 3, 64], type:INT8 RO 36864 bytes, buffer: 28, data:[2, ., ., 1, 6, ...]
+  T#28(arith.constant27) shape:[64, 3, 3, 64], type:INT8 RO 36864 bytes, buffer: 29, data:[P, O, ., ., ^, ...]
+  T#29(arith.constant28) shape:[64, 3, 3, 32], type:INT8 RO 18432 bytes, buffer: 30, data:[., ., ., ., ., ...]
+  T#30(arith.constant29) shape:[32, 3, 3, 32], type:INT8 RO 9216 bytes, buffer: 31, data:[C, ., n, ], ., ...]
+  T#31(arith.constant30) shape:[32, 3, 3, 32], type:INT8 RO 9216 bytes, buffer: 32, data:[ , ., ., ,, ., ...]
+  T#32(arith.constant31) shape:[32, 3, 3, 16], type:INT8 RO 4608 bytes, buffer: 33, data:[., ., x, ., ., ...]
+  T#33(arith.constant32) shape:[16, 3, 3, 16], type:INT8 RO 2304 bytes, buffer: 34, data:[7, ., ., ., 5, ...]
+  T#34(arith.constant33) shape:[16, 3, 3, 16], type:INT8 RO 2304 bytes, buffer: 35, data:[., H, ., ., ., ...]
+  T#35(functional_1/conv2d_1/convolution) shape:[16, 3, 3, 3], type:INT8 RO 432 bytes, buffer: 36, data:[., ., /, ., ., ...]
+  T#36(functional_1/conv2d_1/Relu;functional_1/conv2d_1/add;functional_1/conv2d_1/convolution;functional_1/conv2d_1/Reshape) shape:[16], type:INT64 RO 128 bytes, buffer: 37, data:[??, ??, ??, ??, ??, ...]
+  T#37(functional_1/conv2d_1/Relu;functional_1/conv2d_1/add;functional_1/conv2d_1/convolution;functional_1/conv2d_1/Reshape1) shape_signature:[-1, 1398, 1598, 16], type:INT16
+  T#38(functional_1/conv2d_1_2/Relu;functional_1/conv2d_1_2/add;functional_1/conv2d_1_2/convolution;functional_1/conv2d_1_2/Reshape) shape_signature:[-1, 698, 798, 16], type:INT16
+  T#39(functional_1/conv2d_2_1/Relu;functional_1/conv2d_2_1/add;functional_1/conv2d_2_1/convolution;functional_1/conv2d_2_1/Reshape) shape_signature:[-1, 696, 796, 16], type:INT16
+  T#40(functional_1/conv2d_3_1/Relu;functional_1/conv2d_3_1/add;functional_1/conv2d_3_1/convolution;functional_1/conv2d_3_1/Reshape) shape_signature:[-1, 694, 794, 32], type:INT16
+  T#41(functional_1/conv2d_4_1/Relu;functional_1/conv2d_4_1/add;functional_1/conv2d_4_1/convolution;functional_1/conv2d_4_1/Reshape) shape_signature:[-1, 346, 396, 32], type:INT16
+  T#42(functional_1/conv2d_5_1/Relu;functional_1/conv2d_5_1/add;functional_1/conv2d_5_1/convolution;functional_1/conv2d_5_1/Reshape) shape_signature:[-1, 344, 394, 32], type:INT16
+  T#43(functional_1/conv2d_6_1/Relu;functional_1/conv2d_6_1/add;functional_1/conv2d_6_1/convolution;functional_1/conv2d_6_1/Reshape) shape_signature:[-1, 342, 392, 64], type:INT16
+  T#44(functional_1/conv2d_7_1/Relu;functional_1/conv2d_7_1/add;functional_1/conv2d_7_1/convolution;functional_1/conv2d_7_1/Reshape) shape_signature:[-1, 170, 195, 64], type:INT16
+  T#45(functional_1/conv2d_8_1/Relu;functional_1/conv2d_8_1/add;functional_1/conv2d_8_1/convolution;functional_1/conv2d_8_1/Reshape) shape_signature:[-1, 168, 193, 64], type:INT16
+  T#46(functional_1/conv2d_9_1/Relu;functional_1/conv2d_9_1/add;functional_1/conv2d_9_1/convolution;functional_1/conv2d_9_1/Reshape) shape_signature:[-1, 166, 191, 128], type:INT16
+  T#47(functional_1/conv2d_10_1/Relu;functional_1/conv2d_10_1/add;functional_1/conv2d_10_1/convolution;functional_1/conv2d_10_1/Reshape) shape_signature:[-1, 82, 95, 128], type:INT16
+  T#48(functional_1/conv2d_11_1/Relu;functional_1/conv2d_11_1/add;functional_1/conv2d_11_1/convolution;functional_1/conv2d_11_1/Reshape) shape_signature:[-1, 80, 93, 128], type:INT16
+  T#49(functional_1/conv2d_12_1/Relu;functional_1/conv2d_12_1/add;functional_1/conv2d_12_1/convolution;functional_1/conv2d_12_1/Reshape) shape_signature:[-1, 78, 91, 256], type:INT16
+  T#50(functional_1/conv2d_13_1/Relu;functional_1/conv2d_13_1/add;functional_1/conv2d_13_1/convolution;functional_1/conv2d_13_1/Reshape) shape_signature:[-1, 38, 45, 256], type:INT16
+  T#51(functional_1/conv2d_14_1/Relu;functional_1/conv2d_14_1/add;functional_1/conv2d_14_1/convolution;functional_1/conv2d_14_1/Reshape) shape_signature:[-1, 36, 43, 256], type:INT16
+  T#52(functional_1/conv2d_15_1/Relu;functional_1/conv2d_15_1/add;functional_1/conv2d_15_1/convolution;functional_1/conv2d_15_1/Reshape) shape_signature:[-1, 34, 41, 512], type:INT16
+  T#53(functional_1/conv2d_16_1/Relu;functional_1/conv2d_16_1/add;functional_1/conv2d_16_1/convolution;functional_1/conv2d_16_1/Reshape) shape_signature:[-1, 16, 20, 512], type:INT16
+  T#54(StatefulPartitionedCall_1:0) shape_signature:[-1, 14, 18, 512], type:INT16
+
+---------------------------------------------------------------
+Your TFLite model has '1' signature_def(s).
+
+Signature#0 key: 'serving_default'
+- Subgraph: Subgraph#0
+- Inputs: 
+    'input_layer' : T#0
+- Outputs: 
+    'output_0' : T#54
+
+---------------------------------------------------------------
+              Model size:    7993880 bytes
+    Non-data buffer size:     107896 bytes (01.35 %)
+  Total data buffer size:    7885984 bytes (98.65 %)
+    (Zero value buffers):          0 bytes (00.00 %)
+
+* Buffers of TFLite model are mostly used for constant tensors.
+  And zero value buffers are buffers filled with zeros.
+  Non-data buffers area are used to store operators, subgraphs and etc.
+  You can find more details from https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/schema/schema.fbs
+
