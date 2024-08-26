@@ -2,13 +2,13 @@ This repository contains a proof of concept implementation of a streaming CNN co
 
 Assuming you've installed python3, please, install the following libraries.
 
-# python3 -m pip install opencv-python
-# python3 -m pip install pyqt5
-# python3 -m pip install pyqtwebengine
-# python3 -m pip install tensorflow
-# python3 -m pip install numpy
-# python3 -m pip install tflite
-# python3 -m pip install argparse
+- python3 -m pip install opencv-python
+- python3 -m pip install pyqt5
+- python3 -m pip install pyqtwebengine
+- python3 -m pip install tensorflow
+- python3 -m pip install numpy
+- python3 -m pip install tflite
+- python3 -m pip install argparse
 
 From the directory "sim"
 - to run full simulation run : make all  ( Starts with full training, takes around 36 hours on CPU)
