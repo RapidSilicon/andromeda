@@ -1,0 +1,12 @@
+Namespace(nbatch=5, gallery=False, test=False, smin=10, smax=10, stretch=0.0, nballs=2000, log='./log.train', sidex=1700, spacex=100, sidey=1500, spacey=100, net='alt1', batch=3, lr=1e-05, tflite='encoder.tflite', dtype=16, debug=False)
+i      0 wall 2024-08-26 12:25:10.684831 loss 0.6931470037 grad 0.0020411308 accuracy 0.492 p [0.5 0.5 0.5 0.5 0.5] y [1. 0. 1. 0. 1.]
+i      1 wall 2024-08-26 12:25:22.228492 loss 0.6931488514 grad 0.0020527963 accuracy 0.480 p [0.5 0.5 0.5 0.5 0.5] y [1. 1. 0. 0. 1.]
+i      2 wall 2024-08-26 12:25:33.463944 loss 0.6931477189 grad 0.0017997008 accuracy 0.498 p [0.5 0.5 0.5 0.5 0.5] y [0. 1. 1. 1. 1.]
+i      3 wall 2024-08-26 12:25:44.693056 loss 0.6931479573 grad 0.0017536492 accuracy 0.498 p [0.5 0.5 0.5 0.5 0.5] y [1. 0. 1. 0. 1.]
+i      4 wall 2024-08-26 12:25:55.907175 loss 0.6931453347 grad 0.0016500895 accuracy 0.505 p [0.5001 0.5    0.5    0.5    0.5   ] y [1. 1. 0. 0. 1.]
+Namespace(nbatch=5, gallery=False, test=False, smin=10, smax=10, stretch=0.0, nballs=2000, log='./log.train', sidex=1700, spacex=100, sidey=1500, spacey=100, net='alt1', batch=3, lr=1e-05, tflite='encoder.tflite', dtype=16, debug=False)
+i      0 wall 2024-08-26 12:28:35.581001 loss 0.6931477189 grad 0.0017556172 accuracy 0.486 p [0.5 0.5 0.5 0.5 0.5] y [1. 0. 0. 0. 0.]
+i      1 wall 2024-08-26 12:28:47.398613 loss 0.6931458116 grad 0.0020301214 accuracy 0.532 p [0.5 0.5 0.5 0.5 0.5] y [1. 0. 0. 0. 0.]
+i      2 wall 2024-08-26 12:28:58.804835 loss 0.6931469440 grad 0.0018305718 accuracy 0.511 p [0.5 0.5 0.5 0.5 0.5] y [0. 1. 0. 1. 1.]
+i      3 wall 2024-08-26 12:29:10.095516 loss 0.6931471825 grad 0.0020442719 accuracy 0.499 p [0.5 0.5 0.5 0.5 0.5] y [0. 0. 1. 1. 0.]
+i      4 wall 2024-08-26 12:29:21.512347 loss 0.6931462884 grad 0.0020352239 accuracy 0.506 p [0.5 0.5 0.5 0.5 0.5] y [1. 1. 1. 1. 0.]
