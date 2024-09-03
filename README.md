@@ -17,7 +17,7 @@ Make targets: From the directory "sim"
 
 Hardware generation from existing trained cnns :From the directory "sim"
 - ./hw_gen.sh               : displays usage/help
-- ./hw_gen.sh --cnns        : displays available pretrained models
+- ./hw_gen.sh --cnns        : displays available pretrained models (Please, notice that the main cnns , used in our projects, are passing. The others are for further development of the project)
 - ./hw_gen.sh --c <name>    : generates Hardware for the named cnn (from the list provided by --cnns)
 
 Contact zarin.said@rapidsilicon.com for non-GPL Commercial Licensing option.
